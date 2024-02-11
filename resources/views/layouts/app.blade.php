@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Controle de estoque') }}</title>
+    <title>{{ config('app.name', 'Padaria Nova Esperança') }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
     
@@ -73,7 +73,7 @@
             <a href="/home" class="brand-link  d-flex align-items-center flex-column">
                 <img src="https://norven.com.br/wp-content/themes/norven/images/logo-footer.png" alt="AdminLTE Logo"
                     class="" style="opacity: .8">
-                <span class="brand-text d-none text-center font-weight-light">Controle de Estoque</span>
+                <span class="brand-text d-none text-center font-weight-light">Padaria Nova Esperança</span>
             </a>
 
             @include('layouts.navigation')

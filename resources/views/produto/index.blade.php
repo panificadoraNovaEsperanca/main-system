@@ -47,11 +47,11 @@
                 <tr>
                     <th>Id</th>
                     <th>Nome</th>
-                    <th>Categoria</th>
 
-                    <th>Descrição</th>
-                    <th>Responsável</th>
-                    <th>Ativo</th>
+                    <th>Unidade</th>
+                    <th>Preço A (R$)</th>
+                    <th>Preço B (R$)</th>
+                    <th>Preço C (R$)</th>
                     <th class="text-center">Ações</th>
                 </tr>
             </thead>
@@ -63,17 +63,15 @@
                         </td>
 
                         <td>{{ $produto->nome }}</td>
-                        <td>{{ $produto->categoria->nome }}</td>
 
-                        <td style="text-overflow: ellipsis">{{ $produto->descricao }}</td>
-                        <td>{{ $produto->responsavel->name }}</td>
-                        <td>{{ $produto->deleted_at == null ? 'Ativo' : 'Inativo' }}</td>
+                        <td style="text-overflow: ellipsis">{{ $produto->unidade }}</td>
+                        <td>{{ $produto->precos['a'] }}</td>
+                        <td>{{ $produto->precos['b'] }}</td>
+                        <td>{{ $produto->precos['c'] }}</td>
 
 
                         <td class="d-flex  justify-content-around">
-                            <button data-id="{{ $produto->id }}" type="button" class="btn btn-primary infoProduto mr-1">
-                                <i class="fas fa-info"></i>
-                            </button>
+                       
                             @if ($produto->deleted_at == null)
                             <a href="{{ route('produto.edit', $produto->id) }}" type="button"
                                 class="btn btn-warning mr-1 editModal"><i class="fas fa-edit"></i></a>
@@ -113,60 +111,8 @@
 
 @push('scripts')
     <script>
-        $('.infoProduto').on('click', function() {
-            console.log(this)
-            fetch(`/produto/${this.dataset.id}`).then(async (response) => {
-                let result = await response.json();
-                console.log(result)
-                if (result.success && Object.keys(result.data).length > 0) {
-                    document.getElementById('nomeProduto').textContent = result.data.nome
+    
 
-                    document.getElementById('codigoProduto').value = result.data.id
-
-                    document.getElementById('unidadeMedida').value = result.data.unidade_medida
-
-                    document.getElementById('porcao').value = result.data.informacao_nutricional.porcao
-                    document.getElementById('proteina').value = result.data.informacao_nutricional
-                        .proteina
-                    document.getElementById('carboidrato').value = result.data.informacao_nutricional
-                        .carboidrato
-                    document.getElementById('gordura_total').value = result.data.informacao_nutricional
-                        .gordura_total
-
-
-                    document.getElementById('fornecedorNome').value = result.data.fornecedor.nome
-                    document.getElementById('nomeProduto').value = result.data.nome
-
-                    let date = new Date(Date.parse(result.data.created_at));
-                    let dia = date.getDate().toString().padStart(2, '0');
-                    let mes = (date.getMonth() + 1).toString().padStart(2, '0');
-                    let ano = date.getFullYear();
-                    document.getElementById('dataCadastro').value = `${dia}/${mes}/${ano}`
-
-                    document.getElementById('responsavel').value = result.data.responsavel.name
-                    document.getElementById('descricaoProduto').value = result.data.descricao
-                    $('#produtoModal').modal('show')
-
-                } else {
-                    Toast.fire({
-                        heightAuto: true,
-                        icon: 'error',
-                        title: 'Produto não encontrado'
-                    });
-                }
-
-            })
-
-        })
-
-        document.getElementById('produtoModal').addEventListener('hide.bs.modal', function() {
-            document.getElementById('formProduto').reset()
-        })
-        document.getElementById('search').addEventListener('change', function() {
-            document.getElementById('formSearch').submit()
-        })
-        document.getElementById('paginacao').addEventListener('change', function() {
-            document.getElementById('formSearch').submit()
-        })
+   
     </script>
 @endpush

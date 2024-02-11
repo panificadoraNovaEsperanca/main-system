@@ -3,6 +3,7 @@
 use App\Http\Controllers\MarcaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\FornecedorController;
@@ -52,8 +53,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('lote', LoteController::class);
     Route::resource('lancamento', LancamentoController::class);
 
+
+    Route::resource('cliente', ClienteController::class);
+
     Route::group(['prefix' => 'ativar'],function(){
-        Route::put('/categoria/{categoria_id}',[CategoriaController::class,'ativar'])->name('categoria.ativar');
+        Route::put('/cliente/{categoria_id}',[ClienteController::class,'ativar'])->name('cliente.ativar');
         Route::put('/marca/{marca_id}',[MarcaController::class,'ativar'])->name('marca.ativar');
         Route::put('/produto/{produto_id}',[ProdutoController::class,'ativar'])->name('produto.ativar');
         Route::put('/fornecedor/{fornecedor_id}',[FornecedorController::class,'ativar'])->name('fornecedor.ativar');

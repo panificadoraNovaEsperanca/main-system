@@ -18,42 +18,48 @@ class ProdutoController extends Controller
 {
     private ProdutoRepository $produtoRepository;
 
-    public function __construct(ProdutoRepository $produtoRepository){
+    public function __construct(ProdutoRepository $produtoRepository)
+    {
         $this->produtoRepository = $produtoRepository;
     }
-    public function index() : View|RedirectResponse
+    public function index(): View|RedirectResponse
     {
- 
-            $produtos = $this->produtoRepository->getIndex();
-            return view('produto.index', compact('produtos'));
-      
+
+        $produtos = Produto::withTrashed()->paginate(request()->paginacao ?? 10);
+        return view('produto.index', compact('produtos'));
     }
 
-    public function create() : View|RedirectResponse
+    public function create(): View|RedirectResponse
     {
-        
-            $categorias = Categoria::orderBy('nome')->get();
-            $marcas = Marca::orderBy('nome')->get();
-            $fornecedores = Fornecedor::orderBy('nome')->get();
-            return view('produto.form', compact('categorias', 'marcas', 'fornecedores'));
-      
-       
+
+
+        return view('produto.form');
     }
 
-    public function store(ProdutoRequest $request) : RedirectResponse
+    public function store(ProdutoRequest $request): RedirectResponse
     {
         try {
-            $this->produtoRepository->store($request);
+
+
+            Produto::create([
+                'nome' => $request->nome,
+                'unidade' => $request->unidade,
+                'precos' => [
+                    'a' => $request->precoA,
+                    'b' => $request->precoB,
+                    'c' => $request->precoC,
+                ]
+            ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto criado com sucesso!']]);
         } catch (\Exception $e) {
+
             return back()->with('messages', ['error' => ['Não foi possível salvar o produto. Tente novamente mais tarde!']])->withInput($request->all());
         }
     }
 
-    public function show(int $produto_id) : JsonResponse
+    public function show(int $produto_id): JsonResponse
     {
-        try 
-        {
+        try {
             $produto = $this->produtoRepository->getProduto($produto_id);
             return response()->json(['success' => true, 'data' => $produto], 200);
         } catch (\Exception $e) {
@@ -64,43 +70,49 @@ class ProdutoController extends Controller
         }
     }
 
-    public function edit($id) : View|RedirectResponse
+    public function edit($id): View|RedirectResponse
     {
-        $categorias = Categoria::orderBy('nome')->get();
-        $marcas = Marca::orderBy('nome')->get();
-        $fornecedores = Fornecedor::orderBy('nome')->get();
+
         try {
             $produto = Produto::findOrFail($id);
-            return view('produto.form', compact('produto', 'categorias', 'marcas', 'fornecedores'));
+            return view('produto.form', compact('produto', ));
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
         }
     }
 
-    public function update(ProdutoRequest $request, int $id) : RedirectResponse
+    public function update(ProdutoRequest $request, int $id): RedirectResponse
     {
         try {
-            $this->produtoRepository->update($request, $id);
+            Produto::findOrFail($id)->update([
+                'nome' => $request->nome,
+                'unidade' => $request->unidade,
+                'precos' => [
+                    'a' => $request->precoA,
+                    'b' => $request->precoB,
+                    'c' => $request->precoC,
+                ]
+            ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto atualizado com sucesso!']]);
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível atualizar o produto!']])->withInput($request->all());
         }
     }
 
-    public function destroy(int $id) : RedirectResponse
+    public function destroy(int $id): RedirectResponse
     {
         try {
-            $this->produtoRepository->destroy($id);
+            Produto::findOrFail($id)->delete();
             return back()->with('messages', ['success' => ['Produto excluído com sucesso!']]);
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível excluír o produto!']]);
         }
     }
 
-    public function ativar(int $categoria_id){
+    public function ativar(int $produto_id){
         try {
-            $this->produtoRepository->ativar($categoria_id);
-            return back()->with('messages', ['success' => ['Categoria ativada com sucesso!']]);
+            Produto::withTrashed()->where('id',$produto_id)->update(['deleted_at' => null]);
+            return back()->with('messages', ['success' => ['Produto ativado com sucesso!']]);
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível ativar a categoria!'.$e->getMessage()]]);
         }

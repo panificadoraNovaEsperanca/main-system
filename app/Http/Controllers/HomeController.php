@@ -23,9 +23,8 @@ class HomeController extends Controller
     {
 
         try {
-            $categoriaRepository = new CategoriaRepository(new Categoria());
-            $categorias = $categoriaRepository->getIndexHome();
-            return view('home', compact('categorias'));
+           
+            return view('home');
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível acessar a página principal!']]);
 

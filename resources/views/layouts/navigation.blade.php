@@ -13,20 +13,20 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('categoria.index') }}" class="nav-link">
+                <a href="{{ route('cliente.index') }}" class="nav-link">
                     <i class=" nav-icon fa-solid fa-list"></i>
                     <p>
-                        Categorias
+                        Clientes
                     </p>
 
                 </a>
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('marca.index') }}" class="nav-link">
+                <a href="{{ route('produto.index') }}" class="nav-link">
                     <i class="nav-icon fa-solid fa-copyright"></i>
                     <p>
-                        Marcas
+                        Produtos
                     </p>
                 </a>
             </li>
@@ -35,7 +35,7 @@
                 <a href="{{ route('fornecedor.index') }}" class="nav-link">
                     <i class="nav-icon fa-solid fa-business-time"></i>
                     <p>
-                        Fornecedores
+                        Rotas
                     </p>
                 </a>
             </li>
@@ -43,26 +43,11 @@
                 <a href="{{ route('produto.index') }}" class="nav-link">
                     <i class="nav-icon fa-solid fa-barcode"></i>
                     <p>
-                        Produtos
+                        Pedidos
                     </p>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{{ route('lote.index') }}" class="nav-link">
-                    <i class="nav-icon  fa-solid fa-truck-ramp-box"></i>
-                    <p>
-                        Lotes
-                    </p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('lancamento.index') }}" class="nav-link">
-                  
-                    <i class=" nav-icon fa-solid fa-clock-rotate-left"></i>              <p>
-                        Lançamentos
-                    </p>
-                </a>
-            </li>
+      
         </ul>
     </nav>
     <!-- /.sidebar-menu -->
