@@ -16,14 +16,14 @@ return new class extends Migration
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('cnpj')->unique();
-            $table->string('logradouro');
-            $table->string('numero');
-            $table->string('cep');
+            $table->string('cnpj')->nullable();
+            $table->string('logradouro')->nullable();
+            $table->string('numero')->nullable();
+            $table->string('cep')->nullable();
             $table->string('complemento')->nullable();
-            $table->string('bairro');
-            $table->string('cidade');
-            $table->enum('tipo_cliente', ['a', 'b', 'c']);
+            $table->string('bairro')->nullable();
+            $table->string('cidade')->nullable();
+            $table->enum('tipo_cliente', ['a', 'b', 'c'])->nullable();
                         $table->timestamps();
                         $table->softDeletes();
         });

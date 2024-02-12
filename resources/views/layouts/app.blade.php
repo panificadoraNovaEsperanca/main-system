@@ -6,14 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Padaria Nova Esperança') }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
-
-    
+    <!-- ✅ load jQuery ✅ -->
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"
-    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <script></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"
+        integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     @notifyCss
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.4/build/jquery.datetimepicker.full.min.js">
+    </script>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.css"
+        integrity="sha512-bYPO5jmStZ9WI2602V2zaivdAnbAhtfzmxnEGh9RwtlI00I9s8ulGe4oBa5XxiC6tCITJH/QG70jswBhbLkxPw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="
+                                                    https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js
+                                                    "></script>
+
+    <link href="
+    https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css
+    " rel="stylesheet">
 
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -22,57 +51,96 @@
 
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
 
-
     @yield('styles')
+    <style>
+        .loading {
+            z-index: 90909999999;
+            position: absolute;
+
+            width: 100%;
+            height: 100%;
+
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center
+        }
+
+        .loading-content {
+            position: absolute;
+            border: 16px solid #f3f3f3;
+            /* Light grey */
+            border-top: 16px solid #AA5622;
+            /* Blue */
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            top: 50%;
+            left: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body class="hold-transition sidebar-mini sidebar-collapse">
+    <section id="loading" class="loading">
+        <div id="loading-content" class="loading-content"></div>
+    </section>
     <div class="wrapper">
 
         <nav class="main-header navbar navbar-expand navbar-light navbar-white d-flex justify-content-between">
             <ul class="navbar-nav">
 
-            <li class="nav-item">
-                <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
+                </li>
             </ul>
             <div class="">
 
                 <!-- Right navbar links -->
                 <ul class="navbar-nav ml-auto">
-                  
+
                     <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
                         <i class="fa-solid fa-user mr-2"></i>
                         {{ Auth::user()->name }}
                     </a>
-                        <div class="dropdown-menu dropdown-menu-right" style="left: inherit; right: 0px;">
-                            <a href="{{ route('profile.show') }}" class="dropdown-item">
-                                <i class="mr-2 fas fa-file"></i>
-                                {{ __('Meu perfil') }}
+                    <div class="dropdown-menu dropdown-menu-right" style="left: inherit; right: 0px;">
+                        <a href="{{ route('profile.show') }}" class="dropdown-item">
+                            <i class="mr-2 fas fa-file"></i>
+                            {{ __('Meu perfil') }}
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <a href="{{ route('logout') }}" class="dropdown-item"
+                                onclick="event.preventDefault(); this.closest('form').submit();">
+                                <i class="mr-2 fas fa-sign-out-alt"></i>
+                                {{ __('Log Out') }}
                             </a>
-                            <div class="dropdown-divider"></div>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <a href="{{ route('logout') }}" class="dropdown-item"
-                                    onclick="event.preventDefault(); this.closest('form').submit();">
-                                    <i class="mr-2 fas fa-sign-out-alt"></i>
-                                    {{ __('Log Out') }}
-                                </a>
-                            </form>
-                        </div>
+                        </form>
+                    </div>
                     </li>
                 </ul>
             </div>
         </nav>
 
         <!-- /.navbar -->
-   
+
         <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#1e0535">
+        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#3D2C1F">
             <!-- Brand Logo -->
             <a href="/home" class="brand-link  d-flex align-items-center flex-column">
-                <img src="https://norven.com.br/wp-content/themes/norven/images/logo-footer.png" alt="AdminLTE Logo"
-                    class="" style="opacity: .8">
+                <img src="https://paesnovaesperanca.com.br/wp-content/uploads/2023/08/logo.png"
+                    alt="Panificadora Nova Esperança Logo" class="" style="opacity: .8">
                 <span class="brand-text d-none text-center font-weight-light">Padaria Nova Esperança</span>
             </a>
 
@@ -126,36 +194,37 @@
         </aside>
         <!-- /.control-sidebar -->
         <!-- Main Footer -->
-        <footer class="main-footer">
-            <!-- To the right -->
-            <div class="float-right d-none d-sm-inline">
-                Anything you want
-            </div>
-            <!-- Default to the left -->
-            <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights
-            reserved.
-        </footer>
+
     </div>
+
     <!-- ./wrapper -->
 
     @if (\Session::has('messages'))
         <input type="hidden" name="messages" id="messages" value="{{ json_encode(\Session::get('messages')) }}">
     @endif
+    <script src="{{ asset('js/adminlte.min.js') }}" defer></script>
 
     @vite('resources/js/app.js')
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="{{ asset('js/adminlte.min.js') }}" defer></script>
 
     @yield('scripts')
     @stack('scripts')
 
     <script>
-        $(function() {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
+        $(document).ready(function() {
+            $('#loading').fadeOut('fast');
+        });
 
+        function showLoading() {
+            $('#loading').fadeIn('fast');
+
+        }
+
+        function hideLoading() {
+            $('#loading').fadeOut('fast');
+
+        }
         const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -182,11 +251,6 @@
                 }
             }
         }
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
     </script>
 
 </body>

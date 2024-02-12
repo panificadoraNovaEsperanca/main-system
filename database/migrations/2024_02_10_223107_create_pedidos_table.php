@@ -16,14 +16,13 @@ return new class extends Migration
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('cliente_id');
-            $table->unsignedBigInteger('rota_id');
-            $table->date('data');
-            $table->time('horario');
+            $table->unsignedBigInteger('motorista_id');
+            $table->dateTime('dt_previsao');
             $table->enum('status',['AGENDADO','A CAMINHO','ENTREGUE','CANCELADO']);
             $table->timestamps();
 
             $table->foreign('cliente_id')->references('id')->on('clientes');
-            $table->foreign('rota_id')->references('id')->on('rotas');
+            $table->foreign('motorista_id')->references('id')->on('motoristas');
         
         });
     }

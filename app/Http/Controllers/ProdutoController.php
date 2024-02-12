@@ -3,16 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProdutoRequest;
+use App\Http\Requests\RelatorioProduto;
 use App\Models\Categoria;
 use App\Models\Fornecedor;
 use App\Models\Marca;
+use App\Models\Pedido;
+use App\Models\PedidoProduto;
 use App\Models\Produto;
 use App\Repositories\ProdutoRepository;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProdutoController extends Controller
 {
@@ -75,7 +81,7 @@ class ProdutoController extends Controller
 
         try {
             $produto = Produto::findOrFail($id);
-            return view('produto.form', compact('produto', ));
+            return view('produto.form', compact('produto',));
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
         }
@@ -88,9 +94,9 @@ class ProdutoController extends Controller
                 'nome' => $request->nome,
                 'unidade' => $request->unidade,
                 'precos' => [
-                    'a' => $request->precoA,
-                    'b' => $request->precoB,
-                    'c' => $request->precoC,
+                    'a' => str_replace(',', '.', $request->precoA),
+                    'b' => str_replace(',', '.', $request->precoB),
+                    'c' => str_replace(',', '.', $request->precoC),
                 ]
             ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto atualizado com sucesso!']]);
@@ -109,12 +115,51 @@ class ProdutoController extends Controller
         }
     }
 
-    public function ativar(int $produto_id){
+    public function ativar(int $produto_id)
+    {
         try {
-            Produto::withTrashed()->where('id',$produto_id)->update(['deleted_at' => null]);
+            Produto::withTrashed()->where('id', $produto_id)->update(['deleted_at' => null]);
             return back()->with('messages', ['success' => ['Produto ativado com sucesso!']]);
         } catch (\Exception $e) {
-            return back()->with('messages', ['error' => ['Não foi possível ativar a categoria!'.$e->getMessage()]]);
+            return back()->with('messages', ['error' => ['Não foi possível ativar a categoria!' . $e->getMessage()]]);
+        }
+    }
+
+    public function relatorioProduto(RelatorioProduto $request)
+    {
+        try {
+
+            $datas = explode(' - ', $request->intervalo);
+
+            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0]);
+
+            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1]);
+            $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
+                ->whereNotIn('status', ['ENTREGUE', 'CANCELADO'])
+                ->pluck('id')->toArray();
+                $produtos = DB::table('pedido_produtos')
+                ->selectRaw('pedido_produtos.produto_id as produto,sum(quantidade) as total, produtos.nome as nome_produto')
+                ->join('produtos', 'produtos.id', '=', 'pedido_produtos.produto_id')
+                ->whereIn('pedido_produtos.pedido_id', $pedidos)
+                ->groupBy('pedido_produtos.produto_id','produtos.nome')->get();                
+            $pdf =  Pdf::loadView('relatorios.pdf.produtos', [
+                'total' => $produtos,
+                'inicio' => $inicio,
+                'fim' => $fim
+            ]);
+            return $pdf->download("Relatório produtos.pdf");
+        } catch (\Exception $e) {
+            dd($e);
+            return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
+        }
+    }
+    public function relatorioProdutoIndex()
+    {
+        try {
+            return view('relatorios.produtosHoje');
+        } catch (\Exception $e) {
+            dd($e);
+            return back()->with('messages', ['error' => ['Não foi possível abrir os relatórios!' . $e->getMessage()]]);
         }
     }
 }

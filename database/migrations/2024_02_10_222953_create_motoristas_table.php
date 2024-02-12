@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rotas', function (Blueprint $table) {
+        Schema::create('motoristas', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('periodo');
+            $table->string('nome');
+            $table->enum('turno',['MANHÃ','TARDE','NOITE']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rotas');
+        Schema::dropIfExists('motoristas');
     }
 };

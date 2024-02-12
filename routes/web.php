@@ -9,6 +9,8 @@ use App\Http\Controllers\LoteController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LancamentoController;
+use App\Http\Controllers\MotoristaController;
+use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -44,7 +46,21 @@ Route::middleware('auth')->group(function () {
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     
-    Route::get('/produtosCategoriaEmEstoque/{categoria_id}', [HomeController::class, 'produtosCategoriaEmEstoque'])->name('produtosCategoria.index');
+    Route::get('/clientsByName', [ClienteController::class, 'clientsByName'])->name('cliente.clientes');
+    Route::get('/motoristaByName', [MotoristaController::class, 'motoristaByName'])->name('motorista.motorista');
+    
+    Route::post('/relatorioMotorista', [MotoristaController::class, 'relatorioMotorista'])->name('motorista.relatorio');
+    Route::get('/motorista-relatorio', [MotoristaController::class, 'relatorioMotoristaIndex'])->name('motorista.relatorio.index');
+
+    Route::post('/relatorioCliente', [ClienteController::class, 'relatorioCliente'])->name('cliente.relatorio');
+    Route::get('/cliente-relatorio', [ClienteController::class, 'relatorioClienteIndex'])->name('cliente.relatorio.index');
+    
+    Route::post('/relatorioProduto', [ProdutoController::class, 'relatorioProduto'])->name('produto.relatorio');
+    Route::get('/produto-relatorio', [ProdutoController::class, 'relatorioProdutoIndex'])->name('produto.relatorio.index');
+    
+    Route::get('/pedidoAtualiza', [PedidoController::class, 'baixaPedido'])->name('pedido.atualiza');
+    Route::get('/getPedidoBaixa/{pedido_id}', [PedidoController::class, 'getPedidoBaixa'])->name('pedido.getBaixa');
+    Route::post('/atualizaPedido/{pedido_id}', [PedidoController::class, 'atualizaPedido'])->name('pedido.troca');
 
     Route::resource('categoria', CategoriaController::class);
     Route::resource('fornecedor', FornecedorController::class);
@@ -55,12 +71,15 @@ Route::middleware('auth')->group(function () {
 
 
     Route::resource('cliente', ClienteController::class);
+    Route::resource('pedido', PedidoController::class);
+    Route::resource('motorista', MotoristaController::class);
 
     Route::group(['prefix' => 'ativar'],function(){
         Route::put('/cliente/{categoria_id}',[ClienteController::class,'ativar'])->name('cliente.ativar');
         Route::put('/marca/{marca_id}',[MarcaController::class,'ativar'])->name('marca.ativar');
         Route::put('/produto/{produto_id}',[ProdutoController::class,'ativar'])->name('produto.ativar');
         Route::put('/fornecedor/{fornecedor_id}',[FornecedorController::class,'ativar'])->name('fornecedor.ativar');
+        Route::put('/motorista/{motorista_id}',[MotoristaController::class,'ativar'])->name('motorista.ativar');
         
 
     });

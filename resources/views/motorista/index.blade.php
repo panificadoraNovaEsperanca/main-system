@@ -1,17 +1,16 @@
 @extends('layouts.app')
-@section('title', 'Marcas')
+@section('title', 'motoristas')
 
 @section('actions')
-    <a href="{{ route('marca.create') }}" class="btn btn-primary">
-        Cadastrar marca
+    <a href="{{ route('motorista.create') }}" class="btn btn-primary">
+        Cadastrar motorista
     </a>
 @endsection
 
 
 @section('content')
 
-
-    <form class="mr-2 d-flex justify-content-between" id="formSearch" action="{{ route('marca.index') }}" method="GET">
+    <form class="mr-2 d-flex justify-content-between" id="formSearch" action="{{ route('motorista.index') }}" method="GET">
         <div class="d-flex ">
 
             <div class="input-group mb-3">
@@ -20,7 +19,7 @@
                 </div>
                 <input value="{{ $_GET['search'] ?? '' }}" type="text" id="search" name="search" class="form-control"
                     placeholder="" aria-label="" aria-describedby="basic-addon1">
-                <a href="{{ route('marca.index') }}" class="btn btn-primary">Limpar busca</a>
+                <a href="{{ route('motorista.index') }}" class="btn btn-primary">Limpar busca</a>
 
             </div>
         </div>
@@ -40,59 +39,59 @@
 
 
                 </select>
-                {{ $marcas->appends(['paginacao' => $_GET['paginacao'] ?? 10]) }}
+                {{ $motoristas->appends(['paginacao' => $_GET['paginacao'] ?? 10]) }}
 
             </div>
         </div>
     </form>
-    @if (!$marcas->isEmpty())
-        <table id="marcaTable" class="table shadow rounded table-striped table-hover">
+    @if (!$motoristas->isEmpty())
+        <table id="motoristaTable" class="table shadow rounded table-striped table-hover">
             <thead class="bg-primary ">
                 <tr>
                     <th>Id</th>
                     <th>Nome</th>
+                    <th>Turno</th>
                     <th class="d-flex justify-content-center">Ações</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($marcas as $marca)
-                    <tr @if ($marca->deleted_at != null) style="background-color:#ff8e8e" @endif>
-                        <td>{{ $marca->id }}</td>
-                        <td>{{ $marca->nome }}</td>
-
-                        <td class="d-flex  justify-content-center">
-                            @if ($marca->deleted_at == null)
-                                <a href="{{ route('marca.edit', $marca->id) }}" type="button"
+                @foreach ($motoristas as $motorista)
+                    <tr @if ($motorista->deleted_at != null) style="background-color:#ff8e8e" @endif>
+                        <td>{{ $motorista->id }}</td>
+                        <td>{{ $motorista->nome }}</td>
+                        <td>{{ $motorista->turno }}</td>
+                        <td class="d-flex  justify-content-around">
+                            @if ($motorista->deleted_at == null)
+                                <a href="{{ route('motorista.edit', $motorista->id) }}" type="button"
                                     class="btn btn-warning mr-1 editModal"><i class="fas fa-edit"></i></a>
                             @endif
                             <form method="POST"
-                                action="{{ route($marca->deleted_at == null ? 'marca.destroy' : 'marca.ativar', $marca->id) }}"
+                                action="{{ route($motorista->deleted_at == null ? 'motorista.destroy' : 'motorista.ativar', $motorista->id) }}"
                                 enctype="multipart/form-data">
-                                @if ($marca->deleted_at == null)
+                                @if ($motorista->deleted_at == null)
                                     @method('DELETE')
                                 @else
                                     @method('PUT')
                                 @endif
                                 @csrf
                                 <button type="submit"
-                                    class="btn {{ $marca->deleted_at == null ? 'btn-danger' : 'btn-success' }}"><i
+                                    class="btn {{ $motorista->deleted_at == null ? 'btn-danger' : 'btn-success' }}"><i
                                         class="fa fa-power-off"></i></button>
 
                             </form>
+                         
+
 
                         </td>
                     </tr>
                 @endforeach
             </tbody>
-
         </table>
     @else
         <x-not-found />
-
     @endif
 
-
-
+    <!-- Modal -->
 
 
 
@@ -103,6 +102,7 @@
         document.getElementById('search').addEventListener('change', function() {
             document.getElementById('formSearch').submit()
         })
+
         document.getElementById('paginacao').addEventListener('change', function() {
             document.getElementById('formSearch').submit()
         })
