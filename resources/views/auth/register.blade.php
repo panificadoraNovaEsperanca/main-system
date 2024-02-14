@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+{{-- @extends('layouts.guest')
 
 @section('content')
     <div class="card-body login-card-body">
@@ -75,4 +75,4 @@
             </div>
         </div>
     </div>
-@endsection
+@endsection --}}

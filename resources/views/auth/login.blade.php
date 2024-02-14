@@ -61,9 +61,7 @@
         @endif
         <div class="row">
             <div class="col-12">
-                {{-- <a href="/register">Não possui cadastro? Entre aqui para cadastrar-se</a> --}}
             </div>
         </div>
     </div>
-    <!-- /.login-card-body -->
 @endsection
