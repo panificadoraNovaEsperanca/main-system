@@ -3,7 +3,7 @@ WORKDIR /var/www/html
 ARG NODE_VERSION=18
 
 RUN apt-get update \
-  && apt-get install -y build-essential zlib1g-dev php-bcmath default-mysql-client curl gnupg procps vim git unzip libzip-dev libpq-dev \
+  && apt-get install -y build-essential zlib1g-dev default-mysql-client curl gnupg procps vim git unzip libzip-dev libpq-dev \
   && docker-php-ext-install zip pdo_mysql && curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
     && apt-get install gcc g++ make \
     && apt-get install -y nodejs \
