@@ -16,7 +16,6 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-       VerificaValidade::class,
     ];
 
     /**
@@ -27,7 +26,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('verifica:validade')->everyMinute()->sendOutputTo('storage/logs/laravel.log');
     }
 
     /**
