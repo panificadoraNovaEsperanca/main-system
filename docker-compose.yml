@@ -19,7 +19,7 @@ services:
 
     app:
         build: .
-        container_name: calculadora
+        container_name: padaria
         env_file:
             - ./.env
         ports:
