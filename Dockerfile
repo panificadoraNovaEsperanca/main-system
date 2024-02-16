@@ -27,11 +27,13 @@ COPY . .
 
 RUN composer install
 
-FROM node:18 AS npm
+FROM node:18-alpine AS npm
 WORKDIR /app
 COPY --from=composer /build .
 
-RUN npm install && npm run build
+RUN apk add git
+RUN npm install
+RUN npm run build
 
 FROM composer AS run
 RUN rm -rf /build
