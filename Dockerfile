@@ -1,3 +1,9 @@
+FROM node:latest AS npm
+WORKDIR /app
+COPY . .
+
+RUN npm install && npm run build
+
 FROM php:8.2-fpm
 WORKDIR /var/www/html
 ARG NODE_VERSION=18
@@ -32,9 +38,3 @@ RUN composer install
 
 EXPOSE 8000
 CMD ["/bin/bash", "start.sh"]
-
-FROM node:latest AS npm
-WORKDIR /app
-COPY . .
-
-RUN npm install && npm run build
