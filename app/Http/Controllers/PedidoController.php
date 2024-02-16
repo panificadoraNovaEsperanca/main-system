@@ -47,6 +47,9 @@ class PedidoController extends Controller
 
         try {
             $cliente = Cliente::findOrFail($request->cliente_id);
+            if($cliente->tipo_cliente == null){
+                return back()->with('messages', ['error' => ['Cadastro de cliente incompleto! Finalize o cadastro de cliente para completar o pedido']])->withInput($request->all());;
+            }
             $dataPedido = Carbon::createFromFormat('d/m/Y H:i', $request->dataHora);
             $pedido = Pedido::create([
                 'cliente_id' => $cliente->id,
@@ -87,7 +90,6 @@ class PedidoController extends Controller
             }
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido cadastrado com sucesso!']]);
         } catch (\Exception $e) {
-            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
         }
     }
@@ -170,7 +172,6 @@ class PedidoController extends Controller
             }
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido editado com sucesso!']]);
         } catch (\Exception $e) {
-            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
         }
     }

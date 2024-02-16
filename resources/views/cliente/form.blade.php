@@ -95,11 +95,11 @@
                             class="custom-select" id="inputGroupSelect01">
                             <option value="" hidden>Selecione uma opção</option>
                             <option {{ isset($cliente) && $cliente->tipo_cliente == 'a' ? 'selected' : '' }}
-                                value="A">Nível A</option>
+                                value="a">Nível A</option>
                             <option {{ isset($cliente) && $cliente->tipo_cliente == 'b' ? 'selected' : '' }}
-                                value="B">Nível B</option>
+                                value="a">Nível B</option>
                             <option {{ isset($cliente) && $cliente->tipo_cliente == 'c' ? 'selected' : '' }}
-                                value="C">Nível C</option>
+                                value="a">Nível C</option>
 
                         </select>
                     </div>
