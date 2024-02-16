@@ -47,6 +47,9 @@ class PedidoController extends Controller
 
         try {
             $cliente = Cliente::findOrFail($request->cliente_id);
+            if($cliente->tipo_cliente == null){
+                return back()->with('messages', ['error' => ['Cadastro de cliente incompleto! Finalize o cadastro de cliente para completar o pedido']])->withInput($request->all());;
+            }
             $dataPedido = Carbon::createFromFormat('d/m/Y H:i', $request->dataHora);
             $pedido = Pedido::create([
                 'cliente_id' => $cliente->id,
