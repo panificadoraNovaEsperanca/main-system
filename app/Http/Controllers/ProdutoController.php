@@ -149,7 +149,6 @@ class ProdutoController extends Controller
             ]);
             return $pdf->download("Relatório produtos.pdf");
         } catch (\Exception $e) {
-            dd($e);
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }
     }
@@ -158,7 +157,6 @@ class ProdutoController extends Controller
         try {
             return view('relatorios.produtosHoje');
         } catch (\Exception $e) {
-            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível abrir os relatórios!' . $e->getMessage()]]);
         }
     }

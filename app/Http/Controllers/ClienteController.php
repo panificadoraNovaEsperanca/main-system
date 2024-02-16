@@ -43,7 +43,6 @@ class ClienteController extends Controller
             Cliente::create($request->except('_token'));
             return redirect(route('cliente.index'))->with('messages', ['success' => ['Cliente cadastrado com sucesso!']]);
         } catch (\Exception $e) {
-            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o cliente!']])->withInput($request->all());;
         }
     }
@@ -156,17 +155,14 @@ class ClienteController extends Controller
             ]);
             return $pdf->download("Relatório {$cliente->name}.pdf");
         } catch (\Exception $e) {
-            dd($e);
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }
     }
     public function relatorioClienteIndex()
     {
         try {
-
             return view('relatorios.cliente');
         } catch (\Exception $e) {
-            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível abrir os relatórios!' . $e->getMessage()]]);
         }
     }

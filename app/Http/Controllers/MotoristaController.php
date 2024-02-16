@@ -125,7 +125,6 @@ class MotoristaController extends Controller
             $resultados = Motorista::where(DB::raw('LOWER(nome)'), 'LIKE', '%' . strtolower($name) . '%')->select(['nome', 'id', 'turno'])->get();
             return response()->json(['success' => true, 'data' => $resultados], 200);
         } catch (\Exception $e) {
-            dd($e);
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }
     }
@@ -147,7 +146,6 @@ class MotoristaController extends Controller
             ]);
             return $pdf->download("Relatório {$motorista->nome}.pdf");
         } catch (\Exception $e) {
-            dd($e);
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }
     }
@@ -157,7 +155,6 @@ class MotoristaController extends Controller
 
             return view('relatorios.motorista');
         } catch (\Exception $e) {
-            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível abrir os relatórios!' . $e->getMessage()]]);
         }
     }
