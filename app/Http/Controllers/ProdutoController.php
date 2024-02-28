@@ -31,7 +31,9 @@ class ProdutoController extends Controller
     public function index(): View|RedirectResponse
     {
 
-        $produtos = Produto::withTrashed()->paginate(request()->paginacao ?? 10);
+        $produtos = Produto::withTrashed()->when(request()->search != '', function ($query) {
+            $query->where('nome', 'like', '%' . request()->search . '%');
+        })->paginate(request()->paginacao ?? 10);
         return view('produto.index', compact('produtos'));
     }
 
@@ -135,13 +137,16 @@ class ProdutoController extends Controller
 
             $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1]);
             $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
-                ->whereNotIn('status', ['ENTREGUE', 'CANCELADO'])
+                ->whereNotIn('status', ['CANCELADO'])
                 ->pluck('id')->toArray();
-                $produtos = DB::table('pedido_produtos')
+            $produtos = DB::table('pedido_produtos')
                 ->selectRaw('pedido_produtos.produto_id as produto,sum(quantidade) as total, produtos.nome as nome_produto')
                 ->join('produtos', 'produtos.id', '=', 'pedido_produtos.produto_id')
                 ->whereIn('pedido_produtos.pedido_id', $pedidos)
-                ->groupBy('pedido_produtos.produto_id','produtos.nome')->get();                
+                ->when($request->produto != '',function($query){
+                    $query->where('pedido_produtos.produto_id','=',request()->produto);
+                })
+                ->groupBy('pedido_produtos.produto_id', 'produtos.nome')->get();
             $pdf =  Pdf::loadView('relatorios.pdf.produtos', [
                 'total' => $produtos,
                 'inicio' => $inicio,
@@ -155,7 +160,8 @@ class ProdutoController extends Controller
     public function relatorioProdutoIndex()
     {
         try {
-            return view('relatorios.produtosHoje');
+            $produtos = Produto::get();
+            return view('relatorios.produtosHoje',compact('produtos'));
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível abrir os relatórios!' . $e->getMessage()]]);
         }

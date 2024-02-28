@@ -52,49 +52,11 @@
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
 
     @yield('styles')
-    <style>
-        .loading {
-            z-index: 90909999999;
-            position: absolute;
 
-            width: 100%;
-            height: 100%;
-
-            background-color: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center
-        }
-
-        .loading-content {
-            position: absolute;
-            border: 16px solid #f3f3f3;
-            /* Light grey */
-            border-top: 16px solid #AA5622;
-            /* Blue */
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            top: 50%;
-            left: 50%;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
 </head>
 
 <body class="hold-transition sidebar-mini sidebar-collapse">
-    <section id="loading" class="loading">
-        <div id="loading-content" class="loading-content"></div>
-    </section>
+
     <div class="wrapper">
 
         <nav class="main-header navbar navbar-expand navbar-light navbar-white d-flex justify-content-between">
@@ -212,19 +174,7 @@
     @stack('scripts')
 
     <script>
-        $(document).ready(function() {
-            $('#loading').fadeOut('fast');
-        });
-
-        function showLoading() {
-            $('#loading').fadeIn('fast');
-
-        }
-
-        function hideLoading() {
-            $('#loading').fadeOut('fast');
-
-        }
+    
         const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',

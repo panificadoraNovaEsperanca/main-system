@@ -20,7 +20,23 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        $pedidos = Pedido::with(['motorista', 'cliente'])->paginate(request()->paginacao ?? 10);
+        $pedidos = Pedido::with(['motorista', 'cliente'])
+        ->when(request()->search != '',function($query){
+            $query->whereHas('motorista',function($queryMotora){
+                $queryMotora->where('nome','like','%'.request()->search.'%');
+            })->orWhereHas('cliente',function($queryCliente){
+                $queryCliente->where('name','like','%'.request()->search.'%');
+            });
+        })
+        ->when(request()->status != '' && request()->status != '-1',function($query){
+            $query->where('status',request()->status);
+        })
+        ->when(request()->dataHora != '',function($query){
+            $dtInicial = Carbon::createFromFormat('d/m/Y',request()->dataHora)->startOfDay();
+            $dtFinal = Carbon::createFromFormat('d/m/Y',request()->dataHora)->endOfDay();
+            $query->whereBetween('dt_previsao',[$dtInicial,$dtFinal]);
+        })
+        ->paginate(request()->paginacao ?? 10);
         return view('pedido.index', compact('pedidos'));
     }
 
@@ -63,6 +79,7 @@ class PedidoController extends Controller
                     'pedido_id' => $pedido->id,
                     'produto_id' => $valor,
                     'quantidade' => $request->quantidade[$linha],
+                    'observacao' => $request->observacao[$linha] ?? '',
                     'preco' => $preco
                 ]);
             }
@@ -83,6 +100,7 @@ class PedidoController extends Controller
                             'pedido_id' => $novoPedido->id,
                             'produto_id' => $valor,
                             'quantidade' => $request->quantidade[$linha],
+                            'observacao' => $request->observacao[$linha] ?? '',
                             'preco' => $preco
                         ]);
                     }
@@ -144,6 +162,7 @@ class PedidoController extends Controller
                     'pedido_id' => $id,
                     'produto_id' => $valor,
                     'quantidade' => $request->quantidade[$linha],
+                    'observacao' => $request->observacao[$linha] ?? '',
                     'preco' => $preco
                 ]);
             }
@@ -165,6 +184,7 @@ class PedidoController extends Controller
                             'pedido_id' => $novoPedido->id,
                             'produto_id' => $valor,
                             'quantidade' => $request->quantidade[$linha],
+                            'observacao' => $request->observacao[$linha] ?? '',
                             'preco' => $preco
                         ]);
                     }
@@ -185,7 +205,7 @@ class PedidoController extends Controller
     public function destroy($id)
     {
         try {
-            PedidoProduto::where('produto_id', $id)->delete();
+            PedidoProduto::where('pedido_id', $id)->delete();
             Pedido::findOrFail($id)->delete();
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido excluído com sucesso!']]);
         } catch (\Exception $e) {

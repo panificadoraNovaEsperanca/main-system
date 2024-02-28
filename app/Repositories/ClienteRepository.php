@@ -12,6 +12,8 @@ class ClienteRepository{
     }
 
     public function getAll(){
-        return $this->clientes->withTrashed()->paginate(request()->paginacao ?? 10);
+        return $this->clientes->withTrashed()->when(request()->search != '',function($query){
+            $query->where('name','like','%'.request()->search.'%');
+        })->paginate(request()->paginacao ?? 10);
     }
 }

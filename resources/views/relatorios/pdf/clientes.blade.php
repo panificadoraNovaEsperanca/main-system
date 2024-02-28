@@ -32,7 +32,7 @@
 
 <body>
     <h1 style="margin: 0 0 40px 0;text-align: center">Relatório de Entregas</h1>
-    <h3 style="text-align: center">Intervalo: {{$inicio->format('d/m/Y H:i')}} - {{$fim->format('d/m/Y H:i')}}</h3>
+    <h3 style="text-align: center">Intervalo: {{ $inicio->format('d/m/Y H:i') }} - {{ $fim->format('d/m/Y H:i') }}</h3>
 
     <table>
         <caption>
@@ -99,6 +99,51 @@
             @endif
         </tbody>
     </table>
+    <table style="page-break-after: always; ">
+        <caption>
+            Produtos
+        </caption>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantidade</th>
+                <th>Unidade</th>
+                <th>R$ Valor.un</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $totalCliente = 0;
+                $totalQuantidade = 0;
+            @endphp
+            @foreach ($pedidos as $pedido)
+                @foreach ($pedido->produtos as $produto)
+                    @php
+                        $totalProduto = $produto->preco * $produto->quantidade;
+                        $totalCliente += $totalProduto;
+                        $totalQuantidade += $produto->quantidade;
+                    @endphp
+                    <tr>
+                        <td>{{ $produto->nome_produto }}</td>
+                        <td>{{ $produto->quantidade }}</td>
+                        <td>{{ $produto->produto->unidade }}</td>
+                        <td>{{ $produto->preco }}</td>
+                        <td>{{ $totalProduto }}</td>
+                    </tr>
+                @endforeach
+            @endforeach
+            <tr>
+                <td><b>TOTAL</b></td>
+                <td>{{$totalQuantidade}}</td>
+                <td></td>
+                <td></td>
+                <td>{{$totalCliente}}</td>
+            </tr>
+        </tbody>
+
+    </table>
+
 
 </body>
 

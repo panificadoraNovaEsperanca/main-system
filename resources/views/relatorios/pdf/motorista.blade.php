@@ -54,13 +54,12 @@
     <table style="page-break-after: always; margin:20px 0 0 0 ">
         <thead>
             <tr>
-                <th>Pedido</th>
+                <th>N° Pedido</th>
                 <th>Cliente</th>
-                <th>CNPJ</th>
                 <th>Endereço</th>
-                <th>Horario</th>
-                <th>Item - Quantidade - Valor.un</th>
-                <th>Total</th>
+                <th>Item - Quantidade </th>
+                <th>Check Separação</th>
+                <th>Check Motorista</th>
             </tr>
         </thead>
         <tbody>
@@ -74,34 +73,25 @@
                     <tr>
                         <td>{{ $pedido->id }}</td>
                         <td>{{ $pedido->cliente->name }}</td>
-                        <td>{{ $pedido->cliente->cnpj }}</td>
                         <td>{!! $pedido->cliente->endereco_completo !!}</td>
-                        <td>{{ $pedido->dt_previsao_formatted }}</td>
-
                         <td>
                             @foreach ($pedido->produtos as $produto)
-                                @php
-                                    $totalPedido += $produto->preco * $produto->quantidade;
-                                @endphp
+                           
 
                                 {{ $produto->nome_produto }}({{ $produto->produto->unidade }}) -
-                                {{ $produto->quantidade }} - R$ {{ $produto->preco }}<br>
+                                {{ $produto->quantidade }}<br>
                             @endforeach
 
                         </td>
-                        <td>{{ $totalPedido }}</td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 @endforeach
 
             @endif
         </tbody>
     </table>
-    <table>
-        <caption>Observações do Motorista</caption>
-        <div style="width:100%;height:40%; border:1px solid black;">
-
-        </div>
-    </table>
+  
 </body>
 
 </html>

@@ -69,8 +69,6 @@
                             <option hidden>Selecione uma opção</option>
                             <option {{ isset($pedido) && $pedido->status == 'AGENDADO' ? 'selected' : '' }}
                                 value="AGENDADO">Agendado</option>
-                            <option {{ isset($pedido) && $pedido->status == 'A CAMINHO' ? 'selected' : '' }}
-                                value="A CAMINHO">A Caminho</option>
                             <option {{ isset($pedido) && $pedido->status == 'ENTREGUE' ? 'selected' : '' }}
                                 value="ENTREGUE">Entregue</option>
                             <option {{ isset($pedido) && $pedido->status == 'CANCELADO' ? 'selected' : '' }}
@@ -105,6 +103,7 @@
                                     <th scope="col">Produto</th>
                                     <th scope="col">Quantidade</th>
                                     <th scope="col">Valor Unitário</th>
+                                    <th scope="col">Observação</th>
                                     <th scope="col">Total</th>
                                 </tr>
                             </thead>
@@ -146,6 +145,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class=" bg-primary">
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -241,13 +241,13 @@
 
 
 
-        $('#addProduto').on('click', function() {
+        $('#addProduto').on('click', async function() {
             console.log(tipo_cliente != '' || $('#cliente_id').val() != '')
             if (tipo_cliente != '' || $('#cliente_id').val() != '') {
                 let produtos = JSON.parse($('#produtosCatalogo').val());
                 console.log(produtos)
                 let id = $('#produtos tbody tr').length;
-                let selectProdutos = `<select class="custom-select produtos" data-id="${id}" name="produto[]" >
+                let selectProdutos = `<select class="custom-select produtos select2" data-id="${id}" name="produto[]" >
                 <option hidden>Selecione uma opção</option>`;
                 for (let produto of produtos) {
                     if (produtos.length == 1) {
@@ -262,14 +262,19 @@
                             <td>${selectProdutos}</td>
                             <td><input  type="number" class="quantidadeProduto form-control " data-id="${id}" name="quantidade[]"></td>
                             <td><input  type="number" step="0.1" disabled class="form-control" id="precoProduto-${id}" data-id="${id}" name="precoProduto[]"></td>
+                            <td><textarea  rows="1"  type="text" class="observacao form-control " data-id="${id}" name="observacao[]"></textarea></td>
                             <td><input  type="number" step="0.1" disabled class="form-control" id="valorCalculado-${id}" value="0"></td>
                     </tr>
                     `
-                $('#produtos tbody').append(tr)
+                await $('#produtos tbody').append(tr)
                 if (produtos.length == 1) {
                     $(`#precoProduto-${id}`).val(produtos[0].precos[tipo_cliente])
 
                 }
+
+                $('.select2').select2({width:'100%'})
+
+                
             } else {
                 Toast.fire({
                     heightAuto: true,
@@ -278,37 +283,47 @@
                 });
             }
         })
-        $('#periodo').daterangepicker({
+        $('#dataHora').daterangepicker({
             locale: {
-                format: 'DD/MM/YYYY'
-            }
+                format: 'DD/MM/YYYY  hh:mm',
+                "applyLabel": "Selecionar",
+                "cancelLabel": "Cancelar",
+                monthNames: [
+                    'Janeiro',
+                    'Fevereiro',
+                    'Março',
+                    'Abril',
+                    'Maio',
+                    'Junho',
+                    'Julho',
+                    'Agosto',
+                    'Setembro',
+                    'Outubro',
+                    'Novembro',
+                    'Dezembro'
+                ],
+                daysOfWeek: [
+                    'Dom',
+                    'Seg',
+                    'Ter',
+                    'Qua',
+                    'Qui',
+                    'Sex',
+                    'Sáb'
+                ]
+            },
+            timePicker: true,
+            "timePicker24Hour": true,
+
+            singleDatePicker: true,
+            showDropdowns: true,
+            minYear: 2020,
+
         });
-        $('#dataHora').datetimepicker({
+        $('#das').datetimepicker({
             i18n: {
                 de: {
-                    months: [
-                        'Janeiro',
-                        'Fevereiro',
-                        'Março',
-                        'Abril',
-                        'Maio',
-                        'Junho',
-                        'Julho',
-                        'Agosto',
-                        'Setembro',
-                        'Outubro',
-                        'Novembro',
-                        'Dezembro'
-                    ],
-                    dayOfWeek: [
-                        'Dom',
-                        'Seg',
-                        'Ter',
-                        'Qua',
-                        'Qui',
-                        'Sex',
-                        'Sáb'
-                    ]
+
                 }
             },
             format: 'd/m/Y H:i',

@@ -6,6 +6,7 @@ use App\Http\Requests\ClienteRequest;
 use App\Http\Requests\RelatorioCliente;
 use App\Models\Cliente;
 use App\Models\Pedido;
+use App\Models\PedidoProduto;
 use App\Repositories\ClienteRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -80,7 +81,11 @@ class ClienteController extends Controller
 
                 return response()->json(['success' => true, 'data' => []], 200);
             }
-            $resultados = Cliente::where(DB::raw('LOWER(name)'), 'LIKE', '%' . strtolower($name) . '%')->select(['name', 'id', 'tipo_cliente'])->get();
+            $resultados = Cliente::where(DB::raw('LOWER(name)'), 'LIKE', '%' . strtolower($name) . '%')
+                ->where('tipo_cliente', '!=', null)
+                ->where('logradouro', '!=', null)
+                ->where('cidade', '!=', null)
+                ->select(['name', 'id', 'tipo_cliente'])->get();
             return response()->json(['success' => true, 'data' => $resultados], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
@@ -147,6 +152,10 @@ class ClienteController extends Controller
                     $query->where('status', $request->status);
                 })
                 ->with(['produtos'])->orderBy('dt_previsao', 'ASC')->get();
+            // $produtos = DB::table('pedido_produtos')->whereIn('pedido_id', $pedidos->pluck('id'))->selectRaw('
+            //     produtos.nome, sum(pedido_produtos.quantidade) as qtd,
+            // ')->join('produtos', 'produtos.id', '=', 'pedido_produtos.produto_id');
+
             $pdf =  Pdf::loadView('relatorios.pdf.clientes', [
                 'cliente' => $cliente,
                 'pedidos' => $pedidos,

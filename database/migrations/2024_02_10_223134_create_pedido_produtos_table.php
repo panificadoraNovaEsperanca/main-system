@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pedido_id');
             $table->unsignedBigInteger('produto_id');
             $table->integer('quantidade');
+            $table->text('observacao');
             $table->decimal('preco', 10, 2);
             $table->timestamps();
 
