@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('pedido', PedidoController::class);
     Route::resource('motorista', MotoristaController::class);
 
+    Route::post('atualizar',[PedidoController::class,'atualizarPedidos'])->name('pedido.atualizar');
+
     Route::group(['prefix' => 'ativar'],function(){
         Route::put('/cliente/{categoria_id}',[ClienteController::class,'ativar'])->name('cliente.ativar');
         Route::put('/marca/{marca_id}',[MarcaController::class,'ativar'])->name('marca.ativar');

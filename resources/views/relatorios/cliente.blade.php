@@ -8,16 +8,16 @@
         @csrf
         <div class="row">
 
-            <div class="col-6">
-                <div class="form-group">
+            <div class="col-12">
+                <div class="">
                     <label for="">Cliente</label>
-                    <div class="input-group  ">
-                        <select class="" id="cliente" name="cliente">
+                    <div class=" ">
+                        <select class=""  id="cliente" name="cliente[]"  multiple="multiple"> 
 
                         </select>
                     </div>
                     @error('cliente')
-                        <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
+                        <span class="mt-1 text-red p-1 rounded"><small>{{ $message }}</small></span>
                     @enderror
                 </div>
             </div>
@@ -40,7 +40,7 @@
             <div class="col-6">
                 <div class="form-group">
                     <label>Status</label>
-                    <select class="custom-select" name="status">
+                    <select class="custom-select" name="status" >
                         <option hidden value="-1">Selecione uma opção</option>
                         <option {{ isset($pedido) && $pedido->status == 'AGENDADO' ? 'selected' : '' }} value="AGENDADO">
                             Agendado</option>
@@ -70,6 +70,7 @@
         });
         $('#cliente').select2({
             width: "100%",
+            multiple:true,
             ajax: {
                 url: '/clientsByName',
                 dataType: "json",
