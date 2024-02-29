@@ -19,7 +19,7 @@
                     <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
                 @enderror
             </div>
-            <div class="col-3">
+            <div class="col-12">
                 <label for="exampleInputEmail1" class="form-label">Unidade de Medida</label>
                 <input name="unidade"
                     value="{{ isset($produto) ? $produto->unidade : old('unidade') ?? '' }}"
@@ -52,6 +52,51 @@
                     value="{{ isset($produto) ? $produto->precos['c'] : '' }}"
                     class="form-control" name="precoC">
                 @error('precoC')
+                    <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
+                @enderror
+            </div>
+            <div class="col-3">
+                <label for="exampleInputEmail1" class="form-label">Preço D</label>
+                <input 
+                    value="{{ isset($produto) ? $produto->precos['d'] : '' }}"
+                    class="form-control" name="precoD">
+                @error('precoD')
+                    <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
+                @enderror
+            </div>
+            <div class="col-3">
+                <label for="exampleInputEmail1" class="form-label">Preço E</label>
+                <input 
+                    value="{{ isset($produto) ? $produto->precos['e'] : '' }}"
+                    class="form-control" name="precoE">
+                @error('precoE')
+                    <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
+                @enderror
+            </div>
+            <div class="col-3">
+                <label for="exampleInputEmail1" class="form-label">Preço F</label>
+                <input 
+                    value="{{ isset($produto) ? $produto->precos['f'] : '' }}"
+                    class="form-control" name="precoF">
+                @error('precoF')
+                    <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
+                @enderror
+            </div>
+            <div class="col-3">
+                <label for="exampleInputEmail1" class="form-label">Preço G</label>
+                <input 
+                    value="{{ isset($produto) ? $produto->precos['g'] : '' }}"
+                    class="form-control" name="precoG">
+                @error('precoG')
+                    <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
+                @enderror
+            </div>
+            <div class="col-3">
+                <label for="exampleInputEmail1" class="form-label">Preço H</label>
+                <input 
+                    value="{{ isset($produto) ? $produto->precos['h'] : '' }}"
+                    class="form-control" name="precoH">
+                @error('precoH')
                     <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
                 @enderror
             </div>

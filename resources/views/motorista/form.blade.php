@@ -34,10 +34,7 @@
                             <option {{ isset($motorista) && $motorista->turno == 'TARDE' ? 'selected' : '' }}
                                 value="TARDE">Tarde
                             </option>
-                            <option {{ isset($motorista) && $motorista->turno == 'NOITE' ? 'selected' : '' }}
-                                value="NOITE">Noite
-                            </option>
-
+   
                         </select>
                     </div>
                     @error('turno')

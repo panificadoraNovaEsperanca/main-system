@@ -34,6 +34,9 @@
                     <option value="30" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '30' ? 'selected' : '' }}>
                         30
                     </option>
+                    <option value="100" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '100' ? 'selected' : '' }}>
+                        100
+                    </option>
 
 
                 </select>
@@ -110,9 +113,13 @@
 @endsection
 
 @push('scripts')
-    <script>
-    
+<script>
 
-   
-    </script>
+    document.getElementById('search').addEventListener('change', function() {
+        document.getElementById('formSearch').submit()
+    })
+    document.getElementById('paginacao').addEventListener('change', function() {
+        document.getElementById('formSearch').submit()
+    })
+</script>
 @endpush

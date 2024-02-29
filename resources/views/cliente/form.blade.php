@@ -97,9 +97,19 @@
                             <option {{ isset($cliente) && $cliente->tipo_cliente == 'a' ? 'selected' : '' }}
                                 value="a">Nível A</option>
                             <option {{ isset($cliente) && $cliente->tipo_cliente == 'b' ? 'selected' : '' }}
-                                value="a">Nível B</option>
+                                value="b">Nível B</option>
                             <option {{ isset($cliente) && $cliente->tipo_cliente == 'c' ? 'selected' : '' }}
-                                value="a">Nível C</option>
+                                value="c">Nível C</option>
+                            <option {{ isset($cliente) && $cliente->tipo_cliente == 'd' ? 'selected' : '' }}
+                                value="d">Nível D</option>
+                            <option {{ isset($cliente) && $cliente->tipo_cliente == 'e' ? 'selected' : '' }}
+                                value="e">Nível E</option>
+                            <option {{ isset($cliente) && $cliente->tipo_cliente == 'f' ? 'selected' : '' }}
+                                value="f">Nível F</option>
+                            <option {{ isset($cliente) && $cliente->tipo_cliente == 'g' ? 'selected' : '' }}
+                                value="g">Nível G</option>
+                            <option {{ isset($cliente) && $cliente->tipo_cliente == 'h' ? 'selected' : '' }}
+                                value="h">Nível H</option>
 
                         </select>
                     </div>

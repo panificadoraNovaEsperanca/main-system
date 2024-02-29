@@ -20,7 +20,23 @@ class PedidoController extends Controller
      */
     public function index()
     {
-        $pedidos = Pedido::with(['motorista', 'cliente'])->paginate(request()->paginacao ?? 10);
+        $pedidos = Pedido::with(['motorista', 'cliente'])
+            ->when(request()->search != '', function ($query) {
+                $query->whereHas('motorista', function ($queryMotora) {
+                    $queryMotora->where('nome', 'like', '%' . request()->search . '%');
+                })->orWhereHas('cliente', function ($queryCliente) {
+                    $queryCliente->where('name', 'like', '%' . request()->search . '%');
+                });
+            })
+            ->when(request()->status != '' && request()->status != '-1', function ($query) {
+                $query->where('status', request()->status);
+            })
+            ->when(request()->dataHora != '', function ($query) {
+                $dtInicial = Carbon::createFromFormat('d/m/Y', request()->dataHora)->startOfDay();
+                $dtFinal = Carbon::createFromFormat('d/m/Y', request()->dataHora)->endOfDay();
+                $query->whereBetween('dt_previsao', [$dtInicial, $dtFinal]);
+            })
+            ->paginate(request()->paginacao ?? 10);
         return view('pedido.index', compact('pedidos'));
     }
 
@@ -47,7 +63,7 @@ class PedidoController extends Controller
 
         try {
             $cliente = Cliente::findOrFail($request->cliente_id);
-            if($cliente->tipo_cliente == null){
+            if ($cliente->tipo_cliente == null) {
                 return back()->with('messages', ['error' => ['Cadastro de cliente incompleto! Finalize o cadastro de cliente para completar o pedido']])->withInput($request->all());;
             }
             $dataPedido = Carbon::createFromFormat('d/m/Y H:i', $request->dataHora);
@@ -63,6 +79,7 @@ class PedidoController extends Controller
                     'pedido_id' => $pedido->id,
                     'produto_id' => $valor,
                     'quantidade' => $request->quantidade[$linha],
+                    'observacao' => $request->observacao[$linha] ?? '',
                     'preco' => $preco
                 ]);
             }
@@ -83,6 +100,7 @@ class PedidoController extends Controller
                             'pedido_id' => $novoPedido->id,
                             'produto_id' => $valor,
                             'quantidade' => $request->quantidade[$linha],
+                            'observacao' => $request->observacao[$linha] ?? '',
                             'preco' => $preco
                         ]);
                     }
@@ -144,6 +162,7 @@ class PedidoController extends Controller
                     'pedido_id' => $id,
                     'produto_id' => $valor,
                     'quantidade' => $request->quantidade[$linha],
+                    'observacao' => $request->observacao[$linha] ?? '',
                     'preco' => $preco
                 ]);
             }
@@ -165,6 +184,7 @@ class PedidoController extends Controller
                             'pedido_id' => $novoPedido->id,
                             'produto_id' => $valor,
                             'quantidade' => $request->quantidade[$linha],
+                            'observacao' => $request->observacao[$linha] ?? '',
                             'preco' => $preco
                         ]);
                     }
@@ -185,7 +205,7 @@ class PedidoController extends Controller
     public function destroy($id)
     {
         try {
-            PedidoProduto::where('produto_id', $id)->delete();
+            PedidoProduto::where('pedido_id', $id)->delete();
             Pedido::findOrFail($id)->delete();
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido excluído com sucesso!']]);
         } catch (\Exception $e) {
@@ -195,7 +215,23 @@ class PedidoController extends Controller
 
     public function baixaPedido()
     {
-        $pedidos = Pedido::whereNot('status', 'ENTREGUE')->with(['motorista', 'cliente'])->paginate(request()->paginacao ?? 10);
+        $pedidos = Pedido::with(['motorista', 'cliente'])
+            ->when(request()->search != '', function ($query) {
+                $query->whereHas('motorista', function ($queryMotora) {
+                    $queryMotora->where('nome', 'like', '%' . request()->search . '%');
+                })->orWhereHas('cliente', function ($queryCliente) {
+                    $queryCliente->where('name', 'like', '%' . request()->search . '%');
+                });
+            })
+            ->when(request()->status != '' && request()->status != '-1', function ($query) {
+                $query->where('status', request()->status);
+            })
+            ->when(request()->dataHora != '', function ($query) {
+                $dtInicial = Carbon::createFromFormat('d/m/Y', request()->dataHora)->startOfDay();
+                $dtFinal = Carbon::createFromFormat('d/m/Y', request()->dataHora)->endOfDay();
+                $query->whereBetween('dt_previsao', [$dtInicial, $dtFinal]);
+            })
+            ->paginate(request()->paginacao ?? 50);
 
         return view('pedido.atualizador', compact('pedidos'));
     }
@@ -216,14 +252,16 @@ class PedidoController extends Controller
     }
 
 
-    public function atualizaPedido(Request $request, $pedido_id)
+    public function atualizarPedidos(Request $request)
     {
         try {
 
-            Pedido::findOrFail($pedido_id)->update(['status' => $request->status]);
-            return response()->json(['success' => true, 'data' => '', 'message' => 'Pedido atualizado com sucesso'], 200);
+            foreach ($request->pedido as $pedido_id) {
+                Pedido::findOrFail($pedido_id)->update(['status' => $request->status]);
+            }
+            return redirect(route('pedido.atualiza'))->with('messages', ['success' => ['Pedidos atualizados com sucesso!']]);
         } catch (\Exception $e) {
-            return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
+            return redirect(route('pedido.atualiza'))->with('messages', ['success' => ['Não foi possível atualizar os pedidos']]);
         }
     }
 }

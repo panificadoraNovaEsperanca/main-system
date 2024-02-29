@@ -22,6 +22,19 @@
 
                 </div>
             </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>Produto</label>
+                    <select name="produto" class="custom-select select2" id="produto">
+                        <option value="" hidden>Selecione uma opção</option>
+                        @foreach ($produtos as $produto)
+                            <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
+                        @endforeach
+
+                    </select>
+
+                </div>
+            </div>
 
         </div>
         <button type="submit" class="btn btn-primary mt-4">Emitir</button>
@@ -29,6 +42,10 @@
 
 
     <script>
+        $('.select2').select2({
+            width: '100%'
+        })
+
         $('#intervalo').daterangepicker({
             locale: {
                 format: 'DD/MM/YYYY H:mm'
