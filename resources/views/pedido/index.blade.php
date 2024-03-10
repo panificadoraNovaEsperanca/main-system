@@ -13,7 +13,7 @@
 
     <form class="mr-2 d-flex flex-column" id="formSearch" action="{{ route('pedido.index') }}" method="GET">
         <div class="row">
-            <div class="col-3">
+            <div class="col-md-3 col-sm-12">
 
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -24,7 +24,7 @@
                         aria-describedby="basic-addon1">
                 </div>
             </div>
-            <div class="col-2">
+            <div class="col-md-2 col-sm-12">
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -38,11 +38,11 @@
 
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-md-3 col-sm-12">
                 <div class="form-group">
                     <div class="input-group">
                         <select class="custom-select" id="status" name="status">
-                            <option value="-1" >Selecione uma opção</option>
+                            <option value="-1">Selecione uma opção</option>
 
                             <option {{ isset($_GET['status']) && $_GET['status'] == 'AGENDADO' ? 'selected' : '' }}
                                 value="AGENDADO">Agendado</option>
@@ -56,32 +56,40 @@
 
                 </div>
             </div>
-            <div class="col-1">
-                <a href="{{ route('pedido.index') }}" class="btn btn-primary">Limpar busca</a>
+            <div class="col-md-1 col-sm-12 mb-3">
+                <a href="{{ route('pedido.index') }}" class="btn btn-primary w-100">Limpar busca</a>
 
             </div>
-            <div class="col-1">
-            </div>
-            <div class="col-1">
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="row">
+            <div class="col-md-1 col-sm-12">
 
                 <select id="paginacao" name="paginacao" class="custom-select mr-2" style="min-width: 80px"
                     id="inputGroupSelect01">
-                  
+
                     <option value="30" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '30' ? 'selected' : '' }}>
                         30
                     </option>
                     <option value="50" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '50' ? 'selected' : '' }}>
                         50
                     </option>
-                    <option value="100" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '100' ? 'selected' : '' }}>
+                    <option value="100"
+                        {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '100' ? 'selected' : '' }}>
                         100
                     </option>
 
 
                 </select>
             </div>
-            {{ $pedidos->appends(['paginacao' => $_GET['paginacao'] ?? 10]) }}
+            <div class="col-md-6 col-sm-12">
+
+                {{ $pedidos->appends(['paginacao' => $_GET['paginacao'] ?? 10]) }}
+            </div>
         </div>
+
+
         <div class="d-flex flex-row input-group row justify-content-end">
             <div class="  ">
 
@@ -92,63 +100,65 @@
             </div>
         </div>
     </form>
-    @if (!$pedidos->isEmpty())
-        <table id="pedidoTable" class="table shadow rounded table-striped table-hover">
-            <thead class="bg-primary ">
-                <tr>
-                    <th>Id</th>
-                    <th>Cliente</th>
-                    <th>Motorista</th>
-                    <th>Status</th>
-                    <th>Data de entrega</th>
-                    <th class="d-flex justify-content-center">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($pedidos as $pedido)
-                    <tr @if ($pedido->deleted_at != null) style="background-color:#ff8e8e" @endif>
-                        <td>{{ $pedido->id }}</td>
-                        <td>{{ $pedido->cliente->name }}</td>
-                        <td>{{ $pedido->motorista->nome }}</td>
-                        <td>{{ $pedido->status }}</td>
-                        <td>{{ \Carbon\Carbon::parse($pedido->dt_previsao)->format('d/m/Y H:i') }}</td>
+    <div class="table-responsive">
 
-                        <td class="d-flex  justify-content-around">
-                            <button data-id="{{ $pedido->id }}" type="button" class="btn btn-primary infoPedido">
-                                <i class="fas fa-info"></i>
-                            </button>
-                            @if ($pedido->deleted_at == null)
-                                <a href="{{ route('pedido.edit', $pedido->id) }}" type="button"
-                                    class="btn btn-warning mr-1 editModal"><i class="fas fa-edit"></i></a>
-                            @endif
-                            <form method="POST"
-                                action="{{ route($pedido->deleted_at == null ? 'pedido.destroy' : 'pedido.ativar', $pedido->id) }}"
-                                enctype="multipart/form-data">
-                                @if ($pedido->deleted_at == null)
-                                    @method('DELETE')
-                                @else
-                                    @method('PUT')
-                                @endif
-                                @csrf
-                                @if ($pedido->status != 'ENTREGUE')
-                                    <button type="submit"
-                                        class="btn {{ $pedido->deleted_at == null ? 'btn-danger' : 'btn-success' }}"><i
-                                            class="fa fa-trash"></i></button>
-                                @endif
-                            </form>
-
-                        </td>
+        @if (!$pedidos->isEmpty())
+            <table id="pedidoTable" class="table shadow rounded table-striped table-hover">
+                <thead class="bg-primary ">
+                    <tr>
+                        <th>Id</th>
+                        <th>Cliente</th>
+                        <th>Motorista</th>
+                        <th>Status</th>
+                        <th>Data de entrega</th>
+                        <th class="d-flex justify-content-center">Ações</th>
                     </tr>
-                @endforeach
-            </tbody>
+                </thead>
+                <tbody>
+                    @foreach ($pedidos as $pedido)
+                        <tr @if ($pedido->deleted_at != null) style="background-color:#ff8e8e" @endif>
+                            <td>{{ $pedido->id }}</td>
+                            <td>{{ $pedido->cliente->name }}</td>
+                            <td>{{ $pedido->motorista->nome }}</td>
+                            <td>{{ $pedido->status }}</td>
+                            <td>{{ \Carbon\Carbon::parse($pedido->dt_previsao)->format('d/m/Y H:i') }}</td>
 
-        </table>
-    @else
-        <x-not-found />
+                            <td class="d-flex  justify-content-around">
+                                <button data-id="{{ $pedido->id }}" type="button" class="btn btn-primary infoPedido">
+                                    <i class="fas fa-info"></i>
+                                </button>
+                                @if ($pedido->deleted_at == null)
+                                    <a href="{{ route('pedido.edit', $pedido->id) }}" type="button"
+                                        class="btn btn-warning mr-1 editModal"><i class="fas fa-edit"></i></a>
+                                @endif
+                                <form method="POST"
+                                    action="{{ route($pedido->deleted_at == null ? 'pedido.destroy' : 'pedido.ativar', $pedido->id) }}"
+                                    enctype="multipart/form-data">
+                                    @if ($pedido->deleted_at == null)
+                                        @method('DELETE')
+                                    @else
+                                        @method('PUT')
+                                    @endif
+                                    @csrf
+                                    @if ($pedido->status != 'ENTREGUE')
+                                        <button type="submit"
+                                            class="btn {{ $pedido->deleted_at == null ? 'btn-danger' : 'btn-success' }}"><i
+                                                class="fa fa-trash"></i></button>
+                                    @endif
+                                </form>
 
-    @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
 
+            </table>
+        @else
+            <x-not-found />
 
+        @endif
+
+    </div>
     <div class="modal fade" id="produtoModal" tabindex="-1" aria-labelledby="produtoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">

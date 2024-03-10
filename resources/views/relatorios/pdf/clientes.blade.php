@@ -31,7 +31,7 @@
 </head>
 
 <body>
-    <h1 style="margin: 0 0 40px 0;text-align: center">Relatório de Entregas</h1>
+    <h1 style="margin: 0 0 40px 0;text-align: center">Relatório de Clientes</h1>
     <h3 style="text-align: center">Intervalo: {{ $inicio->format('d/m/Y H:i') }} - {{ $fim->format('d/m/Y H:i') }}</h3>
     @foreach ($dados as $dado)
         <table>
@@ -53,7 +53,7 @@
                 </tr>
             </tbody>
         </table>
-        <table style="page-break-after: always; ">
+        <table>
             <caption>
                 Pedidos
             </caption>
@@ -66,7 +66,7 @@
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody >
+            <tbody>
                 @if ($dado['pedidos']->isEmpty())
                     <tr>
                         <td colspan="5">Sem Resultados</td>
@@ -86,20 +86,18 @@
                                     @endphp
 
                                     {{ $produto->nome_produto }}({{ $produto->produto->unidade }}) -
-                                    {{ $produto->quantidade }} - R$ {{ $produto->preco }}<br>
+                                    {{ $produto->quantidade }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}<br>
                                 @endforeach
 
                             </td>
-                            <td>{{ $totalPedido }}</td>
+                            <td>{{ number_format($totalPedido, 2, ',', '.') }}</td>
                             <td>{{ $pedido->status }}</td>
                         </tr>
                     @endforeach
                 @endif
             </tbody>
         </table>
-        @endforeach
-        
-        {{-- <table>
+        <table  style="page-break-after: always; ">
             <caption>
                 Produtos
             </caption>
@@ -107,42 +105,36 @@
                 <tr>
                     <th>Item</th>
                     <th>Quantidade</th>
-                    <th>Unidade</th>
-                    <th>R$ Valor.un</th>
                     <th>Total</th>
                 </tr>
             </thead>
             <tbody>
                 @php
-                    $totalCliente = 0;
-                    $totalQuantidade = 0;
+                    $qtdTotal = 0;
+                    $valorTotal = 0;
                 @endphp
-                @foreach ($pedidos as $pedido)
-                    @foreach ($pedido->produtos as $produto)
-                        @php
-                            $totalProduto = $produto->preco * $produto->quantidade;
-                            $totalCliente += $totalProduto;
-                            $totalQuantidade += $produto->quantidade;
-                        @endphp
-                        <tr>
-                            <td>{{ $produto->nome_produto }}</td>
-                            <td>{{ $produto->quantidade }}</td>
-                            <td>{{ $produto->produto->unidade }}</td>
-                            <td>{{ $produto->preco }}</td>
-                            <td>{{ $totalProduto }}</td>
-                        </tr>
-                    @endforeach
+                @foreach ($dado['produtos_total'] as $produto)
+                    @php
+                        $qtdTotal += $produto->quantidade_total;
+                        $valorTotal += $produto->preco_total;
+                    @endphp
+                    <tr>
+                        <td>{{ $produto->nome }}</td>
+                        <td>{{ $produto->quantidade_total }}</td>
+                        <td>{{ number_format($produto->preco_total, 2, ',', '.') }}</td>
+                    </tr>
                 @endforeach
                 <tr>
-                    <td><b>TOTAL</b></td>
-                    <td>{{ $totalQuantidade }}</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{ $totalCliente }}</td>
-                </tr>
+                        <td><b>TOTAL</b></td>
+                        <td>{{ $qtdTotal }}</td>
+                        <td>{{ number_format($valorTotal, 2, ',', '.') }}</td>
+                    </tr>
             </tbody>
+    
+        </table>
+    @endforeach
 
-        </table> --}}
+   
 
 
 

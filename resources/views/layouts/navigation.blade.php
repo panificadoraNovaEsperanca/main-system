@@ -89,6 +89,15 @@
                             </p>
                         </a>
                     </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('producao.relatorio') }}" class="nav-link">
+                            <i class="nav-icon fa-solid fa-bread-slice"></i>
+                            <p>
+                                Relatórios de Produção
+                            </p>
+                        </a>
+                    </li>
 
                 </ul>
             </li>

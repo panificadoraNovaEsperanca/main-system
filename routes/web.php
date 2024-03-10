@@ -58,10 +58,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/relatorioProduto', [ProdutoController::class, 'relatorioProduto'])->name('produto.relatorio');
     Route::get('/produto-relatorio', [ProdutoController::class, 'relatorioProdutoIndex'])->name('produto.relatorio.index');
     
+    Route::get('/relatorioProducao', [ProdutoController::class, 'relatorioProducaoIndex'])->name('producao.relatorio');
+    Route::post('/processRelatorioProducao', [ProdutoController::class, 'processRelatorioProducao'])->name('producao.relatorio.processar');
+
+
     Route::get('/pedidoAtualiza', [PedidoController::class, 'baixaPedido'])->name('pedido.atualiza');
     Route::get('/getPedidoBaixa/{pedido_id}', [PedidoController::class, 'getPedidoBaixa'])->name('pedido.getBaixa');
     Route::post('/atualizaPedido/{pedido_id}', [PedidoController::class, 'atualizaPedido'])->name('pedido.troca');
-
+    Route::get('/getPedidosByYear', [HomeController::class, 'getPedidosByYear']);
+    
     Route::resource('categoria', CategoriaController::class);
     Route::resource('fornecedor', FornecedorController::class);
     Route::resource('marca', MarcaController::class);
