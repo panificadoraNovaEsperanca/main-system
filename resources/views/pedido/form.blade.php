@@ -52,7 +52,8 @@
                                 <i class="far fa-calendar-alt"></i>
                             </span>
                         </div>
-                        <input type="text" value="{{ isset($pedido) ? $pedido->dt_previsao_formatted : '' }}"
+                        <input autocomplete="off" type="text"
+                            value="{{ isset($pedido) ? $pedido->dt_previsao_formatted : '' }}"
                             class="form-control float-right" id="dataHora" name="dataHora">
 
                     </div>
@@ -167,19 +168,41 @@
                 </div>
             </div>
             <div class="col-12" id="repeticao" style="display: none">
-                <div class="form-group">
-                    <label>Pedido se repete em</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="far fa-calendar-alt"></i>
-                            </span>
-                        </div>
-                        <input type="text" class="form-control float-right" name="periodo" id="periodo">
-                    </div>
+                <div class="row">
+                    <div class="col-9 ">
+                        <div class="form-group">
+                            <label for="">Datas para cópia</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="far fa-calendar-alt"></i>
+                                    </span>
+                                </div>
+                                <input autocomplete="off"  type="text" class="form-control float-right" name="periodo"
+                                    id="periodo">
 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-1">
+                        <div class="form-group">
+                            <label for="">Horário</label>
+
+                            <div class=" input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="far fa-calendar-alt"></i>
+                                    </span>
+                                </div>
+                                <input autocomplete="off"  type="text" class="form-control float-right" name="horario"
+                                    id="horario">
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
+        </div>
 
         </div>
 
@@ -245,7 +268,6 @@
             console.log(tipo_cliente != '' || $('#cliente_id').val() != '')
             if (tipo_cliente != '' || $('#cliente_id').val() != '') {
                 let produtos = JSON.parse($('#produtosCatalogo').val());
-                console.log(produtos)
                 let id = $('#produtos tbody tr').length;
                 let selectProdutos = `<select class="custom-select produtos select2" data-id="${id}" name="produto[]" >
                 <option hidden>Selecione uma opção</option>`;
@@ -272,9 +294,11 @@
 
                 }
 
-                $('.select2').select2({width:'100%'})
+                $('.select2').select2({
+                    width: '100%'
+                })
 
-                
+
             } else {
                 Toast.fire({
                     heightAuto: true,
@@ -283,50 +307,61 @@
                 });
             }
         })
-        $('#dataHora').daterangepicker({
-            locale: {
-                format: 'DD/MM/YYYY  hh:mm',
-                "applyLabel": "Selecionar",
-                "cancelLabel": "Cancelar",
-                monthNames: [
-                    'Janeiro',
-                    'Fevereiro',
-                    'Março',
-                    'Abril',
-                    'Maio',
-                    'Junho',
-                    'Julho',
-                    'Agosto',
-                    'Setembro',
-                    'Outubro',
-                    'Novembro',
-                    'Dezembro'
-                ],
-                daysOfWeek: [
-                    'Dom',
-                    'Seg',
-                    'Ter',
-                    'Qua',
-                    'Qui',
-                    'Sex',
-                    'Sáb'
-                ]
-            },
-            timePicker: true,
-            "timePicker24Hour": true,
+        // $('#dataHora').daterangepicker({
+        //     locale: {
+        //         format: 'DD/MM/YYYY  hh:mm',
+        //         "applyLabel": "Selecionar",
+        //         "cancelLabel": "Cancelar",
+        //         monthNames: [
+        //             'Janeiro',
+        //             'Fevereiro',
+        //             'Março',
+        //             'Abril',
+        //             'Maio',
+        //             'Junho',
+        //             'Julho',
+        //             'Agosto',
+        //             'Setembro',
+        //             'Outubro',
+        //             'Novembro',
+        //             'Dezembro'
+        //         ],
+        //         daysOfWeek: [
+        //             'Dom',
+        //             'Seg',
+        //             'Ter',
+        //             'Qua',
+        //             'Qui',
+        //             'Sex',
+        //             'Sáb'
+        //         ]
+        //     },
+        //     timePicker: true,
+        //     "timePicker24Hour": true,
 
-            singleDatePicker: true,
-            showDropdowns: true,
-            minYear: 2020,
+        //     singleDatePicker: true,
+        //     showDropdowns: true,
+        //     minYear: 2020,
 
-        });
-        $('#das').datetimepicker({
+        // });
+        $('#dataHora').datetimepicker({
             i18n: {
                 de: {
 
                 }
             },
             format: 'd/m/Y H:i',
+            lang: 'pt'
+        });
+        $('#horario').datetimepicker({
+            datepicker: false,
+            format: 'H:i',
+            lang: 'pt'
+        });
+        $('#periodo').datepicker({
+            multidate: true,
+
+            format: 'dd/mm/yyyy',
             lang: 'pt'
         });
         $('#cliente').select2({

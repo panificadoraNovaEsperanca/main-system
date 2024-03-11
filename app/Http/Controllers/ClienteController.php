@@ -154,6 +154,21 @@ class ClienteController extends Controller
                     })
                     ->with(['produtos'])->orderBy('dt_previsao', 'ASC')->get();
                 $dados[$cliente]['pedidos'] = $pedidos;
+
+                $dados[$cliente]['produtos_total'] =
+                    DB::table(DB::table('pedido_produtos', 'pp')
+                        ->leftJoin('produtos as p', 'pp.produto_id', '=', 'p.id')->whereIn(
+                            'pp.pedido_id',
+                            DB::table('pedidos')
+                                ->where('cliente_id', '=', $cliente)
+                                ->pluck('id')
+                        )->selectRaw('p.id as id,
+                    p.nome as nome,
+                    pp.preco * pp.quantidade as preco_total,
+                    pp.quantidade as quantidade'), 'pro')
+                    ->selectRaw('pro.nome as nome, 
+                    sum(pro.preco_total	) as preco_total,
+                    sum(pro.quantidade) as quantidade_total')->groupBy('nome')->orderBy('nome')->get();
             }
             // $produtos = DB::table('pedido_produtos')->whereIn('pedido_id', $pedidos->pluck('id'))->selectRaw('
             //     produtos.nome, sum(pedido_produtos.quantidade) as qtd,

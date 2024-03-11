@@ -10,6 +10,7 @@ use App\Models\Produto;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PedidoController extends Controller
 {
@@ -62,6 +63,7 @@ class PedidoController extends Controller
 
 
         try {
+            DB::beginTransaction();
             $cliente = Cliente::findOrFail($request->cliente_id);
             if ($cliente->tipo_cliente == null) {
                 return back()->with('messages', ['error' => ['Cadastro de cliente incompleto! Finalize o cadastro de cliente para completar o pedido']])->withInput($request->all());;
@@ -84,14 +86,14 @@ class PedidoController extends Controller
                 ]);
             }
             if ($request->repete) {
-                $datas = explode(' - ', $request->periodo);
-                $dataInicial = Carbon::createFromFormat('d/m/Y', $datas[0]);
-                $dataFinal = Carbon::createFromFormat('d/m/Y', $datas[1]);
-                for ($data = $dataInicial; $data->lte($dataFinal); $data->addDay()) {
+                $datas = explode(',', $request->periodo);
+                
+                foreach($datas as $data) {
+                    $data = Carbon::createFromFormat('d/m/Y H:i', $data . ' ' . $request->horario);
                     $novoPedido = Pedido::create([
                         'cliente_id' => $cliente->id,
                         'motorista_id' => $request->motorista,
-                        'dt_previsao' => Carbon::createFromFormat('d/m/Y H:i', $data->format('d/m/Y') . ' ' . $dataPedido->format('H:i')),
+                        'dt_previsao' => $data,
                         'status' => $request->status,
                     ]);
                     foreach ($request->produto as $linha => $valor) {
@@ -106,8 +108,10 @@ class PedidoController extends Controller
                     }
                 }
             }
+            DB::commit();
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido cadastrado com sucesso!']]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
         }
     }
