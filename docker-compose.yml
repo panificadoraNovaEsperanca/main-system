@@ -4,9 +4,9 @@ services:
         image: postgis/postgis:latest
         container_name: db
         environment:
-            - POSTGRES_PASSWORD=refactorian
-            - POSTGRES_USER=refactorian
-            - POSTGRES_DB=refactorian
+            POSTGRES_DATABASE: refactorian
+            POSTGRES_USER: refactorian
+            POSTGRES_PASSWORD: refactorian
         ports:
             - "5433:5432"
         healthcheck:
