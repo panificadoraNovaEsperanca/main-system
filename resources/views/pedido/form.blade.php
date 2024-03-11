@@ -129,10 +129,11 @@
                                                     @endforeach
                                                 </select>
                                             </td>
+                                            
                                             <td><input type="number" class="quantidadeProduto form-control "
                                                     data-id="{{ $loop->index }}"
                                                     value="{{ $produtosEscolhidos->quantidade }}" name="quantidade[]"></td>
-                                            <td><input type="number" step="0.1" disabled class="form-control"
+                                            <td><input type="number" step="0.1" {{$pedido->cliente->tipo_cliente == 'h' ? '':'disabled'}} class="form-control"
                                                     id="precoProduto-{{ $loop->index }}"
                                                     value="{{ $produtosEscolhidos->preco }}" data-id="{{ $loop->index }}"
                                                     name="precoProduto[]"></td>
@@ -178,7 +179,7 @@
                                         <i class="far fa-calendar-alt"></i>
                                     </span>
                                 </div>
-                                <input autocomplete="off"  type="text" class="form-control float-right" name="periodo"
+                                <input autocomplete="off" type="text" class="form-control float-right" name="periodo"
                                     id="periodo">
 
                             </div>
@@ -194,7 +195,7 @@
                                         <i class="far fa-calendar-alt"></i>
                                     </span>
                                 </div>
-                                <input autocomplete="off"  type="text" class="form-control float-right" name="horario"
+                                <input autocomplete="off" type="text" class="form-control float-right" name="horario"
                                     id="horario">
                             </div>
                         </div>
@@ -254,7 +255,24 @@
                 for (let a = 0; a <= totalRows - 1; a++) {
                     let valor = $(`#valorCalculado-${a}`).val() == '' || $(`#valorCalculado-${a}`).val() ==
                         undefined ? 0 : $(`#valorCalculado-${a}`).val()
-                    console.log(`#valorCalculado-${a}`, $(`#valorCalculado-${a}`).val(), valor)
+                    total += parseFloat(valor);
+                }
+                $('#totalProdutos').text(total);
+
+            }
+        })
+        $(document).on('change', '.precoProduto', function() {
+            let id = this.dataset.id;
+            let quantidade = $(`#quantidade-${id}`).val()
+            if (quantidade != '') {
+
+                let precoTotal = parseInt(quantidade) * parseFloat(this.value)
+                $(`#valorCalculado-${id}`).val(precoTotal)
+                let totalRows = $('#produtos tbody tr').length;
+                let total = 0;
+                for (let a = 0; a <= totalRows - 1; a++) {
+                    let valor = $(`#valorCalculado-${a}`).val() == '' || $(`#valorCalculado-${a}`).val() ==
+                        undefined ? 0 : $(`#valorCalculado-${a}`).val()
                     total += parseFloat(valor);
                 }
                 $('#totalProdutos').text(total);
@@ -265,11 +283,11 @@
 
 
         $('#addProduto').on('click', async function() {
-            console.log(tipo_cliente != '' || $('#cliente_id').val() != '')
             if (tipo_cliente != '' || $('#cliente_id').val() != '') {
+                let precoLiberado = tipo_cliente == 'h'
                 let produtos = JSON.parse($('#produtosCatalogo').val());
                 let id = $('#produtos tbody tr').length;
-                let selectProdutos = `<select class="custom-select produtos select2" data-id="${id}" name="produto[]" >
+                let selectProdutos = `<select class="custom-select produtos " id="select2-${id}" data-id="${id}" name="produto[]" >
                 <option hidden>Selecione uma opção</option>`;
                 for (let produto of produtos) {
                     if (produtos.length == 1) {
@@ -282,19 +300,20 @@
                 selectProdutos += "</select>"
                 let tr = `<tr data-id="${id}">
                             <td>${selectProdutos}</td>
-                            <td><input  type="number" class="quantidadeProduto form-control " data-id="${id}" name="quantidade[]"></td>
-                            <td><input  type="number" step="0.1" disabled class="form-control" id="precoProduto-${id}" data-id="${id}" name="precoProduto[]"></td>
+                            <td><input  type="number" class="quantidadeProduto form-control " data-id="${id}" id="quantidade-${id}" name="quantidade[]"></td>
+                            <td><input  type="number" step="0.1" ${precoLiberado ? '':'disabled'} class="form-control precoProduto" id="precoProduto-${id}" data-id="${id}" name="precoProduto[]"></td>
                             <td><textarea  rows="1"  type="text" class="observacao form-control " data-id="${id}" name="observacao[]"></textarea></td>
                             <td><input  type="number" step="0.1" disabled class="form-control" id="valorCalculado-${id}" value="0"></td>
                     </tr>
                     `
-                await $('#produtos tbody').append(tr)
+                $('#produtos tbody').append(tr)
                 if (produtos.length == 1) {
                     $(`#precoProduto-${id}`).val(produtos[0].precos[tipo_cliente])
 
                 }
 
-                $('.select2').select2({
+
+                $(`#select2-${id}`).select2({
                     width: '100%'
                 })
 
@@ -306,44 +325,9 @@
                     title: 'Escolha o cliente!'
                 });
             }
+
         })
-        // $('#dataHora').daterangepicker({
-        //     locale: {
-        //         format: 'DD/MM/YYYY  hh:mm',
-        //         "applyLabel": "Selecionar",
-        //         "cancelLabel": "Cancelar",
-        //         monthNames: [
-        //             'Janeiro',
-        //             'Fevereiro',
-        //             'Março',
-        //             'Abril',
-        //             'Maio',
-        //             'Junho',
-        //             'Julho',
-        //             'Agosto',
-        //             'Setembro',
-        //             'Outubro',
-        //             'Novembro',
-        //             'Dezembro'
-        //         ],
-        //         daysOfWeek: [
-        //             'Dom',
-        //             'Seg',
-        //             'Ter',
-        //             'Qua',
-        //             'Qui',
-        //             'Sex',
-        //             'Sáb'
-        //         ]
-        //     },
-        //     timePicker: true,
-        //     "timePicker24Hour": true,
 
-        //     singleDatePicker: true,
-        //     showDropdowns: true,
-        //     minYear: 2020,
-
-        // });
         $('#dataHora').datetimepicker({
             i18n: {
                 de: {

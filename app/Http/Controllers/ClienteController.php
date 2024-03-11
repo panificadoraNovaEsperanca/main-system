@@ -105,6 +105,7 @@ class ClienteController extends Controller
             $cliente = Cliente::findOrFail($id)->update($request->except(['_token', '_method']));
             return redirect(route('cliente.index'))->with('messages', ['success' => ['Cliente atualizada com sucesso!']]);
         } catch (\Exception $e) {
+            dd($request->all(),$e);
             return back()->with('messages', ['error' => ['Não foi possícel editar a cliente!']]);
         }
     }
