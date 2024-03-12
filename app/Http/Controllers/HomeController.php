@@ -66,8 +66,8 @@ class HomeController extends Controller
             return ['mes' => $mes, 'quantidade' => 0];
         });
         $pedidos = Pedido::whereBetween('dt_previsao', [$firstDateOfYear, $lastDateOfYear])
-            ->select(DB::raw('MONTH(dt_previsao) as mes'), DB::raw('COUNT(*) as quantidade'))
-            ->groupBy(DB::raw('MONTH(dt_previsao)'))
+            ->select(DB::raw('EXTRACT(MONTH FROM dt_previsao) as mes'), DB::raw('COUNT(*) as quantidade'))
+            ->groupBy(DB::raw('EXTRACT(MONTH FROM dt_previsao)'))
             ->get();
         $quantidadePedidosPorMes = $meses->map(function ($item) use ($pedidos) {
             $quantidade = $pedidos->filter(function ($element) use ($item) {
