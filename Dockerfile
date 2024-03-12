@@ -32,8 +32,8 @@ WORKDIR /app
 COPY --from=composer /build .
 
 RUN apk add git
-RUN npm install
-RUN npm run build
+RUN yarn install
+RUN yarn build
 
 FROM composer AS run
 RUN rm -rf /build
