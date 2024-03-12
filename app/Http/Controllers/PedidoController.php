@@ -76,7 +76,12 @@ class PedidoController extends Controller
                 'status' => $request->status,
             ]);
             foreach ($request->produto as $linha => $valor) {
-                $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                $preco = 0;
+                if($cliente->tipo_cliente == 'h'){
+                    $preco = $request->precoProduto[$linha];
+                }else{
+                    $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                }
                 PedidoProduto::create([
                     'pedido_id' => $pedido->id,
                     'produto_id' => $valor,
@@ -97,7 +102,13 @@ class PedidoController extends Controller
                         'status' => $request->status,
                     ]);
                     foreach ($request->produto as $linha => $valor) {
-                        $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                        $preco = 0;
+                        if($cliente->tipo_cliente == 'h'){
+                            $preco = $request->precoProduto[$linha];
+                        }else{
+
+                            $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                        }
                         PedidoProduto::create([
                             'pedido_id' => $novoPedido->id,
                             'produto_id' => $valor,
@@ -161,7 +172,12 @@ class PedidoController extends Controller
             ]);
 
             foreach ($request->produto as $linha => $valor) {
-                $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                $preco = 0;
+                if($cliente->tipo_cliente == 'h'){
+                    $preco = $request->precoProduto[$linha];
+                }else{
+                    $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                }
                 PedidoProduto::updateOrCreate(['pedido_id' => $id, 'produto_id' => $valor], [
                     'pedido_id' => $id,
                     'produto_id' => $valor,
@@ -172,18 +188,24 @@ class PedidoController extends Controller
             }
 
             if ($request->repete) {
-                $datas = explode(' - ', $request->periodo);
-                $dataInicial = Carbon::createFromFormat('d/m/Y', $datas[0]);
-                $dataFinal = Carbon::createFromFormat('d/m/Y', $datas[1]);
-                for ($data = $dataInicial; $data->lte($dataFinal); $data->addDay()) {
+                $datas = explode(',', $request->periodo);
+                
+                foreach($datas as $data) {
+                    $data = Carbon::createFromFormat('d/m/Y H:i', $data . ' ' . $request->horario);
                     $novoPedido = Pedido::create([
                         'cliente_id' => $cliente->id,
                         'motorista_id' => $request->motorista,
-                        'dt_previsao' => Carbon::createFromFormat('d/m/Y H:i', $data->format('d/m/Y') . ' ' . $dataPedido->format('H:i')),
+                        'dt_previsao' => $data,
                         'status' => $request->status,
                     ]);
                     foreach ($request->produto as $linha => $valor) {
-                        $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                        $preco = 0;
+                        if($cliente->tipo_cliente == 'h'){
+                            $preco = $request->precoProduto[$linha];
+                        }else{
+
+                            $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                        }
                         PedidoProduto::create([
                             'pedido_id' => $novoPedido->id,
                             'produto_id' => $valor,
@@ -193,9 +215,10 @@ class PedidoController extends Controller
                         ]);
                     }
                 }
-            }
+            }   
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido editado com sucesso!']]);
         } catch (\Exception $e) {
+            dd($request->all(),$e);
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
         }
     }

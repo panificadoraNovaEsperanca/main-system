@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('complemento')->nullable();
             $table->string('bairro')->nullable();
             $table->string('cidade')->nullable();
-            $table->enum('tipo_cliente', ['a', 'b', 'c'])->nullable();
+            $table->enum('tipo_cliente', ['a', 'b', 'c','d','e','f','g','h'])->nullable();
                         $table->timestamps();
                         $table->softDeletes();
         });

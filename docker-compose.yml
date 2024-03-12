@@ -4,13 +4,13 @@ services:
         image: postgis/postgis:latest
         container_name: db
         environment:
-            - POSTGRES_PASSWORD=refactorian
-            - POSTGRES_USER=refactorian
-            - POSTGRES_DB=refactorian
+            POSTGRES_DATABASE: refactorian
+            POSTGRES_USER: refactorian
+            POSTGRES_PASSWORD: refactorian
         ports:
             - "5433:5432"
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready"]
+            test: ["CMD-SHELL", "pg_isready -d refactorian -U refactorian"]
             interval: 5s
             timeout: 5s
             retries: 5

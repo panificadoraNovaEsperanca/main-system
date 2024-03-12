@@ -33,6 +33,10 @@
 <body>
     <h1 style="margin: 0 0 40px 0;text-align: center">Relatório de Clientes</h1>
     <h3 style="text-align: center">Intervalo: {{ $inicio->format('d/m/Y H:i') }} - {{ $fim->format('d/m/Y H:i') }}</h3>
+    @php
+        $geral = [];
+
+    @endphp
     @foreach ($dados as $dado)
         <table>
             <caption>
@@ -86,7 +90,8 @@
                                     @endphp
 
                                     {{ $produto->nome_produto }}({{ $produto->produto->unidade }}) -
-                                    {{ $produto->quantidade }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}<br>
+                                    {{ $produto->quantidade }} - R$
+                                    {{ number_format($produto->preco, 2, ',', '.') }}<br>
                                 @endforeach
 
                             </td>
@@ -97,7 +102,7 @@
                 @endif
             </tbody>
         </table>
-        <table  style="page-break-after: always; ">
+        <table style="page-break-after: always; ">
             <caption>
                 Produtos
             </caption>
@@ -117,6 +122,14 @@
                     @php
                         $qtdTotal += $produto->quantidade_total;
                         $valorTotal += $produto->preco_total;
+                        if (!isset($geral[$produto->nome])) {
+                            $geral[$produto->nome] = [
+                                'qtd' => 0,
+                                'valor' => 0,
+                            ];
+                        }
+                        $geral[$produto->nome]['qtd'] += $produto->quantidade_total;
+                        $geral[$produto->nome]['valor'] += $produto->preco_total;
                     @endphp
                     <tr>
                         <td>{{ $produto->nome }}</td>
@@ -125,16 +138,51 @@
                     </tr>
                 @endforeach
                 <tr>
-                        <td><b>TOTAL</b></td>
-                        <td>{{ $qtdTotal }}</td>
-                        <td>{{ number_format($valorTotal, 2, ',', '.') }}</td>
-                    </tr>
+                    <td><b>TOTAL</b></td>
+                    <td>{{ $qtdTotal }}</td>
+                    <td>{{ number_format($valorTotal, 2, ',', '.') }}</td>
+                </tr>
             </tbody>
-    
+
         </table>
     @endforeach
 
-   
+
+    <table>
+        <caption>
+            Produtos Totais
+        </caption>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantidade</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $qtdTotal = 0;
+                $valorTotal = 0;
+            @endphp
+            @foreach ($geral as $nome => $valor)
+                @php
+                    $qtdTotal += $valor['qtd'];
+                    $valorTotal += $valor['valor'];
+                @endphp
+                <tr>
+                    <td>{{ $nome }}</td>
+                    <td>{{ $valor['qtd'] }}</td>
+                    <td>{{ number_format($valor['valor'], 2, ',', '.') }}</td>
+                </tr>
+            @endforeach
+            <tr>
+                <td><b>TOTAL</b></td>
+                <td>{{ $qtdTotal }}</td>
+                <td>{{ number_format($valorTotal, 2, ',', '.') }}</td>
+            </tr>
+        </tbody>
+
+    </table>
 
 
 
