@@ -56,6 +56,10 @@ class ProdutoController extends Controller
                     'a' => $request->precoA,
                     'b' => $request->precoB,
                     'c' => $request->precoC,
+                    'd' => $request->precoD,
+                    'e' => $request->precoE,
+                    'f' => $request->precoF,
+                    'g' => $request->precoG,
                 ]
             ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto criado com sucesso!']]);
@@ -99,6 +103,11 @@ class ProdutoController extends Controller
                     'a' => str_replace(',', '.', $request->precoA),
                     'b' => str_replace(',', '.', $request->precoB),
                     'c' => str_replace(',', '.', $request->precoC),
+                    'd' => str_replace(',', '.', $request->precoD),
+                    'e' => str_replace(',', '.', $request->precoE),
+                    'f' => str_replace(',', '.', $request->precoF),
+                    'g' => str_replace(',', '.', $request->precoG),
+                    
                 ]
             ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto atualizado com sucesso!']]);
