@@ -31,7 +31,6 @@ class ClienteRequest extends FormRequest
             'numero' => 'required',
             'bairro' => 'required',
             'cidade' => 'required',
-            'complemento' => 'required',
             'tipo_cliente' => 'required',
            
         ];
@@ -52,7 +51,6 @@ class ClienteRequest extends FormRequest
             'numero.required' => 'Obrigatório',
             'bairro.required' => 'Obrigatório',
             'cidade.required' => 'Obrigatório',
-            'complemento.required' => 'Obrigatório',
             'tipo_cliente.required' => 'Obrigatório',
 
         ];

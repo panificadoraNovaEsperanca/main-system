@@ -106,6 +106,7 @@
             <table id="pedidoTable" class="table shadow rounded table-striped table-hover">
                 <thead class="bg-primary ">
                     <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
                         <th>Id</th>
                         <th>Cliente</th>
                         <th>Motorista</th>
@@ -117,6 +118,8 @@
                 <tbody>
                     @foreach ($pedidos as $pedido)
                         <tr @if ($pedido->deleted_at != null) style="background-color:#ff8e8e" @endif>
+                            <td><input type="checkbox" class="pedidoCheck" name="pedido[]" value="{{ $pedido->id }}">
+
                             <td>{{ $pedido->id }}</td>
                             <td>{{ $pedido->cliente->name }}</td>
                             <td>{{ $pedido->motorista->nome }}</td>
@@ -153,6 +156,9 @@
                 </tbody>
 
             </table>
+
+            <button class="btn btn-danger" id="deleteOrders"><i class="fa fa-trash"></i> Excluir pedidos
+                selecionados</button>
         @else
             <x-not-found />
 
@@ -217,6 +223,54 @@
 
 @push('scripts')
     <script>
+        $('#selectAll').on('change', function() {
+            let val = $(this).is(':checked');
+            console.log(val)
+            $('.pedidoCheck').each((index, element) => {
+                $(element).prop('checked', val)
+            })
+        })
+
+        $('#deleteOrders').on('click', async function() {
+
+            let pedidosDelete = [];
+            $("input[type='checkbox'].pedidoCheck:checked").each((index, element) => {
+                pedidosDelete.push(element.value)
+            })
+            console.log(pedidosDelete)
+            fetch("pedidosDelete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-Token": $('meta[name="csrf-token"]').val()
+                },
+                body: JSON.stringify({
+                    pedidos: pedidosDelete,
+                    _token: "{{ csrf_token() }}",
+
+                })
+            }).then( (response) => {
+                 response.json().then((res) => {
+                    console.log(res)
+                    if (!res.data.success && res.data == '') {
+                        Toast.fire({
+                            heightAuto: true,
+                            icon: 'success',
+                            title: res.message
+                        });
+                    }
+
+                    setTimeout(() => {
+                        location.reload()
+                    }, 1000);
+
+                });
+
+            }).catch((error) => {
+                console.log(error)
+            });
+        })
         $('#dataHora').datetimepicker({
             i18n: {
                 de: {

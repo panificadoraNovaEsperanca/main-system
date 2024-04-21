@@ -69,6 +69,7 @@ class PedidoController extends Controller
                 return back()->with('messages', ['error' => ['Cadastro de cliente incompleto! Finalize o cadastro de cliente para completar o pedido']])->withInput($request->all());;
             }
             $dataPedido = Carbon::createFromFormat('d/m/Y H:i', $request->dataHora);
+       
             $pedido = Pedido::create([
                 'cliente_id' => $cliente->id,
                 'motorista_id' => $request->motorista,
@@ -92,14 +93,16 @@ class PedidoController extends Controller
             }
             if ($request->repete) {
                 $datas = explode(',', $request->periodo);
-                
+                $horaPedido = $dataPedido->format('H');
+                $minutoPedido = $dataPedido->format('i');
                 foreach($datas as $data) {
-                    $data = Carbon::createFromFormat('d/m/Y H:i', $data . ' ' . $request->horario);
+                    $data = Carbon::createFromFormat('d/m/Y H:i', $data . " {$horaPedido}:{$minutoPedido}" );
                     $novoPedido = Pedido::create([
                         'cliente_id' => $cliente->id,
                         'motorista_id' => $request->motorista,
                         'dt_previsao' => $data,
-                        'status' => $request->status,
+                        'status' => 'AGENDADO',
+
                     ]);
                     foreach ($request->produto as $linha => $valor) {
                         $preco = 0;
@@ -277,6 +280,20 @@ class PedidoController extends Controller
             return response()->json(['success' => false, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }
     }
+    public function pedidosDelete(Request $request)
+    {
+        try {
+
+            foreach($request->pedidos as $pedido_id){
+                PedidoProduto::where('pedido_id','=',$pedido_id)->delete();
+                Pedido::where('id','=',$pedido_id)->delete();
+            }
+            return response()->json(['success' => true, 'data' => '','message' => 'Pedidos excluídos com sucesso!'], 200);
+        } catch (\Exception $e) {
+
+            return response()->json(['success' => false, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
+        }
+    }
 
 
     public function atualizarPedidos(Request $request)
@@ -291,4 +308,5 @@ class PedidoController extends Controller
             return redirect(route('pedido.atualiza'))->with('messages', ['success' => ['Não foi possível atualizar os pedidos']]);
         }
     }
+
 }

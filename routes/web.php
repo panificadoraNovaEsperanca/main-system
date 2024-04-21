@@ -60,7 +60,8 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/relatorioProducao', [ProdutoController::class, 'relatorioProducaoIndex'])->name('producao.relatorio');
     Route::post('/processRelatorioProducao', [ProdutoController::class, 'processRelatorioProducao'])->name('producao.relatorio.processar');
-
+    
+    Route::post('/pedidosDelete', [PedidoController::class, 'pedidosDelete'])->name('pedidos.multipleDelete');
 
     Route::get('/pedidoAtualiza', [PedidoController::class, 'baixaPedido'])->name('pedido.atualiza');
     Route::get('/getPedidoBaixa/{pedido_id}', [PedidoController::class, 'getPedidoBaixa'])->name('pedido.getBaixa');
