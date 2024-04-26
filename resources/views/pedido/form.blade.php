@@ -106,6 +106,7 @@
                                     <th scope="col">Valor Unitário</th>
                                     <th scope="col">Observação</th>
                                     <th scope="col">Total</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -129,12 +130,13 @@
                                                     @endforeach
                                                 </select>
                                             </td>
-                                            
+
                                             <td><input type="number" class="quantidadeProduto form-control "
                                                     data-id="{{ $loop->index }}"
                                                     value="{{ $produtosEscolhidos->quantidade }}" name="quantidade[]"></td>
-                                            <td><input type="number" step="0.1" {{$pedido->cliente->tipo_cliente == 'h' ? '':'disabled'}} class="form-control"
-                                                    id="precoProduto-{{ $loop->index }}"
+                                            <td><input type="number" step="0.1"
+                                                    {{ $pedido->cliente->tipo_cliente == 'h' ? '' : 'disabled' }}
+                                                    class="form-control" id="precoProduto-{{ $loop->index }}"
                                                     value="{{ $produtosEscolhidos->preco }}" data-id="{{ $loop->index }}"
                                                     name="precoProduto[]"></td>
                                             <td><input type="number" step="0.1" disabled class="form-control"
@@ -185,21 +187,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-1">
-                        <div class="form-group">
-                            <label for="">Horário</label>
-
-                            <div class=" input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </span>
-                                </div>
-                                <input autocomplete="off" type="text" class="form-control float-right" name="horario"
-                                    id="horario">
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
             </div>
@@ -225,6 +212,9 @@
             let cliente = this.value.split('-')
             $('#cliente_id').val(cliente[0])
             tipo_cliente = cliente[1];
+        })
+        $(document).on('click', '.killme', function() {
+            this.parentNode.parentNode.remove()
         })
         $('#repete').on('change', function() {
             if ($(this).is(':checked')) {
@@ -291,9 +281,9 @@
                 <option hidden>Selecione uma opção</option>`;
                 for (let produto of produtos) {
                     if (produtos.length == 1) {
-                        selectProdutos += `<option selected value="${produto.id}">${produto.nome}</option>`;
+                        selectProdutos += `<option selected value="${produto.id}">${produto.id} - ${produto.nome}</option>`;
                     } else {
-                        selectProdutos += `<option value="${produto.id}">${produto.nome}</option>`;
+                        selectProdutos += `<option value="${produto.id}">${produto.id} - ${produto.nome}</option>`;
 
                     }
                 }
@@ -304,6 +294,7 @@
                             <td><input  type="number" step="0.1" ${precoLiberado ? '':'disabled'} class="form-control precoProduto" id="precoProduto-${id}" data-id="${id}" name="precoProduto[]"></td>
                             <td><textarea  rows="1"  type="text" class="observacao form-control " data-id="${id}" name="observacao[]"></textarea></td>
                             <td><input  type="number" step="0.1" disabled class="form-control" id="valorCalculado-${id}" value="0"></td>
+                            <td><button class="btn btn-danger killme" type="button" >Excluir</button></td>
                     </tr>
                     `
                 $('#produtos tbody').append(tr)
@@ -311,12 +302,9 @@
                     $(`#precoProduto-${id}`).val(produtos[0].precos[tipo_cliente])
 
                 }
-
-
                 $(`#select2-${id}`).select2({
                     width: '100%'
                 })
-
 
             } else {
                 Toast.fire({
@@ -327,6 +315,8 @@
             }
 
         })
+
+
 
         $('#dataHora').datetimepicker({
             i18n: {
@@ -376,6 +366,7 @@
                 }
             }
         });
+
         $('#motorista').select2({
             width: "100%",
             ajax: {
