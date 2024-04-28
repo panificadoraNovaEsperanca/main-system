@@ -10,8 +10,7 @@
             @method('PUT')
         @endif
         <div class="row">
-
-            <div class="col-6">
+                <div class="col-6">
                 <div class="form-group">
                     <label for="">Cliente</label>
                     <div class="input-group  ">
@@ -139,10 +138,17 @@
                                                     class="form-control" id="precoProduto-{{ $loop->index }}"
                                                     value="{{ $produtosEscolhidos->preco }}" data-id="{{ $loop->index }}"
                                                     name="precoProduto[]"></td>
+                                            <td>
+                                                <textarea  rows="1"  type="text" class="observacao form-control " data-id="{{ $loop->index }}" name="observacao[]">
+                                                {{$produtosEscolhidos->observacao}}
+                                                </textarea></td>
+
                                             <td><input type="number" step="0.1" disabled class="form-control"
                                                     id="valorCalculado-{{ $loop->index }}"
                                                     value="{{ $produtosEscolhidos->quantidade * $produtosEscolhidos->preco }}">
                                             </td>
+                                            <td><button class="btn btn-danger killme" type="button" >Excluir</button></td>
+
                                         </tr>
                                     @endforeach
                                 @endif

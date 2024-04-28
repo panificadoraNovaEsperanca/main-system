@@ -32,7 +32,7 @@ class ProdutoController extends Controller
     {
 
         $produtos = Produto::withTrashed()->when(request()->search != '', function ($query) {
-            $query->where('nome', 'like', '%' . request()->search . '%');
+            $query->where(DB::raw('lower(nome)'), 'like', '%' . request()->search . '%');
         })->paginate(request()->paginacao ?? 10);
         return view('produto.index', compact('produtos'));
     }
@@ -86,7 +86,9 @@ class ProdutoController extends Controller
     {
 
         try {
+            
             $produto = Produto::findOrFail($id);
+            
             return view('produto.form', compact('produto',));
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);

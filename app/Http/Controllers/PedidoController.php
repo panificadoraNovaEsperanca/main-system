@@ -24,9 +24,9 @@ class PedidoController extends Controller
         $pedidos = Pedido::with(['motorista', 'cliente'])
             ->when(request()->search != '', function ($query) {
                 $query->whereHas('motorista', function ($queryMotora) {
-                    $queryMotora->where('nome', 'like', '%' . request()->search . '%');
+                    $queryMotora->where(DB::raw('lower(nome)'), 'like', '%' . strtolower(request()->search) . '%');
                 })->orWhereHas('cliente', function ($queryCliente) {
-                    $queryCliente->where('name', 'like', '%' . request()->search . '%');
+                    $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
                 });
             })
             ->when(request()->status != '' && request()->status != '-1', function ($query) {
@@ -148,9 +148,9 @@ class PedidoController extends Controller
         try {
             $produtos = Produto::get();
             $pedido = Pedido::with(['motorista', 'produtos', 'cliente'])->where('id', $id)->first();
-
             return view('pedido.form', compact('pedido', 'produtos'));
         } catch (\Exception $e) {
+            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível editar o pedido!']]);
         }
     }
@@ -248,9 +248,9 @@ class PedidoController extends Controller
         $pedidos = Pedido::with(['motorista', 'cliente'])
             ->when(request()->search != '', function ($query) {
                 $query->whereHas('motorista', function ($queryMotora) {
-                    $queryMotora->where('nome', 'like', '%' . request()->search . '%');
+                    $queryMotora->where(DB::raw('lower(nome)'), 'like', '%' . strtolower(request()->search) . '%');
                 })->orWhereHas('cliente', function ($queryCliente) {
-                    $queryCliente->where('name', 'like', '%' . request()->search . '%');
+                    $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
                 });
             })
             ->when(request()->status != '' && request()->status != '-1', function ($query) {
