@@ -101,7 +101,7 @@ class MotoristaController extends Controller
             Motorista::findOrFail($id)->delete();
             return back()->with('messages', ['success' => ['Motorista excluído com sucesso!']]);
         } catch (\Exception $e) {
-            return back()->with('messages', ['error' => ['Não foi possível excluír o produto!']]);
+            return back()->with('messages', ['error' => ['Não foi possível excluír o motorista!']]);
         }
     }
 
