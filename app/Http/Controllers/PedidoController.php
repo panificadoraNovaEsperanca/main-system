@@ -91,6 +91,7 @@ class PedidoController extends Controller
                     'preco' => $preco
                 ]);
             }
+
             if ($request->repete) {
                 $datas = explode(',', $request->periodo);
                 $horaPedido = $dataPedido->format('H');
@@ -167,12 +168,17 @@ class PedidoController extends Controller
         try {
             $cliente = Cliente::findOrFail($request->cliente_id);
             $dataPedido = Carbon::createFromFormat('d/m/Y H:i', $request->dataHora);
-            Pedido::findOrFail($id)->update([
+            $pedido = Pedido::findOrFail($id);
+            $pedido->update([
                 'cliente_id' => $cliente->id,
                 'motorista_id' => $request->motorista,
                 'dt_previsao' => $dataPedido,
                 'status' => $request->status,
             ]);
+
+            PedidoProduto::where('pedido_id','=',$pedido->id)
+                          ->whereNotIn('produto_id',$request->produto)
+                          ->delete();
 
             foreach ($request->produto as $linha => $valor) {
                 $preco = 0;
@@ -221,7 +227,6 @@ class PedidoController extends Controller
             }   
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido editado com sucesso!']]);
         } catch (\Exception $e) {
-            dd($request->all(),$e);
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
         }
     }
