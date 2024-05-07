@@ -158,10 +158,12 @@ class ClienteController extends Controller
 
                 $dados[$cliente]['produtos_total'] =
                     DB::table(DB::table('pedido_produtos', 'pp')
-                        ->leftJoin('produtos as p', 'pp.produto_id', '=', 'p.id')->whereIn(
+                        ->leftJoin('produtos as p', 'pp.produto_id', '=', 'p.id')
+                        ->whereIn(
                             'pp.pedido_id',
-                            DB::table('pedidos')
+                            DB::table('pedidos as pe')
                                 ->where('cliente_id', '=', $cliente)
+                                ->whereBetween('dt_previsao',[$inicio,$fim])
                                 ->pluck('id')
                         )->selectRaw('p.id as id,
                     p.nome as nome,
@@ -169,11 +171,11 @@ class ClienteController extends Controller
                     pp.quantidade as quantidade'), 'pro')
                     ->selectRaw('pro.nome as nome, 
                     sum(pro.preco_total	) as preco_total,
-                    sum(pro.quantidade) as quantidade_total')->groupBy('nome')->orderBy('nome')->get();
+                    sum(pro.quantidade) as quantidade_total')
+                    ->groupBy('nome')
+                    ->orderBy('nome')
+                    ->get();
             }
-            // $produtos = DB::table('pedido_produtos')->whereIn('pedido_id', $pedidos->pluck('id'))->selectRaw('
-            //     produtos.nome, sum(pedido_produtos.quantidade) as qtd,
-            // ')->join('produtos', 'produtos.id', '=', 'pedido_produtos.produto_id');
 
             $pdf =  Pdf::loadView('relatorios.pdf.clientes', [
                 'dados' => $dados,
