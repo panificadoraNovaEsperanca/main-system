@@ -20,7 +20,9 @@ class MotoristaController extends Controller
      */
     public function index()
     {
-        $motoristas = Motorista::withTrashed()->paginate(request()->paginacao ?? 10);
+        $motoristas = Motorista::withTrashed()->when(request()->search != '',function($query){
+            $query->where(DB::raw('LOWER(nome)'), 'LIKE', '%' . strtolower(request()->search) . '%');
+        })->paginate(request()->paginacao ?? 10);
         return view('motorista.index', compact('motoristas'));
     }
 

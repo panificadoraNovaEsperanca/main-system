@@ -23,13 +23,12 @@ class LancamentoController extends Controller
         $this->lancamentoRepository = $lancamentoRepository;
     }
 
-    public function index(): View|RedirectResponse
+    public function index() : View|RedirectResponse
     {
 
         $lancamentos = $this->lancamentoRepository->getIndex();
         return view('lancamento.index', compact('lancamentos'));
     }
-
 
     public function create(): View|RedirectResponse
     {
