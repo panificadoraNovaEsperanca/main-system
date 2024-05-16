@@ -17,4 +17,8 @@ class PedidoProduto extends Model
     public function getNomeProdutoAttribute(){
         return $this->produto->nome;
     }
+
+    public function pedido(){
+        return $this->hasOne(Pedido::class, 'id','pedido_id');
+    }
 }

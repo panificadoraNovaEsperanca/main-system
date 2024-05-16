@@ -21,14 +21,24 @@ class PedidoController extends Controller
      */
     public function index()
     {
+        if (request()->codigo != '') {
+            $pedidos =  Pedido::with(['motorista', 'cliente'])
+                ->where('id', request()->codigo)
+                ->paginate(request()->paginacao ?? 10);
+            return view('pedido.index', compact('pedidos'));
+        }
         $pedidos = Pedido::with(['motorista', 'cliente'])
-            ->when(request()->search != '', function ($query) {
+            ->when(request()->motorista != '', function ($query) {
                 $query->whereHas('motorista', function ($queryMotora) {
-                    $queryMotora->where(DB::raw('lower(nome)'), 'like', '%' . strtolower(request()->search) . '%');
-                })->orWhereHas('cliente', function ($queryCliente) {
+                    $queryMotora->where(DB::raw('lower(nome)'), 'like', '%' . strtolower(request()->motorista) . '%');
+                });
+            })
+            ->when(request()->cliente != '', function ($query) {
+                $query->orWhereHas('cliente', function ($queryCliente) {
                     $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
                 });
             })
+
             ->when(request()->status != '' && request()->status != '-1', function ($query) {
                 $query->where('status', request()->status);
             })
@@ -69,18 +79,18 @@ class PedidoController extends Controller
                 return back()->with('messages', ['error' => ['Cadastro de cliente incompleto! Finalize o cadastro de cliente para completar o pedido']])->withInput($request->all());;
             }
             $dataPedido = Carbon::createFromFormat('d/m/Y H:i', $request->dataHora);
-       
+
             $pedido = Pedido::create([
                 'cliente_id' => $cliente->id,
                 'motorista_id' => $request->motorista,
                 'dt_previsao' => $dataPedido,
-                'status' => $request->status,
+                'status' => 'AGENDADO',
             ]);
             foreach ($request->produto as $linha => $valor) {
                 $preco = 0;
-                if($cliente->tipo_cliente == 'h'){
+                if ($cliente->tipo_cliente == 'h') {
                     $preco = $request->precoProduto[$linha];
-                }else{
+                } else {
                     $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
                 }
                 PedidoProduto::create([
@@ -96,8 +106,8 @@ class PedidoController extends Controller
                 $datas = explode(',', $request->periodo);
                 $horaPedido = $dataPedido->format('H');
                 $minutoPedido = $dataPedido->format('i');
-                foreach($datas as $data) {
-                    $data = Carbon::createFromFormat('d/m/Y H:i', $data . " {$horaPedido}:{$minutoPedido}" );
+                foreach ($datas as $data) {
+                    $data = Carbon::createFromFormat('d/m/Y H:i', $data . " {$horaPedido}:{$minutoPedido}");
                     $novoPedido = Pedido::create([
                         'cliente_id' => $cliente->id,
                         'motorista_id' => $request->motorista,
@@ -107,9 +117,9 @@ class PedidoController extends Controller
                     ]);
                     foreach ($request->produto as $linha => $valor) {
                         $preco = 0;
-                        if($cliente->tipo_cliente == 'h'){
+                        if ($cliente->tipo_cliente == 'h') {
                             $preco = $request->precoProduto[$linha];
-                        }else{
+                        } else {
 
                             $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
                         }
@@ -126,6 +136,7 @@ class PedidoController extends Controller
             DB::commit();
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido cadastrado com sucesso!']]);
         } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
         }
@@ -173,18 +184,18 @@ class PedidoController extends Controller
                 'cliente_id' => $cliente->id,
                 'motorista_id' => $request->motorista,
                 'dt_previsao' => $dataPedido,
-                'status' => $request->status,
+                'status' => $request->status ?? 'AGENDADO',
             ]);
 
-            PedidoProduto::where('pedido_id','=',$pedido->id)
-                          ->whereNotIn('produto_id',$request->produto)
-                          ->delete();
+            PedidoProduto::where('pedido_id', '=', $pedido->id)
+                ->whereNotIn('produto_id', $request->produto)
+                ->delete();
 
             foreach ($request->produto as $linha => $valor) {
                 $preco = 0;
-                if($cliente->tipo_cliente == 'h'){
+                if ($cliente->tipo_cliente == 'h') {
                     $preco = $request->precoProduto[$linha];
-                }else{
+                } else {
                     $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
                 }
                 PedidoProduto::updateOrCreate(['pedido_id' => $id, 'produto_id' => $valor], [
@@ -198,20 +209,20 @@ class PedidoController extends Controller
 
             if ($request->repete) {
                 $datas = explode(',', $request->periodo);
-                
-                foreach($datas as $data) {
+
+                foreach ($datas as $data) {
                     $data = Carbon::createFromFormat('d/m/Y H:i', $data . ' ' . $request->horario);
                     $novoPedido = Pedido::create([
                         'cliente_id' => $cliente->id,
                         'motorista_id' => $request->motorista,
                         'dt_previsao' => $data,
-                        'status' => $request->status,
+                        'status' => 'AGENDADO',
                     ]);
                     foreach ($request->produto as $linha => $valor) {
                         $preco = 0;
-                        if($cliente->tipo_cliente == 'h'){
+                        if ($cliente->tipo_cliente == 'h') {
                             $preco = $request->precoProduto[$linha];
-                        }else{
+                        } else {
 
                             $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
                         }
@@ -224,7 +235,7 @@ class PedidoController extends Controller
                         ]);
                     }
                 }
-            }   
+            }
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido editado com sucesso!']]);
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
@@ -250,14 +261,24 @@ class PedidoController extends Controller
 
     public function baixaPedido()
     {
+        if (request()->codigo != '') {
+            $pedidos =  Pedido::with(['motorista', 'cliente'])
+                ->where('id', request()->codigo)
+                ->paginate(request()->paginacao ?? 50);
+            return view('pedido.atualizador', compact('pedidos'));
+        }
         $pedidos = Pedido::with(['motorista', 'cliente'])
-            ->when(request()->search != '', function ($query) {
+            ->when(request()->motorista != '', function ($query) {
                 $query->whereHas('motorista', function ($queryMotora) {
-                    $queryMotora->where(DB::raw('lower(nome)'), 'like', '%' . strtolower(request()->search) . '%');
-                })->orWhereHas('cliente', function ($queryCliente) {
+                    $queryMotora->where(DB::raw('lower(nome)'), 'like', '%' . strtolower(request()->motorista) . '%');
+                });
+            })
+            ->when(request()->cliente != '', function ($query) {
+                $query->orWhereHas('cliente', function ($queryCliente) {
                     $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
                 });
             })
+
             ->when(request()->status != '' && request()->status != '-1', function ($query) {
                 $query->where('status', request()->status);
             })
@@ -267,7 +288,6 @@ class PedidoController extends Controller
                 $query->whereBetween('dt_previsao', [$dtInicial, $dtFinal]);
             })
             ->paginate(request()->paginacao ?? 50);
-
         return view('pedido.atualizador', compact('pedidos'));
     }
     public function getPedidoBaixa($pedido_id)
@@ -289,11 +309,11 @@ class PedidoController extends Controller
     {
         try {
 
-            foreach($request->pedidos as $pedido_id){
-                PedidoProduto::where('pedido_id','=',$pedido_id)->delete();
-                Pedido::where('id','=',$pedido_id)->delete();
+            foreach ($request->pedidos as $pedido_id) {
+                PedidoProduto::where('pedido_id', '=', $pedido_id)->delete();
+                Pedido::where('id', '=', $pedido_id)->delete();
             }
-            return response()->json(['success' => true, 'data' => '','message' => 'Pedidos excluídos com sucesso!'], 200);
+            return response()->json(['success' => true, 'data' => '', 'message' => 'Pedidos excluídos com sucesso!'], 200);
         } catch (\Exception $e) {
 
             return response()->json(['success' => false, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
@@ -313,5 +333,4 @@ class PedidoController extends Controller
             return redirect(route('pedido.atualiza'))->with('messages', ['success' => ['Não foi possível atualizar os pedidos']]);
         }
     }
-
 }

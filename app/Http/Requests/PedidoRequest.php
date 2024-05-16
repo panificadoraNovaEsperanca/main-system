@@ -21,7 +21,6 @@ class PedidoRequest extends FormRequest
         return [
             'motorista' => 'required',
             'dataHora' => 'required',
-            'status' => 'required',
             'produto' => 'min:1',
             'quantidade' => 'min:1',
             'cliente' => 'required',

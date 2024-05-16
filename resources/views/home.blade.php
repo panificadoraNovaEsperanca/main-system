@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="row">
         <div class="col-lg-3 col-6">
@@ -120,4 +119,12 @@
     </script>
 
     <!-- /.content -->
+@endsection
+
+@section('style')
+<style>
+    .eliasViado{
+        background-color: pink;
+    }
+</style>
 @endsection

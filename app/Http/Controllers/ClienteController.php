@@ -105,7 +105,7 @@ class ClienteController extends Controller
             $cliente = Cliente::findOrFail($id)->update($request->except(['_token', '_method']));
             return redirect(route('cliente.index'))->with('messages', ['success' => ['Cliente atualizada com sucesso!']]);
         } catch (\Exception $e) {
-            dd($request->all(),$e);
+            dd($request->all(), $e);
             return back()->with('messages', ['error' => ['Não foi possícel editar a cliente!']]);
         }
     }
@@ -163,7 +163,7 @@ class ClienteController extends Controller
                             'pp.pedido_id',
                             DB::table('pedidos as pe')
                                 ->where('cliente_id', '=', $cliente)
-                                ->whereBetween('dt_previsao',[$inicio,$fim])
+                                ->whereBetween('dt_previsao', [$inicio, $fim])
                                 ->pluck('id')
                         )->selectRaw('p.id as id,
                     p.nome as nome,
