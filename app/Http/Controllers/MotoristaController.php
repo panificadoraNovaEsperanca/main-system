@@ -137,7 +137,7 @@ class MotoristaController extends Controller
             $motorista = Motorista::findOrFail($request->motorista);
             $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
-
+            ini_set('memory_limit','1024M');
             $pedidos = Pedido::where('motorista_id', $motorista->id)
                 ->whereBetween('dt_previsao', [$inicio, $fim])
                 ->with(['produtos', 'cliente'])->orderBy('dt_previsao','ASC')->get();
