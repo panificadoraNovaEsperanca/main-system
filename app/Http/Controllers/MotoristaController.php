@@ -20,7 +20,7 @@ class MotoristaController extends Controller
      */
     public function index()
     {
-        $motoristas = Motorista::withTrashed()->when(request()->search != '',function($query){
+        $motoristas = Motorista::withTrashed()->when(request()->search != '', function ($query) {
             $query->where(DB::raw('LOWER(nome)'), 'LIKE', '%' . strtolower(request()->search) . '%');
         })->paginate(request()->paginacao ?? 10);
         return view('motorista.index', compact('motoristas'));
@@ -133,17 +133,16 @@ class MotoristaController extends Controller
     public function relatorioMotorista(RelatorioMotorista $request)
     {
         try {
-            ini_set('memory_limit','2048M');
+            ini_set('memory_limit', '2048M');
             $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
 
-            $pedidos = Motorista::with(['pedidos','pedidos.produtos', 'pedidos.cliente'])
-            ->when($request->motorista != null && $request->motorista != '', function ($query) use($request){
-                $query->where('id',$request->motorista);
-            })->whereHas('pedidos',function($query) use($inicio, $fim){
-                $query->whereBetween('dt_previsao', [$inicio, $fim]);
-            })
-            ->get();
+
+            $pedidos = Motorista::when($request->motorista != null && $request->motorista != '', function ($query) use ($request) {
+                $query->where('id', $request->motorista);
+            })->with(['pedidos' =>  function ($queryPedido) use ($inicio, $fim) {
+                $queryPedido->whereBetween('dt_previsao', [$inicio, $fim]);
+            }])->get();
 
             $pdf =  Pdf::loadView('relatorios.pdf.motorista', [
                 'pedidos' => $pedidos,
