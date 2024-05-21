@@ -8,7 +8,6 @@ use App\Models\Pedido;
 use App\Models\PedidoProduto;
 use App\Models\Produto;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,8 +22,8 @@ class PedidoController extends Controller
     {
         if (request()->codigo != '') {
             $pedidos =  Pedido::with(['motorista', 'cliente'])
-                ->where('id', request()->codigo)
-                ->paginate(request()->paginacao ?? 10);
+            ->where('id', request()->codigo)
+            ->paginate(request()->paginacao ?? 10);
             return view('pedido.index', compact('pedidos'));
         }
         $pedidos = Pedido::with(['motorista', 'cliente'])
@@ -34,8 +33,8 @@ class PedidoController extends Controller
                 });
             })
             ->when(request()->cliente != '', function ($query) {
-                $query->orWhereHas('cliente', function ($queryCliente) {
-                    $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
+                $query->whereHas('cliente', function ($queryCliente) {
+                    $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->cliente) . '%');
                 });
             })
 
@@ -43,11 +42,12 @@ class PedidoController extends Controller
                 $query->where('status', request()->status);
             })
             ->when(request()->dataHora != '', function ($query) {
-                $dtInicial = Carbon::createFromFormat('d/m/Y', request()->dataHora)->startOfDay();
-                $dtFinal = Carbon::createFromFormat('d/m/Y', request()->dataHora)->endOfDay();
+                $datas = explode(' - ',request()->dataHora);
+                $dtInicial = Carbon::createFromFormat('d/m/Y', $datas[0])->startOfDay();
+                $dtFinal = Carbon::createFromFormat('d/m/Y', $datas[1])->endOfDay();
                 $query->whereBetween('dt_previsao', [$dtInicial, $dtFinal]);
             })
-            ->paginate(request()->paginacao ?? 10);
+            ->paginate(request()->paginacao ?? 30);
         return view('pedido.index', compact('pedidos'));
     }
 
@@ -209,9 +209,10 @@ class PedidoController extends Controller
 
             if ($request->repete) {
                 $datas = explode(',', $request->periodo);
-
+                $horaPedido = $dataPedido->format('H');
+                $minutoPedido = $dataPedido->format('i');
                 foreach ($datas as $data) {
-                    $data = Carbon::createFromFormat('d/m/Y H:i', $data . ' ' . $request->horario);
+                    $data = Carbon::createFromFormat('d/m/Y H:i', $data . " {$horaPedido}:{$minutoPedido}");
                     $novoPedido = Pedido::create([
                         'cliente_id' => $cliente->id,
                         'motorista_id' => $request->motorista,
@@ -238,6 +239,7 @@ class PedidoController extends Controller
             }
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido editado com sucesso!']]);
         } catch (\Exception $e) {
+            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
         }
     }
@@ -274,8 +276,8 @@ class PedidoController extends Controller
                 });
             })
             ->when(request()->cliente != '', function ($query) {
-                $query->orWhereHas('cliente', function ($queryCliente) {
-                    $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
+                $query->whereHas('cliente', function ($queryCliente) {
+                    $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->cliente) . '%');
                 });
             })
 

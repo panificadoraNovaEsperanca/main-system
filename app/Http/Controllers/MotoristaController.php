@@ -134,19 +134,22 @@ class MotoristaController extends Controller
     {
         try {
 
-            $motorista = Motorista::findOrFail($request->motorista);
             $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
-            ini_set('memory_limit','1024M');
-            $pedidos = Pedido::where('motorista_id', $motorista->id)
-                ->whereBetween('dt_previsao', [$inicio, $fim])
-                ->with(['produtos', 'cliente'])->orderBy('dt_previsao','ASC')->get();
+            
+            $pedidos = Motorista::with(['pedidos','pedidos.produtos', 'pedidos.cliente'])
+            ->when($request->motorista != null && $request->motorista != '', function ($query) use($request){
+                        $query->where('id',$request->motorista);
+            })
+                ->whereHas('pedidos',function($query2) use($inicio, $fim){
+                                            $query2->whereBetween('dt_previsao', [$inicio, $fim]);
+                                    })->get();
+            
             $pdf =  Pdf::loadView('relatorios.pdf.motorista', [
-                'motorista' => $motorista,
                 'pedidos' => $pedidos,
                 'dia' => $inicio->format('d/m/Y')
             ]);
-            return $pdf->download("Relatório {$motorista->nome}.pdf");
+            return $pdf->download("Relatório entregas {$inicio->format('d/m/Y')}.pdf");
         } catch (\Exception $e) {
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }

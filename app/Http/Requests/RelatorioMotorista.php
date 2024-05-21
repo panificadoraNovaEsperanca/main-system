@@ -19,7 +19,6 @@ class RelatorioMotorista extends FormRequest
     public function rules()
     {
         return [
-            'motorista' => 'required',
             'data'=> 'required'
         ];
     }
@@ -32,7 +31,6 @@ class RelatorioMotorista extends FormRequest
     public function messages(): array
     {
         return [
-            'motorista.required' => 'Obrigatório',
             'data.required' => 'Obrigatório',
 
         ];

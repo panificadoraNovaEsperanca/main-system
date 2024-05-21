@@ -33,7 +33,7 @@
             class="form-control" placeholder="Cliente " aria-label="" aria-describedby="basic-addon1">
         </div>
       </div>
-      <div class="col-md-2 col-sm-12">
+      <div class="col-md-3 col-sm-12">
         <div class="form-group">
           <div class="input-group">
             <div class="input-group-prepend">
@@ -47,7 +47,7 @@
 
         </div>
       </div>
-      <div class="col-md-2 col-sm-12">
+      <div class="col-md-3 col-sm-12">
         <div class="form-group">
           <div class="input-group">
             <select class="custom-select" id="status" name="status">
@@ -299,41 +299,10 @@
         console.log(error)
       });
     })
-    $('#dataHora').datetimepicker({
-      i18n: {
-        de: {
-          months: [
-            'Janeiro',
-            'Fevereiro',
-            'Março',
-            'Abril',
-            'Maio',
-            'Junho',
-            'Julho',
-            'Agosto',
-            'Setembro',
-            'Outubro',
-            'Novembro',
-            'Dezembro'
-          ],
-          dayOfWeek: [
-            'Dom',
-            'Seg',
-            'Ter',
-            'Qua',
-            'Qui',
-            'Sex',
-            'Sáb'
-          ]
-        }
+    $('#dataHora').daterangepicker({
+      locale: {
+        format: 'DD/MM/YYYY'
       },
-      onSelect: function(dateText) {
-        console.log(dateText)
-        document.getElementById('formSearch').submit()
-
-      },
-      format: 'd/m/Y',
-      lang: 'pt'
     });
     document.getElementById('motorista').addEventListener('change', function() {
       document.getElementById('formSearch').submit()
@@ -348,6 +317,7 @@
       date,
       oldDate
     }) => {
+
       document.getElementById('formSearch').submit()
       return ''
     })

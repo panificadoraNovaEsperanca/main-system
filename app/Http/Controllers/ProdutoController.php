@@ -13,6 +13,7 @@ use App\Models\Produto;
 use App\Repositories\ProdutoRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -186,34 +187,37 @@ class ProdutoController extends Controller
 
     public function processRelatorioProducao(Request $request)
     {
-        $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
-        $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
+    $datas = explode(' - ',$request->data);
+    $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
+    $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
 
-        $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
-        ->when($request->produto != null && count($request->produto), function ($query) use($request){
-            $query->whereHas('produtos',function($query2) use($request){
-                $query2->whereIn('produto_id',$request->produto);
+    $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
+    ->when($request->produto != null && count($request->produto), function ($query) use($request){
+        $query->whereHas('produtos',function($query2) use($request){
+            $query2->whereIn('produto_id',$request->produto);
+        });
+    })
+    ->with(['cliente','motorista','produtos'])
+    ->get();
+    if($request->produto != null && count($request->produto)){
+        $pedidos = $pedidos->map(function ($element) use($request){
+            // dump($element->toArray());
+            $element->produtos = $element->produtos->filter(function($element) use($request){
+                return in_array($element->produto_id,$request->produto);
             });
-        })
-        ->with(['cliente','motorista','produtos'])
-        ->get();
+            return $element;
+        });
+    }
 
-        if($request->produto != null && count($request->produto)){
-            $pedidos = $pedidos->map(function ($element) use($request){
-                // dump($element->toArray());
-                $element->produtos = $element->produtos->filter(function($element) use($request){
-                    return in_array($element->produto_id,$request->produto);
-                });
-                return $element;
-            });
-        }
 
-        $data = Carbon::createFromFormat('d/m/Y', $request->data);
-        $pdf =  Pdf::loadView('relatorios.pdf.producao', [
-            'pedidos' => $pedidos,
-            'data' => $data,
-        ]);
-        $today = Carbon::now()->format('d-m-y H:i');
-        return $pdf->download("Relatório producao $today.pdf");
+    $data = Carbon::createFromFormat('d/m/Y', $request->data);
+    $pdf =  Pdf::loadView('relatorios.pdf.producao', [
+        'pedidos' => $pedidos,
+        'inicio' => $inicio,
+        'fim' => $fim,
+    ]);
+    $today = Carbon::now()->format('d-m-y H:i');
+    return $pdf->download("Relatório producao $today.pdf");
+ 
     }
 }
