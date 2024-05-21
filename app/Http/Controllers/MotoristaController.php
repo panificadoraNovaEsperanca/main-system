@@ -133,10 +133,10 @@ class MotoristaController extends Controller
     public function relatorioMotorista(RelatorioMotorista $request)
     {
         try {
-            ini_set('memory_limit','1024M');
+            ini_set('memory_limit','2048M');
             $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
-            
+
             $pedidos = Motorista::with(['pedidos','pedidos.produtos', 'pedidos.cliente'])
             ->when($request->motorista != null && $request->motorista != '', function ($query) use($request){
                         $query->where('id',$request->motorista);
@@ -144,7 +144,7 @@ class MotoristaController extends Controller
                 ->whereHas('pedidos',function($query2) use($inicio, $fim){
                                             $query2->whereBetween('dt_previsao', [$inicio, $fim]);
                                     })->get();
-            
+
             $pdf =  Pdf::loadView('relatorios.pdf.motorista', [
                 'pedidos' => $pedidos,
                 'dia' => $inicio->format('d/m/Y')
