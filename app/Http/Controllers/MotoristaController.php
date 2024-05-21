@@ -139,11 +139,11 @@ class MotoristaController extends Controller
 
             $pedidos = Motorista::with(['pedidos','pedidos.produtos', 'pedidos.cliente'])
             ->when($request->motorista != null && $request->motorista != '', function ($query) use($request){
-                        $query->where('id',$request->motorista);
+                $query->where('id',$request->motorista);
+            })->whereHas('pedidos',function($query) use($inicio, $fim){
+                $query->whereBetween('dt_previsao', [$inicio, $fim]);
             })
-                ->whereHas('pedidos',function($query2) use($inicio, $fim){
-                                            $query2->whereBetween('dt_previsao', [$inicio, $fim]);
-                                    })->get();
+            ->get();
 
             $pdf =  Pdf::loadView('relatorios.pdf.motorista', [
                 'pedidos' => $pedidos,
