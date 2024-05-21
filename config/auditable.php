@@ -2,7 +2,7 @@
 
 return [
     'defaults' => [
-        'creator' => [
+        'creator' => [ 
             'name' => '',
             // add creator default values if not set
         ],
