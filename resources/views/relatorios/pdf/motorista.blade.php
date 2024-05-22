@@ -75,7 +75,7 @@
               $totalPedido = 0;
             @endphp
             <tr>
-              <td>{{ $pedido->id }} - {{ $pedido->dt_previsao }}</td>
+              <td>{{ $pedido->id }}</td>
               <td>{!! $pedido->cliente->endereco_completo !!}</td>
               <td>{{ $pedido->cliente->name }}</td>
               <td>
