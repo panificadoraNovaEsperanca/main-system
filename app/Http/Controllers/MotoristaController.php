@@ -137,15 +137,22 @@ class MotoristaController extends Controller
             $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
 
-
-            $pedidos = Motorista::when($request->motorista != null && $request->motorista != '', function ($query) use ($request) {
+            $motoristasId = Motorista::when($request->motorista != null && $request->motorista != '', function ($query) use ($request) {
                 $query->where('id', $request->motorista);
-            })->with(['pedidos' =>  function ($queryPedido) use ($inicio, $fim) {
-                $queryPedido->whereBetween('dt_previsao', [$inicio, $fim]);
-            }])->get();
+            })->whereHas('pedidos', function ($query2) use ($inicio, $fim) {
+                $query2->whereBetween('dt_previsao', [$inicio, $fim]);
+            })->pluck('id');
+            $dados = [];
+
+            foreach ($motoristasId as $motorista_id) {
+                $pedidos = Pedido::with(['produtos', 'cliente'])->whereBetween('dt_previsao', [$inicio, $fim])->orderBy('dt_previsao', 'ASC')->get();
+                $dados[$motorista_id]['motorista'] = Motorista::find($motorista_id);
+                $dados[$motorista_id]['pedidos'] = $pedidos;
+            }
+
 
             $pdf =  Pdf::loadView('relatorios.pdf.motorista', [
-                'pedidos' => $pedidos,
+                'pedidos' => $dados,
                 'dia' => $inicio->format('d/m/Y')
             ]);
             return $pdf->download("Relatório entregas {$inicio->format('d/m/Y')}.pdf");

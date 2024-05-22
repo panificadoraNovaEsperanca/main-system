@@ -46,8 +46,8 @@
       </thead>
       <tbody>
         <tr>
-          <td>{{ $motorista->nome }}</td>
-          <td>{{ $motorista->turno }}</td>
+          <td>{{ $motorista['motorista']->nome }}</td>
+          <td>{{ $motorista['motorista']->turno }}</td>
         </tr>
       </tbody>
     </table>
@@ -65,17 +65,17 @@
         </tr>
       </thead>
       <tbody>
-        @if ($motorista->pedidos->isEmpty())
+        @if ($motorista['pedidos']->isEmpty())
           <tr>
             <td colspan="7">Sem Resultados</td>
           </tr>
         @else
-          @foreach ($motorista->pedidos as $pedido)
+          @foreach ($motorista['pedidos'] as $pedido)
             @php
               $totalPedido = 0;
             @endphp
             <tr>
-              <td>{{ $pedido->id }}</td>
+              <td>{{ $pedido->id }} - {{ $pedido->dt_previsao }}</td>
               <td>{!! $pedido->cliente->endereco_completo !!}</td>
               <td>{{ $pedido->cliente->name }}</td>
               <td>

@@ -87,9 +87,9 @@ class ProdutoController extends Controller
     {
 
         try {
-            
+
             $produto = Produto::findOrFail($id);
-            
+
             return view('produto.form', compact('produto',));
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
@@ -110,7 +110,7 @@ class ProdutoController extends Controller
                     'e' => str_replace(',', '.', $request->precoE),
                     'f' => str_replace(',', '.', $request->precoF),
                     'g' => str_replace(',', '.', $request->precoG),
-                    
+
                 ]
             ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto atualizado com sucesso!']]);
@@ -187,37 +187,39 @@ class ProdutoController extends Controller
 
     public function processRelatorioProducao(Request $request)
     {
-    $datas = explode(' - ',$request->data);
-    $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
-    $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
+        try {
+            $datas = explode(' - ', $request->data);
+            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
+            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
 
-    $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
-    ->when($request->produto != null && count($request->produto), function ($query) use($request){
-        $query->whereHas('produtos',function($query2) use($request){
-            $query2->whereIn('produto_id',$request->produto);
-        });
-    })
-    ->with(['cliente','motorista','produtos'])
-    ->get();
-    if($request->produto != null && count($request->produto)){
-        $pedidos = $pedidos->map(function ($element) use($request){
-            // dump($element->toArray());
-            $element->produtos = $element->produtos->filter(function($element) use($request){
-                return in_array($element->produto_id,$request->produto);
-            });
-            return $element;
-        });
-    }
+            $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
+                ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
+                    $query->whereHas('produtos', function ($query2) use ($request) {
+                        $query2->whereIn('produto_id', $request->produto);
+                    });
+                })
+                ->with(['cliente', 'motorista', 'produtos'])
+                ->get();
+            if ($request->produto != null && count($request->produto)) {
+                $pedidos = $pedidos->map(function ($element) use ($request) {
+                    // dump($element->toArray());
+                    $element->produtos = $element->produtos->filter(function ($element) use ($request) {
+                        return in_array($element->produto_id, $request->produto);
+                    });
+                    return $element;
+                });
+            }
 
 
-    $data = Carbon::createFromFormat('d/m/Y', $request->data);
-    $pdf =  Pdf::loadView('relatorios.pdf.producao', [
-        'pedidos' => $pedidos,
-        'inicio' => $inicio,
-        'fim' => $fim,
-    ]);
-    $today = Carbon::now()->format('d-m-y H:i');
-    return $pdf->download("Relatório producao $today.pdf");
- 
+            $pdf =  Pdf::loadView('relatorios.pdf.producao', [
+                'pedidos' => $pedidos,
+                'inicio' => $inicio,
+                'fim' => $fim,
+            ]);
+            $today = Carbon::now()->format('d-m-y H:i');
+            return $pdf->download("Relatório producao $today.pdf");
+        } catch (Exception $e) {
+            return back()->with('messages', ['error' => ['Não foi gerar o relatório! ']]);
+        }
     }
 }
