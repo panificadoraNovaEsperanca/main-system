@@ -133,7 +133,7 @@ class MotoristaController extends Controller
     public function relatorioMotorista(RelatorioMotorista $request)
     {
         try {
-            ini_set('memory_limit', '2048M');
+            ini_set('memory_limit', '-1');
             $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
 
