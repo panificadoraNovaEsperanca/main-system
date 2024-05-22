@@ -145,7 +145,7 @@ class MotoristaController extends Controller
             $dados = [];
 
             foreach ($motoristasId as $motorista_id) {
-                $pedidos = Pedido::with(['produtos', 'cliente'])->whereBetween('dt_previsao', [$inicio, $fim])->orderBy('dt_previsao', 'ASC')->get();
+                $pedidos = Pedido::with(['produtos', 'cliente'])->where('motorista_id',$motorista_id)->whereBetween('dt_previsao', [$inicio, $fim])->orderBy('dt_previsao', 'ASC')->get();
                 $dados[$motorista_id]['motorista'] = Motorista::find($motorista_id);
                 $dados[$motorista_id]['pedidos'] = $pedidos;
             }
