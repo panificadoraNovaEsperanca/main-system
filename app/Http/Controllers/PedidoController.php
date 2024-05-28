@@ -22,8 +22,8 @@ class PedidoController extends Controller
     {
         if (request()->codigo != '') {
             $pedidos =  Pedido::with(['motorista', 'cliente'])
-            ->where('id', request()->codigo)
-            ->paginate(request()->paginacao ?? 10);
+                ->where('id', request()->codigo)
+                ->paginate(request()->paginacao ?? 10);
             return view('pedido.index', compact('pedidos'));
         }
         $pedidos = Pedido::with(['motorista', 'cliente'])
@@ -42,7 +42,7 @@ class PedidoController extends Controller
                 $query->where('status', request()->status);
             })
             ->when(request()->dataHora != '', function ($query) {
-                $datas = explode(' - ',request()->dataHora);
+                $datas = explode(' - ', request()->dataHora);
                 $dtInicial = Carbon::createFromFormat('d/m/Y', $datas[0])->startOfDay();
                 $dtFinal = Carbon::createFromFormat('d/m/Y', $datas[1])->endOfDay();
                 $query->whereBetween('dt_previsao', [$dtInicial, $dtFinal]);
@@ -167,13 +167,7 @@ class PedidoController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(PedidoRequest $request, $id)
     {
         try {
@@ -239,8 +233,17 @@ class PedidoController extends Controller
             }
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido editado com sucesso!']]);
         } catch (\Exception $e) {
-            dd($e);
             return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
+        }
+    }
+
+    public function removeProdutoPedido(int $pedido_produto_id)
+    {
+        try {
+            PedidoProduto::findOrFail($pedido_produto_id)->delete();
+            return response()->json(['success' => true, 'data' => null, 'message' => 'Item excluído com sucesso!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }
     }
 

@@ -58,14 +58,12 @@
                 let result = await response.json();
                 if (response.status == 400) {
                     Toast.fire({
-                        heightAuto: true,
                         icon: 'error',
                         title: result.message
                     });
                 } else {
                     if (result.data.quantidadeAtual == 0) {
                         Toast.fire({
-                            heightAuto: true,
                             icon: 'error',
                             title: 'Lote sem produtos! Escolha outro lote.'
                         });
@@ -93,7 +91,6 @@
             let valorRetirada = parseInt(this.value)
             if (valorRetirada > valorMaximo) {
                 Toast.fire({
-                    heightAuto: true,
                     icon: 'error',
                     title: 'A quantidade a ser retirada não pode ser maior que a quantidade em estoque atual!'
                 });

@@ -265,7 +265,6 @@
       $("input[type='checkbox'].pedidoCheck:checked").each((index, element) => {
         pedidosDelete.push(element.value)
       })
-      console.log(pedidosDelete)
       fetch("pedidosDelete", {
         method: "POST",
         headers: {
@@ -283,7 +282,6 @@
           console.log(res)
           if (!res.data.success && res.data == '') {
             Toast.fire({
-              heightAuto: true,
               icon: 'success',
               title: res.message
             });

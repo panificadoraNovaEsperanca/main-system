@@ -146,7 +146,8 @@
                           id="valorCalculado-{{ $loop->index }}"
                           value="{{ $produtosEscolhidos->quantidade * $produtosEscolhidos->preco }}">
                       </td>
-                      <td><button class="btn btn-danger killme" type="button">Excluir</button></td>
+                      <td><button class="btn btn-danger killme" data-id="{{ $produtosEscolhidos->id }}"
+                          type="button">Excluir</button></td>
 
                     </tr>
                   @endforeach
@@ -211,6 +212,12 @@
 
 @push('scripts')
   <script type="module">
+    $(document).ready(function() {
+      $(`.produtos`).select2({
+        width: '100%'
+      })
+
+    });
     let tipo_cliente = '{{ isset($pedido) ? $pedido->cliente->tipo_cliente : '' }}';
     $('#cliente').on('change', function() {
       let cliente = this.value.split('-')
@@ -218,7 +225,37 @@
       tipo_cliente = cliente[1];
     })
     $(document).on('click', '.killme', function() {
-      this.parentNode.parentNode.remove()
+      const id = this.dataset.id;
+      if (id == 0) {
+        this.parentNode.parentNode.remove()
+      } else if (id != undefined && this.dataset.id != null && this.dataset.id != '') {
+        fetch(`/removeProdutoPedido/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-CSRF-Token": $('meta[name="csrf-token"]').attr('content')
+          },
+        }).then((response) => {
+          response.json().then((res) => {
+            if (res.success) {
+              Toast.fire({
+                icon: 'success',
+                title: res.message
+              });
+            }
+            this.parentNode.parentNode.remove()
+
+          });
+
+        }).catch((error) => {
+          console.log(error)
+          Toast.fire({
+            icon: 'success',
+            title: 'Erro ao excluir item!'
+          });
+        });
+      }
     })
     $('#repete').on('change', function() {
       if ($(this).is(':checked')) {
@@ -232,10 +269,27 @@
       }
     })
 
-    $(document).on('change', '.produtos', function() {
+    $(document).on('change', '.produtos', function(e) {
       let produto = JSON.parse($('#produtosCatalogo').val()).find((element) => element.id == this.value);
-      let id = this.dataset.id;
-      $(`#precoProduto-${id}`).val(produto.precos[tipo_cliente])
+      if (produto) {
+        let id = this.dataset.id;
+        $(`#precoProduto-${id}`).val(produto.precos[tipo_cliente])
+      }
+    })
+
+
+    $(document).on('select2:selecting', '.produtos', function(e) {
+      var data = e.params.args.data;
+      let idSelected = data.id
+      $(`.produtos`).each((index, element) => {
+        if (idSelected == element.value) {
+          Toast.fire({
+            icon: 'error',
+            title: 'Produto já selecionado!'
+          });
+          $(this).val('').trigger('change')
+        }
+      })
     })
 
     $(document).on('change', '.quantidadeProduto', function() {
@@ -282,7 +336,7 @@
         let produtos = JSON.parse($('#produtosCatalogo').val());
         let id = $('#produtos tbody tr').length;
         let selectProdutos = `<select class="custom-select produtos " id="select2-${id}" data-id="${id}" name="produto[]" >
-                <option hidden>Selecione uma opção</option>`;
+                <option value="0" hidden>Selecione uma opção</option>`;
         for (let produto of produtos) {
           if (produtos.length == 1) {
             selectProdutos +=
@@ -299,7 +353,7 @@
                             <td><input  type="number" step="0.1" ${precoLiberado ? '':'disabled'} class="form-control precoProduto" id="precoProduto-${id}" data-id="${id}" name="precoProduto[]"></td>
                             <td><textarea  rows="1"  type="text" class="observacao form-control " data-id="${id}" name="observacao[]"></textarea></td>
                             <td><input  type="number" step="0.1" disabled class="form-control" id="valorCalculado-${id}" value="0"></td>
-                            <td><button class="btn btn-danger killme" type="button" >Excluir</button></td>
+                            <td><button class="btn btn-danger killme" data-id="0" type="button" >Excluir</button></td>
                     </tr>
                     `
         $('#produtos tbody').append(tr)
@@ -313,7 +367,6 @@
 
       } else {
         Toast.fire({
-          heightAuto: true,
           icon: 'error',
           title: 'Escolha o cliente!'
         });

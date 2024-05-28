@@ -175,7 +175,6 @@
       for (let item in messages) {
         for (let message of messages[item]) {
           Toast.fire({
-            heightAuto: false,
             icon: `${item}`,
             title: `${message}`
           });
