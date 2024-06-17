@@ -35,7 +35,7 @@ class ClienteController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Req uest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(ClienteRequest $request)
@@ -111,7 +111,7 @@ class ClienteController extends Controller
     }
 
     /**
-     * 
+     *
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -169,7 +169,7 @@ class ClienteController extends Controller
                     p.nome as nome,
                     pp.preco * pp.quantidade as preco_total,
                     pp.quantidade as quantidade'), 'pro')
-                    ->selectRaw('pro.nome as nome, 
+                    ->selectRaw('pro.nome as nome,
                     sum(pro.preco_total	) as preco_total,
                     sum(pro.quantidade) as quantidade_total')
                     ->groupBy('nome')
