@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return redirect('/home');
+
 });
 
 Auth::routes();
