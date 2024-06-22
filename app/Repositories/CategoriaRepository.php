@@ -25,10 +25,10 @@ class CategoriaRepository implements CategoriaRepositoryInterface
     }
     public function store(CategoriaRequest $request)
     {
+
         Categoria::create([
             'nome' => $request->nome,
             'descricao' => $request->descricao,
-            'url_capa' => $request->imageLink
         ]);
     }
 
@@ -43,7 +43,6 @@ class CategoriaRepository implements CategoriaRepositoryInterface
         $categoria->update([
             'nome' => $request->nome,
             'descricao' => $request->descricao,
-            'url_capa' => $request->imageLink
         ]);
     }
 

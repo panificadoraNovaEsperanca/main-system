@@ -1,5 +1,7 @@
 @extends('layouts.app')
 @section('content')
+@hasGroup('admnistrador')
+
     <div class="row">
         <div class="col-lg-3 col-6">
 
@@ -117,6 +119,7 @@
             });
         });
     </script>
+        @endhasGroup
 
     <!-- /.content -->
 @endsection

@@ -41,8 +41,8 @@ class ProdutoController extends Controller
     public function create(): View|RedirectResponse
     {
 
-
-        return view('produto.form');
+        $categorias = Categoria::all();
+        return view('produto.form',compact('categorias'));
     }
 
     public function store(ProdutoRequest $request): RedirectResponse
@@ -53,6 +53,7 @@ class ProdutoController extends Controller
             Produto::create([
                 'nome' => $request->nome,
                 'unidade' => $request->unidade,
+                'categoria_id' => $request->categoria_id,
                 'precos' => [
                     'a' => $request->precoA,
                     'b' => $request->precoB,
@@ -89,8 +90,9 @@ class ProdutoController extends Controller
         try {
 
             $produto = Produto::findOrFail($id);
+            $categorias = Categoria::all();
 
-            return view('produto.form', compact('produto',));
+            return view('produto.form', compact('produto','categorias'));
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
         }
@@ -102,6 +104,8 @@ class ProdutoController extends Controller
             Produto::findOrFail($id)->update([
                 'nome' => $request->nome,
                 'unidade' => $request->unidade,
+                'categoria_id' => $request->categoria_id,
+
                 'precos' => [
                     'a' => str_replace(',', '.', $request->precoA),
                     'b' => str_replace(',', '.', $request->precoB),

@@ -27,9 +27,7 @@ class CategoriaRequest extends FormRequest
             'nome' => 'required',
             'descricao' => 'required'
         ];
-        if ($this->_method !== 'PUT') {
-            $rules['url_capa'] = 'required|file';
-        }
+   
         return $rules;
     }
 
@@ -45,9 +43,6 @@ class CategoriaRequest extends FormRequest
             'descricao.required' => 'O campo descrição é obrigatório'
         ];
 
-        if ($this->_method !== 'PUT') {
-            $messages['url_capa.required'] = 'O campo foto da capa é obrigatório';
-        }
         return $messages;
     }
 }

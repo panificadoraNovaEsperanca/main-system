@@ -67,6 +67,8 @@ class CategoriaController extends Controller
             CategoriaService::update($request, $categoria_id, $this->categoriaRepository);
             return redirect(route('categoria.index'))->with('messages', ['success' => ['Categoria atualizada com sucesso!']]);
         } catch (\Exception $e) {
+            dd($e);
+
             return back()->with('messages', ['error' => ['Não foi possível atualizar a categoria!']])->withInput($request->all());;
         }
     }

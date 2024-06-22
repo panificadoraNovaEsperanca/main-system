@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\PermissaoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
@@ -71,7 +73,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/atualizaPedido/{pedido_id}', [PedidoController::class, 'atualizaPedido'])->name('pedido.troca');
     Route::get('/getPedidosByYear', [HomeController::class, 'getPedidosByYear']);
 
-    Route::resource('categoria', CategoriaController::class);
+    Route::resource('categoria', CategoriaController::class)->middleware('permission:admin');
+    Route::resource('grupo', GrupoController::class);
+    Route::resource('permissao', PermissaoController::class);
+    Route::resource('user', UserController::class);
     Route::resource('fornecedor', FornecedorController::class);
     Route::resource('marca', MarcaController::class);
     Route::resource('produto', ProdutoController::class);
