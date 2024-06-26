@@ -14,7 +14,7 @@ services:
             interval: 5s
             timeout: 5s
             retries: 5
-    app_homolog:
+    app:
         build: .
         image: panificadoranovaesperanca/system
         container_name: padaria_homolog
