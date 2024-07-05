@@ -68,13 +68,41 @@
             </a>
           </li>
         @endhasGroup
-
+        <li class="nav-item">
+          <a href="{{ route('producao.index') }}" class="nav-link">
+            <i class="nav-icon fa-solid fa-truck-fast"></i>
+            <p>
+              Cadastro de Produção
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ route('producaoBaixa.index') }}" class="nav-link">
+            <i class="nav-icon fa-solid fa-truck-fast"></i>
+            <p>
+              Baixa de Produção
+            </p>
+          </a>
+        </li>
+        
         @hasGroup('admnistrador')
           <li class="nav-item">
             <a href="{{ route('pedido.atualiza') }}" class="nav-link">
               <i class="nav-icon fa-solid fa-magnifying-glass"></i>
               <p>
                 Baixa de Pedidos
+              </p>
+            </a>
+          </li>
+        @endhasGroup
+
+             
+        @hasGroup('admnistrador|motorista')
+          <li class="nav-item">
+            <a href="{{ route('motorista.entrega.index') }}" class="nav-link">
+              <i class="nav-icon fa-solid fa-magnifying-glass"></i>
+              <p>
+                Entrega de Pedidos
               </p>
             </a>
           </li>

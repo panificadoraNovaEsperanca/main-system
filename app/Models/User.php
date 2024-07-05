@@ -66,7 +66,7 @@ class User extends Authenticatable
     public function obtemTodosGrupos(): string
     {
         return Cache::rememberForever('grupo_usuario_' . $this->id, function () {
-            return $this->grupoPermissao->slug;
+            return $this->grupoPermissao->slug ?? 'root';
         });
     }
 

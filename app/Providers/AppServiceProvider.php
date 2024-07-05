@@ -36,7 +36,10 @@ class AppServiceProvider extends ServiceProvider
             $grupos = explode('|', $groups);
             $bool   = false;
             $user = Auth::user();
-            if($user->obtemTodosGrupos() == 'administrador' || $user->obtemTodosGrupos() == 'root'){
+            if($user->grupoPermissao == null ){
+                return true;
+            }
+            if($user->grupoPermissao == null && $user->obtemTodosGrupos() == 'administrador' || $user->obtemTodosGrupos() == 'root'){
                 return true;
             }
             foreach ($grupos as $grupo) {

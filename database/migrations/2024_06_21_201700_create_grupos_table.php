@@ -43,7 +43,15 @@ return new class extends Migration {
             'nome' => 'Administrador', 
             'slug' => Str::slug('Administrador')
         ]);
+        $motorista = Grupo::create([
+            'nome' => 'Motorista', 
+            'slug' => Str::slug('motorista')
+        ]);
 
+        $motorista = Grupo::create([
+            'nome' => 'Produção', 
+            'slug' => Str::slug('producao')
+        ]);
         $data =
         [
             'name' => 'Marcelo',

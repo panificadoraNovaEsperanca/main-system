@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('actions')
-@section('title', 'Grupos de permissão')
+@section('title', 'Usuários')
 
     <a href="{{ route('user.create') }}" class="btn btn-primary">
         Cadastrar usuario

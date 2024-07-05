@@ -11,7 +11,7 @@ use App\Repositories\ProdutoRepository;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
@@ -24,7 +24,20 @@ class HomeController extends Controller
 
     public function index(): View|RedirectResponse
     {
-
+        $user = Auth::user();
+        if($user->grupoPermissao != null){
+            $user_group = $user->grupoPermissao->slug ;
+        
+    
+            if($user_group == 'motorista'){
+                
+                return redirect('/motorista-entrega');
+        
+            }else{
+                return redirect('/home');
+        
+            }
+        }
         try {
             $inicio = Carbon::now()->startOfDay();
             $fim = Carbon::now()->endOfDay();

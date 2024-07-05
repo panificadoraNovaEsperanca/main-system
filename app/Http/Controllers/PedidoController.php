@@ -10,6 +10,7 @@ use App\Models\Produto;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PedidoController extends Controller
 {
@@ -136,9 +137,8 @@ class PedidoController extends Controller
             DB::commit();
             return redirect(route('pedido.index'))->with('messages', ['success' => ['Pedido cadastrado com sucesso!']]);
         } catch (\Exception $e) {
-            dd($e);
             DB::rollBack();
-            return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());;
+            return back()->with('messages', ['error' => ['Não foi possível cadastrar o pedido!']])->withInput($request->all());
         }
     }
 
@@ -266,6 +266,15 @@ class PedidoController extends Controller
 
     public function baixaPedido()
     {
+        $user = Auth::user();
+            
+        $user_group = $user->grupoPermissao != null ? $user->grupoPermissao->slug : '';
+
+        if($user_group == 'motorista'){
+            
+            return redirect('/motorista-entrega')->with('messages', ['success' => ['Pedidos atualizados com sucesso!']]);
+        }
+        
         if (request()->codigo != '') {
             $pedidos =  Pedido::with(['motorista', 'cliente'])
                 ->where('id', request()->codigo)
@@ -333,7 +342,18 @@ class PedidoController extends Controller
             foreach ($request->pedido as $pedido_id) {
                 Pedido::findOrFail($pedido_id)->update(['status' => $request->status]);
             }
-            return redirect(route('pedido.atualiza'))->with('messages', ['success' => ['Pedidos atualizados com sucesso!']]);
+            $user = Auth::user();
+            
+            $user_group = $user->grupoPermissao != null ? $user->grupoPermissao->slug : '';
+
+            if($user_group == 'motorista'){
+                
+                return redirect('/motorista-entrega')->with('messages', ['success' => ['Pedidos atualizados com sucesso!']]);
+            }else{
+                return redirect(route('pedido.atualiza'))->with('messages', ['success' => ['Pedidos atualizados com sucesso!']]);
+                
+        
+            }
         } catch (\Exception $e) {
             return redirect(route('pedido.atualiza'))->with('messages', ['success' => ['Não foi possível atualizar os pedidos']]);
         }

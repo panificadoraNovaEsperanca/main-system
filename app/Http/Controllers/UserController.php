@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grupo;
+use App\Models\Motorista;
+use App\Models\MotoristaUser;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     public function index()
     {
         $users = User::whereNot('id',1)->paginate();
+        
         return view('users.index', compact('users'));
     }
 
@@ -25,7 +29,8 @@ class UserController extends Controller
     public function create()
     {
         $grupos = Grupo::whereNot('id',1)->get();
-        return view('users.form', compact('grupos'));
+        $motoristas = Motorista::all();
+        return view('users.form', compact('grupos','motoristas'));
 
     }
 
@@ -39,6 +44,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         try {
+            DB::beginTransaction();
            $user =  User::create([
                 'name' => $request->nome,
                 'email' => $request->email,
@@ -46,8 +52,20 @@ class UserController extends Controller
                 'password' => Hash::make($request->senha),
                 'grupo_id' => $request->grupo
             ]);
+
+            if($request->motorista != null){
+                foreach($request->motorista as $motorista_id){
+                    MotoristaUser::create(
+                        ['user_id' => $user->id,
+                        'motorista_id' => $motorista_id
+                        ]
+                    );
+                }
+            }
+            DB::commit();
             return redirect(route('user.index'))->with('messages', ['success' => ['Usuário criada com sucesso!']]);
         } catch (Exception $e) {
+            DB::rollback();
             return back()->with('messages', ['error' => ['Não foi possível criar o usuário!']])->withInput($request->all());
             ;
         }

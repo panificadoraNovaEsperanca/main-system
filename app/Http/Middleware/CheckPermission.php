@@ -16,7 +16,7 @@ class CheckPermission
         $bool   = false;
         $user = Auth::user();
         if($user->obtemTodosGrupos() == 'administrador' || $user->obtemTodosGrupos() == 'root'){
-            return true;
+            return $next($request);
         }
         if($user != null){
             foreach ($grupos as $grupo) {
