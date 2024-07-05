@@ -27,6 +27,7 @@ services:
     app:
         build: .
         image: panificadoranovaesperanca/system
+        image: panificadoranovaesperanca/system
         container_name: padaria
         env_file:
             - ./.env
@@ -42,11 +43,7 @@ services:
             - ./stubs:/var/www/html/stubs
             - ./tests:/var/www/html/tests
         ports:
-<<<<<<< HEAD
           - 80:80
-=======
-            - 80:80
->>>>>>> f70ee62 (ksda)
         depends_on:
             db:
                 condition: service_healthy
