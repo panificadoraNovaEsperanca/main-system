@@ -4,13 +4,13 @@ services:
         image: postgis/postgis:latest
         container_name: db
         environment:
-            POSTGRES_DATABASE: refactorian
-            POSTGRES_USER: refactorian
-            POSTGRES_PASSWORD: refactorian
+            POSTGRES_DATABASE: panificadora
+            POSTGRES_USER: panificadora
+            POSTGRES_PASSWORD: Panificadora@2024
         ports:
-            - "5433:5432"
+            - "5432:5432"
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -d refactorian -U refactorian"]
+            test: ["CMD-SHELL", "pg_isready -d panificadora -U panificadora"]
             interval: 5s
             timeout: 5s
             retries: 5
