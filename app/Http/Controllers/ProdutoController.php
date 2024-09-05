@@ -20,6 +20,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class ProdutoController extends Controller
 {
@@ -94,7 +96,8 @@ class ProdutoController extends Controller
 
             return view('produto.form', compact('produto','categorias'));
         } catch (\Exception $e) {
-            return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
+		Log::info(json_encode($e,true));
+		return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
         }
     }
 
