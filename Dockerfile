@@ -42,4 +42,5 @@ WORKDIR /var/www/html
 
 COPY --from=npm /app .
 EXPOSE 80
+EXPOSE 443
 CMD ["/bin/bash", "start.sh"]

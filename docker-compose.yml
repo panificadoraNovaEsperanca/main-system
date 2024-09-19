@@ -33,6 +33,7 @@ services:
             - ./tests:/var/www/html/tests
         ports:
           - 80:80
+          - 443:443
         depends_on:
             db:
                 condition: service_healthy
