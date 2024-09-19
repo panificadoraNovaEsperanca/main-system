@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+ <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ config('app.name', 'Padaria Nova Esperança') }}</title>
@@ -18,7 +18,6 @@
   <script src="{{ asset('js/vendor/bootstrap-datepicker.min.js') }}"></script>
   <script src="{{ asset('js/vendor/bootstrap-datepicker.br.min.js') }}"></script>
   <script src="{{ asset('js/vendor/jquery.datetimepicker.full.min.js') }}"></script>
-
   <link href="{{ asset('css/vendor/select2.min.css') }}" rel="stylesheet">
   <link href="{{ asset('css/vendor/jquery.datetimepicker.css') }}" rel="stylesheet">
   <link href="{{ asset('css/vendor/daterangepicker.css') }}" rel="stylesheet">
