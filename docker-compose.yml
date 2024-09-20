@@ -35,7 +35,7 @@ services:
             - ./stubs:/var/www/html/stubs
             - ./tests:/var/www/html/tests
             # - cert-volume:/etc/letsencrypt
-            - ./public:/var/www/html
+            # - ./public:/var/www/html
         ports:
           - 8080:8080
           - 443:443
