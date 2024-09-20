@@ -41,5 +41,5 @@ RUN rm -rf /build
 WORKDIR /var/www/html
 
 COPY --from=npm /app .
-EXPOSE 80
+EXPOSE 8080
 CMD ["/bin/bash", "start.sh"]
