@@ -36,3 +36,4 @@ services:
         depends_on:
             db_homolog:
                 condition: service_healthy
+
