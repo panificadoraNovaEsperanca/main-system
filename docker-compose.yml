@@ -20,9 +20,9 @@ services:
         container_name: padaria_homolog
         env_file:
             - ./.env
-        environment:
-            - VIRTUAL_HOST=admin.paesnovaesperanca.com.br
-            - HTTPS=on
+        # environment:
+        #     - VIRTUAL_HOST=admin.paesnovaesperanca.com.br
+        #     - HTTPS=on
         volumes:
             - ./app:/var/www/html/app
             - ./bootstrap:/var/www/html/bootstrap
