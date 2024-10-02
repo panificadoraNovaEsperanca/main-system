@@ -41,17 +41,11 @@ Route::get('/', function () {
     if($user == null){
         return redirect('/login');
     }
-    $user_group = $user->grupoPermissao->slug;
+
+    
+    return redirect('/home');
     
 
-    if($user_group == 'motorista'){
-        
-        return redirect('/motorista-entrega');
-
-    }else{
-        return redirect('/home');
-
-    }
 
 });
 

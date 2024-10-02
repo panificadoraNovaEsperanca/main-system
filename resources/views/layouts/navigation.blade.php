@@ -57,7 +57,6 @@
         </li>
       @endhasGroup
 
-      @hasGroup('admnistrador')
         @hasGroup('admnistrador')
           <li class="nav-item">
             <a href="{{ route('motorista.index') }}" class="nav-link">
@@ -68,6 +67,8 @@
             </a>
           </li>
         @endhasGroup
+        @hasGroup('admnistrador')
+
         <li class="nav-item">
           <a href="{{ route('producao.index') }}" class="nav-link">
             <i class="nav-icon fa-solid fa-truck-fast"></i>
@@ -76,6 +77,9 @@
             </p>
           </a>
         </li>
+        @endhasGroup
+        @hasGroup('admnistrador|producao')
+
         <li class="nav-item">
           <a href="{{ route('producaoBaixa.index') }}" class="nav-link">
             <i class="nav-icon fa-solid fa-truck-fast"></i>
@@ -84,7 +88,8 @@
             </p>
           </a>
         </li>
-        
+        @endhasGroup
+
         @hasGroup('admnistrador')
           <li class="nav-item">
             <a href="{{ route('pedido.atualiza') }}" class="nav-link">
@@ -196,7 +201,6 @@
           </li>
         @endhasGroup
 
-      @endhasGroup
 
 
 

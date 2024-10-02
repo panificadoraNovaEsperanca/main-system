@@ -30,6 +30,7 @@
 
         </select>
         </div>
+    
       </div>
 
       <div class="col-md-3 col-sm-12">
@@ -40,8 +41,8 @@
                 <i class="far fa-calendar-alt"></i>
               </span>
             </div>
-            <input autocomplete="off" value="{{ $_GET['dataHora'] ?? '' }}" placeholder="Data de entrega" type="text"
-              class="form-control trigger float-right" name="dataHora" id="dataHora">
+            <input autocomplete="off" value="{{ $_GET['data'] ?? '' }}" placeholder="Data de entrega" type="text"
+              class="form-control trigger float-right" name="data" id="data">
           </div>
 
         </div>
@@ -84,6 +85,8 @@
                               <th>Quantidade</th>
                               <th>Status</th>
                               <th>Data de Início</th>
+                              <th>Turno</th>
+
                               <th class="d-flex justify-content-center">Ações</th>
                           </tr>
                       </thead>
@@ -93,11 +96,17 @@
                               <tr @if ($producao->deleted_at != null) style="background-color:#ff8e8e" @endif>
   
                                   <td>{{ $producao->id }}</td>
-                                  <td>{{ $producao->produto->nome }} - {{ $categoria }}</td>
+                                  <td>{{ $producao->produto->nome }}</td>
                                   <td>{{ $producao->quantidade }}</td>
                                   <td>{{ $producao->status ? 'Concluído' : 'Pendente' }}</td>
                                   <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
-                                  <td> <button data-id="{{$producao->id}}" type="button" class="btn btn-success confirmarProducao">OK<i class=" fa fa-2x fa-check"></i></button>
+                                  <td>{{ $producao->turno }}</td>
+
+                                  <td>
+                                    @if(!$producao->status)
+                                      <button data-id="{{$producao->id}}" type="button" class="btn btn-success confirmarProducao">OK<i class=" fa fa-2x fa-check"></i>
+                                    @endif
+                                  </button>
                                   </td>
                               </tr>
                           @endforeach
@@ -122,7 +131,8 @@
 
 @push('scripts')
     <script>
-          $('#dataHora').datetimepicker({
+      
+          $('#data').datetimepicker({
       i18n: {
         de: {
           months: [

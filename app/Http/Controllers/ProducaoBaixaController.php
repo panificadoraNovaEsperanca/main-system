@@ -20,16 +20,28 @@ class ProducaoBaixaController extends Controller
     public function index()
     {
         
-        dump($_GET);
-        $producaos = Producao::with(['produto','produto.categoria'])->where('status',false)
-            ->paginate(request()->paginacao ?? 30);
-
+        $producaos = Producao::with(['produto','produto.categoria'])
+        ->when(request()->turno != null,function($query){
+            $query->where('turno','=',request()->turno);
+        })
+        ->when(request()->data != null,function($query){
+            
+            $inicio = Carbon::createFromFormat('d/m/Y',request()->data)->startOfDay();
+            $fim = Carbon::createFromFormat('d/m/Y',request()->data)->endOfDay();
+            $query->whereBetween('dt_inicio',[$inicio,$fim]);
+        })
+        ->paginate(request()->paginacao ?? 30);
         $producaoCategoria = [];
 
         foreach($producaos as $producao){
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
             
         }
+        if(count($_GET) == 0){
+            $_GET['turno'] = 'MANHÃ';
+            $_GET['data'] = Carbon::now()->format('d/m/Y');
+        }
+        
         return view('producaoBaixa.index', compact('producaoCategoria'));
     }
 

@@ -10,28 +10,46 @@
 
   <form class="mr-2 d-flex justify-content-between" id="formSearch" action="{{ route('motorista.index') }}" method="GET">
 
-    <div class="d-flex">
-      <div class="input-group  ">
-        <select id="paginacao" name="paginacao" class="custom-select mr-2" style="min-width: 80px"
-          id="inputGroupSelect01">
-          <option value="10" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '10' ? 'selected' : '' }}>
-            10
-          </option>
-          <option value="20" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '20' ? 'selected' : '' }}>
-            20
-          </option>
-          <option value="30" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '30' ? 'selected' : '' }}>
-            30
-          </option>
-
-
-        </select>
-        {{ $pedidos->appends([
-            'paginacao' => $_GET['paginacao'] ?? 10,
-            'search' => $_GET['search'] ?? '',
-        ]) }}
+    <div class="row">
+      <div class="col-3">
+        <div class="input-group  ">
+          <label for="exampleInputEmail1" class="form-label">Paginação</label>
+  
+          <select id="paginacao" name="paginacao" class="custom-select mr-2" style="min-width: 80px"
+            id="inputGroupSelect01">
+            <option value="10" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '10' ? 'selected' : '' }}>
+              10
+            </option>
+            <option value="20" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '20' ? 'selected' : '' }}>
+              20
+            </option>
+            <option value="30" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '30' ? 'selected' : '' }}>
+              30
+            </option>
+  
+  
+          </select>
+        
+          {{ $pedidos->appends([
+              'paginacao' => $_GET['paginacao'] ?? 10,
+              'search' => $_GET['search'] ?? '',
+          ]) }}
+  
+        </div>
 
       </div>
+      <div class="col-8">
+        <label for="exampleInputEmail1" class="form-label">Motoristas</label>
+        <select class="custom-select select2" multiple="multiple"  name="motoristas[]">
+          <option selected disabled>Selecione uma opção</option>
+          @foreach ($motoristas as $motorista)
+            <option value="{{ $motorista->id }}">{{ $motorista->nome }}</option>
+          @endforeach
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      
     </div>
   </form>
   @if (!$pedidos->isEmpty())
@@ -107,6 +125,9 @@
 
 @push('scripts')
   <script>
+    $('.select2').select2({
+            width: '100%'
+        })
     document.getElementById('search').addEventListener('change', function() {
       document.getElementById('formSearch').submit()
     })

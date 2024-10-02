@@ -180,9 +180,10 @@ class MotoristaController extends Controller
         $dtInicial = Carbon::now()->startOfDay();
         $dtFinal = Carbon::now()->endOfDay();
         $pedidos = Pedido::with(['cliente'])
-        ->whereHas('motorista', function ($queryMotora) {
-            $motoristasID = MotoristaUser::where('user_id','=',Auth::id())->pluck('motorista_id')->toArray();
-            $queryMotora->whereIn('id',$motoristasID);
+        ->when(request()->motoristas,function($query){
+            $query->whereHas('motorista', function ($queryMotora) {
+                $queryMotora->whereIn('id',request()->motoristas);
+            });
         })
         ->whereBetween('dt_previsao', [$dtInicial, $dtFinal])
         ->when(request()->cliente != '', function ($query) {
@@ -195,7 +196,7 @@ class MotoristaController extends Controller
             $query->where('status', request()->status);
         })
         ->paginate(request()->paginacao ?? 50);
-
-        return view('motorista.entrega',compact('pedidos'));
+        $motoristas = Motorista::select(['nome','id'])->get();
+        return view('motorista.entrega',compact('pedidos','motoristas'));
     }
 }

@@ -33,8 +33,8 @@ class HomeController extends Controller
                 
                 return redirect('/motorista-entrega');
         
-            }else{
-                return redirect('/home');
+            }else if($user_group == 'producao'){
+                return redirect('/producaoBaixa');
         
             }
         }
