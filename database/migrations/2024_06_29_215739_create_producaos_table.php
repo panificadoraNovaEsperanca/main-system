@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('producaos', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('quantidade');
+            $table->float('quantidade');
             $table->boolean('status')->default(false);
             $table->dateTime('dt_inicio');
             $table->unsignedBigInteger('produto_id');

@@ -91,6 +91,7 @@
                     <th>Produto</th>
                     <th>Quantidade</th>
                     <th>Data de Início</th>
+                    <th>Turno</th>
                 </tr>
             </thead>
             <tbody>
@@ -102,6 +103,8 @@
                             <td>{{ $producao->produto->nome }}</td>
                             <td>{{ $producao->quantidade }}</td>
                             <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
+                            <td>{{$producao->turno}}</td>
+
                         </tr>
                     @endforeach
                 @else
@@ -127,6 +130,8 @@
                     <th>Produto</th>
                     <th>Quantidade</th>
                     <th>Data de Início</th>
+                    <th>Turno</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -134,11 +139,12 @@
 
                     @foreach ($producaosConcluidas as $producao)
                         <tr @if ($producao->deleted_at != null) style="background-color:#ff8e8e" @endif>
-
+                            @dd($producao)
                             <td>{{ $producao->id }}</td>
                             <td>{{ $producao->produto->nome }}</td>
                             <td>{{ $producao->quantidade }}</td>
                             <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
+                            <td>{{$producao->turno}}</td>
                         </tr>
                     @endforeach
                 @else

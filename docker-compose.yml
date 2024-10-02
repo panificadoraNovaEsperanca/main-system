@@ -1,8 +1,8 @@
 version: "3"
 services:
-    db_homolog:  # Corrigido o nome do serviço
+    db:  # Corrigido o nome do serviço
         image: postgis/postgis:latest
-        container_name: db_homolog
+        container_name: db
         environment:
             POSTGRES_DATABASE: panificadora_nova_esperanca
             POSTGRES_USER: panificadora_nova_esperanca
@@ -38,9 +38,10 @@ services:
             # - ./public:/var/www/html
         ports:
           - 80:80
+          - 8080:8080
           - 443:443
         depends_on:
-            db_homolog:
+            db:
                 condition: service_healthy
 #     certbot:
 #         image: certbot/certbot

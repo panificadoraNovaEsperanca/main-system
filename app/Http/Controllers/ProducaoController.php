@@ -58,6 +58,7 @@ class ProducaoController extends Controller
                     'produto_id'=> $producao['produto_id'],
                     'quantidade' => (int) $producao['quantidade'],
                     'dt_inicio' => Carbon::createFromFormat('d/m/Y H:i',$producao['data_inicio']),
+                    'turno' => $producao['turno']
                 ]);
             }
             DB::commit();

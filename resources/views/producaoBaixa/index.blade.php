@@ -9,7 +9,7 @@
 @section('content')
 
 
-    {{-- <form class="mr-2 d-flex flex-column" id="formSearch" action="{{ route('pedido.index') }}" method="GET">
+    <form class="mr-2 d-flex flex-column" id="formSearch" action="{{ route('producaoBaixa.index') }}" method="GET">
     <div class="row">
       <div class="col-md-3 col-sm-12">
 
@@ -17,20 +17,21 @@
           <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
           </div>
-          <input autocomplete="off" value="{{ $_GET['motorista'] ?? '' }}" type="text" id="motorista" name="motorista"
-            class="form-control" placeholder=" Motorista" aria-label="" aria-describedby="basic-addon1">
-        </div>
-      </div>
-      <div class="col-md-3 col-sm-12">
+          <select value="{{ $_GET['turno'] ?? '' }}" name="turno" class="custom-select trigger mr-2" 
+            id="">
+            <option hidden value="">Selecione uma opção</option>
+            <option {{ $_GET['turno'] == 'MANHÃ' ? 'selected':'' }}  value="MANHÃ" >
+                MANHÃ
+            </option>
+            <option {{ $_GET['turno'] == 'TARDE' ? 'selected':'' }} value="TARDE">
+                TARDE
+            </option>
+            
 
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
-          </div>
-          <input autocomplete="off" value="{{ $_GET['cliente'] ?? '' }}" type="text" id="cliente" name="cliente"
-            class="form-control" placeholder="Cliente " aria-label="" aria-describedby="basic-addon1">
+        </select>
         </div>
       </div>
+
       <div class="col-md-3 col-sm-12">
         <div class="form-group">
           <div class="input-group">
@@ -40,75 +41,22 @@
               </span>
             </div>
             <input autocomplete="off" value="{{ $_GET['dataHora'] ?? '' }}" placeholder="Data de entrega" type="text"
-              class="form-control float-right" name="dataHora" id="dataHora">
+              class="form-control trigger float-right" name="dataHora" id="dataHora">
           </div>
 
         </div>
       </div>
 
-      <div class="col-md-2 col-sm-12">
-        <div class="form-group">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                <i class="fa fa-search"></i>
-              </span>
-            </div>
-            <input autocomplete="off" value="{{ $_GET['codigo'] ?? '' }}" placeholder="ID" type="text"
-              class="form-control float-right" name="codigo" id="codigo">
-          </div>
-
-        </div>
-      </div>
       <div class="col-md-2 col-sm-12 mb-3">
-        <a href="{{ route('pedido.index') }}" class="btn btn-primary w-100">Limpar busca</a>
+        <a href="{{ route('producaoBaixa.index') }}" class="btn btn-primary w-100">Limpar busca</a>
 
       </div>
     </div>
     <div class="col-md-1">
     </div>
-    <div class="row">
-      <div class="col-md-1 col-sm-12">
-
-        <select id="paginacao" name="paginacao" class="custom-select mr-2" style="min-width: 80px"
-          id="inputGroupSelect01">
-
-          <option value="10" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '10' ? 'selected' : '' }}>
-            30
-          </option>
-          <option value="50" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '50' ? 'selected' : '' }}>
-            50
-          </option>
-          <option value="100" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '100' ? 'selected' : '' }}>
-            100
-          </option>
 
 
-        </select>
-      </div>
-      <div class="col-md-6 col-sm-12">
-
-        {{ $producaos->appends([
-            'paginacao' => $_GET['paginacao'] ?? 10,
-            'motorista' => $_GET['motorista'] ?? '',
-            'cliente' => $_GET['cliente'] ?? '',
-            'dataHora' => $_GET['dataHora'] ?? '',
-            'status' => $_GET['status'] ?? '',
-        ]) }}
-      </div>
-    </div>
-
-
-    <div class="d-flex flex-row input-group row justify-content-end">
-      <div class="  ">
-
-        <div class="col-10">
-
-        </div>
-
-      </div>
-    </div>
-  </form> --}}
+  </form>
     <div class="table-responsive">
 
         @if ($producaoCategoria)
@@ -174,6 +122,37 @@
 
 @push('scripts')
     <script>
+          $('#dataHora').datetimepicker({
+      i18n: {
+        de: {
+          months: [
+            'Janeiro',
+            'Fevereiro',
+            'Março',
+            'Abril',
+            'Maio',
+            'Junho',
+            'Julho',
+            'Agosto',
+            'Setembro',
+            'Outubro',
+            'Novembro',
+            'Dezembro'
+          ],
+          dayOfWeek: [
+            'Dom',
+            'Seg',
+            'Ter',
+            'Qua',
+            'Qui',
+            'Sex',
+            'Sáb'
+          ]
+        }
+      },
+      format: 'd/m/Y',
+      lang: 'pt'
+    });
         $('.confirmarProducao').on('click', async function() {
           console.log(this.dataset.id)
             fetch("confirmarProducao", {
@@ -208,6 +187,18 @@
                 console.log(error)
             });
         })
+        $('.trigger').on('change',function(){
+          document.getElementById('formSearch').submit()
 
+        })
+        $('.dataHora').datetimepicker({
+            i18n: {
+                de: {
+
+                }
+            },
+            format: 'd/m/Y H:i',
+            lang: 'pt'
+        });
     </script>
 @endpush

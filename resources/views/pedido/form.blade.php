@@ -129,7 +129,7 @@
                         </select>
                       </td>
 
-                      <td><input type="number" class="quantidadeProduto form-control " data-id="{{ $loop->index }}"
+                      <td><input type="number" step="0.1" class="quantidadeProduto form-control " data-id="{{ $loop->index }}"
                           value="{{ $produtosEscolhidos->quantidade }}" name="quantidade[]"></td>
                       <td><input type="number" step="0.1"
                           {{ $pedido->cliente->tipo_cliente == 'h' ? '' : 'disabled' }} class="form-control"
@@ -349,7 +349,7 @@
         selectProdutos += "</select>"
         let tr = `<tr data-id="${id}">
                             <td>${selectProdutos}</td>
-                            <td><input  type="number" class="quantidadeProduto form-control " data-id="${id}" id="quantidade-${id}" name="quantidade[]"></td>
+                            <td><input  type="number" step="0.1" class="quantidadeProduto form-control " data-id="${id}" id="quantidade-${id}" name="quantidade[]"></td>
                             <td><input  type="number" step="0.1" ${precoLiberado ? '':'disabled'} class="form-control precoProduto" id="precoProduto-${id}" data-id="${id}" name="precoProduto[]"></td>
                             <td><textarea  rows="1"  type="text" class="observacao form-control " data-id="${id}" name="observacao[]"></textarea></td>
                             <td><input  type="number" step="0.1" disabled class="form-control" id="valorCalculado-${id}" value="0"></td>

@@ -20,6 +20,7 @@ class ProducaoBaixaController extends Controller
     public function index()
     {
         
+        dump($_GET);
         $producaos = Producao::with(['produto','produto.categoria'])->where('status',false)
             ->paginate(request()->paginacao ?? 30);
 

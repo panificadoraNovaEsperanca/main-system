@@ -188,7 +188,7 @@ class ProdutoController extends Controller
 
     public function relatorioProducaoIndex()
     {
-        $produtos = Produto::all();
+        $produtos = Categoria::all();
         return view('relatorios.producao', compact('produtos'));
     }
 
@@ -198,11 +198,12 @@ class ProdutoController extends Controller
             $datas = explode(' - ', $request->data);
             $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
-
+            
             $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
-                ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
-                    $query->whereHas('produtos', function ($query2) use ($request) {
-                        $query2->whereIn('produto_id', $request->produto);
+            ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
+                    $produtos = Produto::whereIn('categoria_id',$request->produto)->pluck('id')->toArray();
+                    $query->whereHas('produtos', function ($query2) use ($produtos) {
+                        $query2->whereIn('produto_id', $produtos);
                     });
                 })
                 ->with(['cliente', 'motorista', 'produtos'])
@@ -226,6 +227,7 @@ class ProdutoController extends Controller
             $today = Carbon::now()->format('d-m-y H:i');
             return $pdf->download("Relatório producao $today.pdf");
         } catch (Exception $e) {
+            dd($e);
             return back()->with('messages', ['error' => ['Não foi gerar o relatório! ']]);
         }
     }
