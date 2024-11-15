@@ -109,7 +109,7 @@
                     @endforeach
                 @else
                     <tr>
-                        <td class="text-center" colspan="4">Nenhuma produção pendente</td>
+                        <td class="text-center" colspan="5">Nenhuma produção pendente</td>
                     </tr>
                 @endif
             </tbody>
@@ -139,7 +139,6 @@
 
                     @foreach ($producaosConcluidas as $producao)
                         <tr @if ($producao->deleted_at != null) style="background-color:#ff8e8e" @endif>
-                            @dd($producao)
                             <td>{{ $producao->id }}</td>
                             <td>{{ $producao->produto->nome }}</td>
                             <td>{{ $producao->quantidade }}</td>

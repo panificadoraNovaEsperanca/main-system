@@ -9,6 +9,7 @@ use App\Models\Fornecedor;
 use App\Models\Marca;
 use App\Models\Pedido;
 use App\Models\PedidoProduto;
+use App\Models\Producao;
 use App\Models\Produto;
 use App\Repositories\ProdutoRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -199,28 +200,24 @@ class ProdutoController extends Controller
             $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
             
-            $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
+            $producaos = Producao::whereBetween('dt_inicio', [$inicio, $fim])
             ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
                     $produtos = Produto::whereIn('categoria_id',$request->produto)->pluck('id')->toArray();
-                    $query->whereHas('produtos', function ($query2) use ($produtos) {
-                        $query2->whereIn('produto_id', $produtos);
-                    });
+                    $query->whereIn('produto_id', $produtos);
+
                 })
-                ->with(['cliente', 'motorista', 'produtos'])
+                ->selectRaw('categorias.nome as categoria ,produtos.nome as nome, sum(producaos.quantidade) as quantidade, producaos.turno  as turno')
+                ->join('produtos', 'producaos.produto_id', '=', 'produtos.id')
+                ->join('categorias', 'produtos.categoria_id', '=', 'categorias.id') // Realiza o INNER JOIN
+
+                ->groupBy('producaos.produto_id','produtos.nome','producaos.turno','categorias.nome')
                 ->get();
-            if ($request->produto != null && count($request->produto)) {
-                $pedidos = $pedidos->map(function ($element) use ($request) {
-                    // dump($element->toArray());
-                    $element->produtos = $element->produtos->filter(function ($element) use ($request) {
-                        return in_array($element->produto_id, $request->produto);
-                    });
-                    return $element;
-                });
+            $producaoCategorias = [];
+            foreach($producaos as $producao) {
+                $producaoCategorias[$producao->categoria][] = $producao;
             }
-
-
             $pdf =  Pdf::loadView('relatorios.pdf.producao', [
-                'pedidos' => $pedidos,
+                'producao' => $producaoCategorias,
                 'inicio' => $inicio,
                 'fim' => $fim,
             ]);
