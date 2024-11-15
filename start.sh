@@ -4,10 +4,10 @@
 php artisan inicializar:sistema
 
 # Iniciar o PHP-FPM
-php-fpm
+# php-fpm
 
 # Iniciar o Nginx
-service nginx start
+# service nginx start
 
 # Manter o contêiner em execução
 tail -f /dev/null
