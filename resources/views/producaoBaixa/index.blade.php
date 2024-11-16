@@ -85,8 +85,6 @@
                               <th>Quantidade</th>
                               <th>Status</th>
                               <th>Data de Início</th>
-                              <th>Turno</th>
-
                               <th class="d-flex justify-content-center">Ações</th>
                           </tr>
                       </thead>
@@ -100,7 +98,6 @@
                                   <td>{{ $producao->quantidade }}</td>
                                   <td>{{ $producao->status ? 'Concluído' : 'Pendente' }}</td>
                                   <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
-                                  <td>{{ $producao->turno }}</td>
 
                                   <td>
                                     @if(!$producao->status)

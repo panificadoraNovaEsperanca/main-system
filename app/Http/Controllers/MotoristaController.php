@@ -177,6 +177,11 @@ class MotoristaController extends Controller
     }
     public function motoristaEntregaIndex(){
         
+        if(request()->motoristas == ''){
+            $pedidos = Pedido::where('id','=',0)->paginate(request()->paginacao ?? 50);
+            $motoristas = Motorista::select(['nome','id'])->get();
+            return view('motorista.entrega',compact('pedidos','motoristas'));
+        }
         $dtInicial = Carbon::now()->startOfDay();
         $dtFinal = Carbon::now()->endOfDay();
         $pedidos = Pedido::with(['cliente'])
@@ -186,12 +191,11 @@ class MotoristaController extends Controller
             });
         })
         ->whereBetween('dt_previsao', [$dtInicial, $dtFinal])
-        ->when(request()->cliente != '', function ($query) {
+        ->when(request()->search != '', function ($query) {
             $query->whereHas('cliente', function ($queryCliente) {
-                $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->cliente) . '%');
+                $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
             });
         })
-
         ->when(request()->status != '' && request()->status != '-1', function ($query) {
             $query->where('status', request()->status);
         })

@@ -13,7 +13,6 @@ class Producao extends Model
         'status',
         'dt_inicio',
         'produto_id',
-        'turno'
     ];
 
     public function produto(){

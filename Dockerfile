@@ -39,6 +39,8 @@ COPY . .
 # Instalar dependências do Laravel
 RUN composer install
 RUN npm install
+RUN npm run build
+
 # Etapa 2: Node.js (instalar dependências do frontend)
 FROM node:18-alpine AS npm
 WORKDIR /app

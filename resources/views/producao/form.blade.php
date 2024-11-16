@@ -33,7 +33,6 @@
                                         <th>Produto</th>
                                         <th>Quantidade</th>
                                         <th>Data de Início</th>
-                                        <th>Turno</th>
                                     </tr>
                                 </thead>
                                 <tbody style="background: #fafafa">
@@ -48,19 +47,7 @@
                                                     class="form-control float-right dataHora" id=""
                                                     name="producao[{{ $produto->id }}][data_inicio]">
                                             </td>
-                                            <td>
-                                                <select name="producao[{{ $produto->id }}][turno]" class="custom-select mr-2" 
-                                                id="">
-                                                <option selected value="MANHÃ" >
-                                                    MANHÃ
-                                                </option>
-                                                <option value="TARDE">
-                                                    TARDE
-                                                </option>
-                                                
-                            
-                                            </select>
-                                            </td>
+                                
                                         </tr>
                                     @endforeach
                                 </tbody>
