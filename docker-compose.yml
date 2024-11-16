@@ -24,7 +24,7 @@ services:
         container_name: nginx-server
         volumes:
             - ./nginx.conf:/etc/nginx/conf.d/default.conf  # Monta a configuração Nginx
-            - ./public:/var/www/html:ro  # Monta a pasta pública do Laravel
+            - ./public:/var/www/html/public:ro
         ports:
             - "8080:8080"  # Mapeia a porta 8080
         networks:
