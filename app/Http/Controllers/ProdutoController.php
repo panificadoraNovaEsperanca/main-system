@@ -38,8 +38,8 @@ class ProdutoController extends Controller
         $produtos = Produto::withTrashed()->when(request()->search != '', function ($query) {
             $query->where(DB::raw('lower(nome)'), 'like', '%' . request()->search . '%');
         })
-        ->orderBy('id','asc')
-        ->paginate(request()->paginacao ?? 10);
+            ->orderBy('id', 'asc')
+            ->paginate(request()->paginacao ?? 10);
         return view('produto.index', compact('produtos'));
     }
 
@@ -47,7 +47,7 @@ class ProdutoController extends Controller
     {
 
         $categorias = Categoria::all();
-        return view('produto.form',compact('categorias'));
+        return view('produto.form', compact('categorias'));
     }
 
     public function store(ProdutoRequest $request): RedirectResponse
@@ -97,10 +97,10 @@ class ProdutoController extends Controller
             $produto = Produto::findOrFail($id);
             $categorias = Categoria::all();
 
-            return view('produto.form', compact('produto','categorias'));
+            return view('produto.form', compact('produto', 'categorias'));
         } catch (\Exception $e) {
-		Log::info(json_encode($e,true));
-		return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
+            Log::info(json_encode($e, true));
+            return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
         }
     }
 
@@ -200,37 +200,36 @@ class ProdutoController extends Controller
         $datas = explode(' - ', $request->data);
         $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
         $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
-        
+
+        $produtosId = Produto::whereIn('categoria_id', $request->produto ?? [])->pluck('id')->toArray();
+
+        $pedidosProdutos = PedidoProduto::whereIn('produto_id', $produtosId)->pluck('pedido_id')->toArray();
+
         $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
-        ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
-                $produtos = Produto::whereIn('categoria_id',$request->produto)->pluck('id')->toArray();
-                $query->whereHas('produtos', function ($query2) use ($produtos) {
-                    $query2->whereIn('produto_id', $produtos);
-                });
-            })
+            ->whereIn('id', $pedidosProdutos)
             ->with(['cliente', 'motorista', 'produtos',])
             ->get();
 
 
-
-
-            $producaoCategorias = [];
-            foreach($pedidos as $pedido) {
-                $produtos = [];
-                foreach($pedido->produtos as $produto){
-                    if(!array_key_exists($produto->produto->nome,$produtos)){
-                        $produtos[$produto->produto->nome] = 0;
-                    }                    
-                    
-                    $producaoCategorias[$produto->produto->categoria->nome][$produto->produto->nome] = floatval( $produto->quantidade);
+        $producaoCategorias = [];
+        foreach ($pedidos as $pedido) {
+            $produtos = [];
+            $produtosFiltrados = $pedido->produtos->reject(function ($element) use ($produtosId) {
+                return !in_array($element['produto_id'], $produtosId);
+            });
+            foreach ($produtosFiltrados as $produto) {
+                if (!array_key_exists($produto->produto->nome, $produtos)) {
+                    $produtos[$produto->produto->nome] = 0;
                 }
+
+                $producaoCategorias[$produto->produto->categoria->nome][$produto->produto->nome] = floatval($produto->quantidade);
             }
-            $pdf =  Pdf::loadView('relatorios.pdf.producao', [
-                'producao' => $producaoCategorias,
-                'inicio' => $inicio,
-                'fim' => $fim,
-            ]);
-            return $pdf->download("Relatório producao $inicio.pdf");
-    
+        }
+        $pdf =  Pdf::loadView('relatorios.pdf.producao', [
+            'producao' => $producaoCategorias,
+            'inicio' => $inicio,
+            'fim' => $fim,
+        ]);
+        return $pdf->download("Relatório producao $inicio.pdf");
     }
 }
