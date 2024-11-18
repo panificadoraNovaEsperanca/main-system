@@ -140,7 +140,7 @@
                             <td>{{ $producao->produto->nome }}</td>
                             <td>{{ $producao->quantidade }}</td>
                             <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
-                            <td>{{$producao->user->name}}</td>
+                            <td>{{$producao->user->name ?? 'Não identificado'}}</td>
                         </tr>
                     @endforeach
                 @else
