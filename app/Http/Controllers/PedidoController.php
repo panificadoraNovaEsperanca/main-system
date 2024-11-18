@@ -59,7 +59,7 @@ class PedidoController extends Controller
      */
     public function create()
     {
-        $produtos = Produto::get();
+        $produtos = Produto::orderBy('id','ASC')->get();
         return view('pedido.form', compact('produtos'));
     }
 

@@ -197,37 +197,40 @@ class ProdutoController extends Controller
 
     public function processRelatorioProducao(Request $request)
     {
-        try {
-            $datas = explode(' - ', $request->data);
-            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
-            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
-            
-            $producaos = Producao::whereBetween('dt_inicio', [$inicio, $fim])
-            ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
-                    $produtos = Produto::whereIn('categoria_id',$request->produto)->pluck('id')->toArray();
-                    $query->whereIn('produto_id', $produtos);
+        $datas = explode(' - ', $request->data);
+        $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
+        $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
+        
+        $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
+        ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
+                $produtos = Produto::whereIn('categoria_id',$request->produto)->pluck('id')->toArray();
+                $query->whereHas('produtos', function ($query2) use ($produtos) {
+                    $query2->whereIn('produto_id', $produtos);
+                });
+            })
+            ->with(['cliente', 'motorista', 'produtos',])
+            ->get();
 
-                })
-                ->selectRaw('categorias.nome as categoria ,produtos.nome as nome, sum(producaos.quantidade) as quantidade, producaos.turno  as turno')
-                ->join('produtos', 'producaos.produto_id', '=', 'produtos.id')
-                ->join('categorias', 'produtos.categoria_id', '=', 'categorias.id') // Realiza o INNER JOIN
 
-                ->groupBy('producaos.produto_id','produtos.nome','producaos.turno','categorias.nome')
-                ->get();
+
+
             $producaoCategorias = [];
-            foreach($producaos as $producao) {
-                $producaoCategorias[$producao->categoria][] = $producao;
+            foreach($pedidos as $pedido) {
+                $produtos = [];
+                foreach($pedido->produtos as $produto){
+                    if(!array_key_exists($produto->produto->nome,$produtos)){
+                        $produtos[$produto->produto->nome] = 0;
+                    }                    
+                    
+                    $producaoCategorias[$produto->produto->categoria->nome][$produto->produto->nome] = floatval( $produto->quantidade);
+                }
             }
             $pdf =  Pdf::loadView('relatorios.pdf.producao', [
                 'producao' => $producaoCategorias,
                 'inicio' => $inicio,
                 'fim' => $fim,
             ]);
-            $today = Carbon::now()->format('d-m-y H:i');
-            return $pdf->download("Relatório producao $today.pdf");
-        } catch (Exception $e) {
-            dd($e);
-            return back()->with('messages', ['error' => ['Não foi gerar o relatório! ']]);
-        }
+            return $pdf->download("Relatório producao $inicio.pdf");
+    
     }
 }

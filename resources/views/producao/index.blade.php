@@ -128,7 +128,7 @@
                     <th>Produto</th>
                     <th>Quantidade</th>
                     <th>Data de Início</th>
-
+                    <th>Usuário Baixa</th>
                 </tr>
             </thead>
             <tbody>
@@ -140,11 +140,12 @@
                             <td>{{ $producao->produto->nome }}</td>
                             <td>{{ $producao->quantidade }}</td>
                             <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
+                            <td>{{$producao->user->name}}</td>
                         </tr>
                     @endforeach
                 @else
                     <tr>
-                        <td class="text-center" colspan="4">Nenhuma produção Concluída</td>
+                        <td class="text-center" colspan="5">Nenhuma produção Concluída</td>
                     </tr>
                 @endif
             </tbody>

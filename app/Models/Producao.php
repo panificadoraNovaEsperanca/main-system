@@ -13,9 +13,14 @@ class Producao extends Model
         'status',
         'dt_inicio',
         'produto_id',
+        'baixa_id'
     ];
 
     public function produto(){
         return $this->hasOne(Produto::class,'id','produto_id');
+    }
+
+    public function user(){
+        return $this->hasOne(User::class,'id','baixa_id');
     }
 }

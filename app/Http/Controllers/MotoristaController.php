@@ -176,10 +176,11 @@ class MotoristaController extends Controller
 
     }
     public function motoristaEntregaIndex(){
-        
+        $motoristas = Motorista::select(['nome','id'])->get();
+
         if(request()->motoristas == ''){
+            
             $pedidos = Pedido::where('id','=',0)->paginate(request()->paginacao ?? 50);
-            $motoristas = Motorista::select(['nome','id'])->get();
             return view('motorista.entrega',compact('pedidos','motoristas'));
         }
         $dtInicial = Carbon::now()->startOfDay();
@@ -200,7 +201,7 @@ class MotoristaController extends Controller
             $query->where('status', request()->status);
         })
         ->paginate(request()->paginacao ?? 50);
-        $motoristas = Motorista::select(['nome','id'])->get();
+        $motoristas = [];
         return view('motorista.entrega',compact('pedidos','motoristas'));
     }
 }

@@ -43,7 +43,6 @@
                 <tr>
                     <th>Produto</th>
                     <th>Quantidade</th>
-                    <th>TURNO</th>
 
                 </tr>
             </thead>
@@ -56,20 +55,19 @@
                     @php
                         $totalItens = [];
                     @endphp
-                    @foreach ($produtos as $produto)
+                    @foreach ($produtos as $produto => $quantidade)
                         <tr>
-                            <td>{{ $produto->nome }}</td>
+                            <td>{{ $produto }}</td>
                             <td>
-                                {{ $produto->quantidade }}
+                                {{ $quantidade }}
                                 @php
-                                    if (!isset($totalItens[$produto->nome])) {
-                                        $totalItens[$produto->nome] = 0;
+                                    if (!isset($totalItens[$produto])) {
+                                        $totalItens[$produto] = 0;
                                     }
-                                    $totalItens[$produto->nome] += $produto->quantidade;
+                                    $totalItens[$produto] += $quantidade;
                                 @endphp
 
                             </td>
-                            <td>{{ $produto->turno }}</td>
                         </tr>
                     @endforeach
                 @endif

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ProducaoController extends Controller
 {
@@ -23,7 +24,7 @@ class ProducaoController extends Controller
         $producaosPendentes = Producao::where('status',false)->with(['produto'])
             ->paginate(request()->paginacao ?? 30);
 
-            $producaosConcluidas = Producao::where('status',true)->with(['produto'])
+            $producaosConcluidas = Producao::where('status',true)->with(['produto','user'])
             ->paginate(request()->paginacao ?? 30);
         return view('producao.index', compact('producaosPendentes','producaosConcluidas'));
     }
@@ -58,6 +59,7 @@ class ProducaoController extends Controller
                     'produto_id'=> $producao['produto_id'],
                     'quantidade' => (int) $producao['quantidade'],
                     'dt_inicio' => Carbon::createFromFormat('d/m/Y H:i',$producao['data_inicio']),
+                    'baixa_id' => Auth::id()
                 ]);
             }
             DB::commit();
