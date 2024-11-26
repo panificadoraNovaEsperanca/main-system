@@ -25,7 +25,7 @@ class InitSystem extends Command
                 echo '----------------------- FINALIZADO --------------------';
 
             } else {
-                echo "O banco de dados não está vazio";
+                Artisan::call('migrate');
             }
         }catch(\Exception $e){
             echo $e->getMessage();

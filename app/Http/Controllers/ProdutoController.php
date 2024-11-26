@@ -9,6 +9,7 @@ use App\Models\Fornecedor;
 use App\Models\Marca;
 use App\Models\Pedido;
 use App\Models\PedidoProduto;
+use App\Models\Producao;
 use App\Models\Produto;
 use App\Repositories\ProdutoRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,6 +21,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class ProdutoController extends Controller
 {
@@ -34,15 +37,17 @@ class ProdutoController extends Controller
 
         $produtos = Produto::withTrashed()->when(request()->search != '', function ($query) {
             $query->where(DB::raw('lower(nome)'), 'like', '%' . request()->search . '%');
-        })->paginate(request()->paginacao ?? 10);
+        })
+        ->orderBy('id','asc')
+        ->paginate(request()->paginacao ?? 10);
         return view('produto.index', compact('produtos'));
     }
 
     public function create(): View|RedirectResponse
     {
 
-
-        return view('produto.form');
+        $categorias = Categoria::all();
+        return view('produto.form',compact('categorias'));
     }
 
     public function store(ProdutoRequest $request): RedirectResponse
@@ -53,6 +58,7 @@ class ProdutoController extends Controller
             Produto::create([
                 'nome' => $request->nome,
                 'unidade' => $request->unidade,
+                'categoria_id' => $request->categoria_id,
                 'precos' => [
                     'a' => $request->precoA,
                     'b' => $request->precoB,
@@ -89,10 +95,12 @@ class ProdutoController extends Controller
         try {
 
             $produto = Produto::findOrFail($id);
+            $categorias = Categoria::all();
 
-            return view('produto.form', compact('produto',));
+            return view('produto.form', compact('produto','categorias'));
         } catch (\Exception $e) {
-            return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
+		Log::info(json_encode($e,true));
+		return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
         }
     }
 
@@ -102,6 +110,8 @@ class ProdutoController extends Controller
             Produto::findOrFail($id)->update([
                 'nome' => $request->nome,
                 'unidade' => $request->unidade,
+                'categoria_id' => $request->categoria_id,
+
                 'precos' => [
                     'a' => str_replace(',', '.', $request->precoA),
                     'b' => str_replace(',', '.', $request->precoB),
@@ -181,7 +191,7 @@ class ProdutoController extends Controller
 
     public function relatorioProducaoIndex()
     {
-        $produtos = Produto::all();
+        $produtos = Categoria::all();
         return view('relatorios.producao', compact('produtos'));
     }
 
@@ -191,34 +201,32 @@ class ProdutoController extends Controller
             $datas = explode(' - ', $request->data);
             $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
+            
+            $producaos = Producao::whereBetween('dt_inicio', [$inicio, $fim])
+            ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
+                    $produtos = Produto::whereIn('categoria_id',$request->produto)->pluck('id')->toArray();
+                    $query->whereIn('produto_id', $produtos);
 
-            $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
-                ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
-                    $query->whereHas('produtos', function ($query2) use ($request) {
-                        $query2->whereIn('produto_id', $request->produto);
-                    });
                 })
-                ->with(['cliente', 'motorista', 'produtos'])
+                ->selectRaw('categorias.nome as categoria ,produtos.nome as nome, sum(producaos.quantidade) as quantidade, producaos.turno  as turno')
+                ->join('produtos', 'producaos.produto_id', '=', 'produtos.id')
+                ->join('categorias', 'produtos.categoria_id', '=', 'categorias.id') // Realiza o INNER JOIN
+
+                ->groupBy('producaos.produto_id','produtos.nome','producaos.turno','categorias.nome')
                 ->get();
-            if ($request->produto != null && count($request->produto)) {
-                $pedidos = $pedidos->map(function ($element) use ($request) {
-                    // dump($element->toArray());
-                    $element->produtos = $element->produtos->filter(function ($element) use ($request) {
-                        return in_array($element->produto_id, $request->produto);
-                    });
-                    return $element;
-                });
+            $producaoCategorias = [];
+            foreach($producaos as $producao) {
+                $producaoCategorias[$producao->categoria][] = $producao;
             }
-
-
             $pdf =  Pdf::loadView('relatorios.pdf.producao', [
-                'pedidos' => $pedidos,
+                'producao' => $producaoCategorias,
                 'inicio' => $inicio,
                 'fim' => $fim,
             ]);
             $today = Carbon::now()->format('d-m-y H:i');
             return $pdf->download("Relatório producao $today.pdf");
         } catch (Exception $e) {
+            dd($e);
             return back()->with('messages', ['error' => ['Não foi gerar o relatório! ']]);
         }
     }

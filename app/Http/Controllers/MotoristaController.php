@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MotoristaRequest;
 use App\Http\Requests\RelatorioMotorista;
 use App\Models\Motorista;
+use App\Models\MotoristaUser;
 use App\Models\Pedido;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class MotoristaController extends Controller
 {
@@ -168,5 +170,37 @@ class MotoristaController extends Controller
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível abrir os relatórios!' . $e->getMessage()]]);
         }
+    }
+
+    public function motoristaEntrega(Request $request){
+
+    }
+    public function motoristaEntregaIndex(){
+        
+        if(request()->motoristas == ''){
+            $pedidos = Pedido::where('id','=',0)->paginate(request()->paginacao ?? 50);
+            $motoristas = Motorista::select(['nome','id'])->get();
+            return view('motorista.entrega',compact('pedidos','motoristas'));
+        }
+        $dtInicial = Carbon::now()->startOfDay();
+        $dtFinal = Carbon::now()->endOfDay();
+        $pedidos = Pedido::with(['cliente'])
+        ->when(request()->motoristas,function($query){
+            $query->whereHas('motorista', function ($queryMotora) {
+                $queryMotora->whereIn('id',request()->motoristas);
+            });
+        })
+        ->whereBetween('dt_previsao', [$dtInicial, $dtFinal])
+        ->when(request()->search != '', function ($query) {
+            $query->whereHas('cliente', function ($queryCliente) {
+                $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
+            });
+        })
+        ->when(request()->status != '' && request()->status != '-1', function ($query) {
+            $query->where('status', request()->status);
+        })
+        ->paginate(request()->paginacao ?? 50);
+        $motoristas = Motorista::select(['nome','id'])->get();
+        return view('motorista.entrega',compact('pedidos','motoristas'));
     }
 }

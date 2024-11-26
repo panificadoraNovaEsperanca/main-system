@@ -11,7 +11,7 @@ class Categoria extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['nome','descricao','url_capa'];
+    protected $fillable = ['nome','descricao'];
 
     public function produtos(){
         return $this->hasMany(Produto::class);

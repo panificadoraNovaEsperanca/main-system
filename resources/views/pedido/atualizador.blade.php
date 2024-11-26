@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', isset($produto) ?: 'Baixa de pedidos')
+@section('title', isset($produto) ? : 'Baixa de pedidos')
 
 
 @section('content')

@@ -7,7 +7,6 @@ use App\Models\Categoria;
 use App\Repositories\CategoriaRepository;
 use App\Services\CategoriaService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class CategoriaController extends Controller
 {
@@ -17,9 +16,9 @@ class CategoriaController extends Controller
     {
         $this->categoriaRepository = $categoriaRepository;
     }
-    public function index(): View|RedirectResponse
-    {
 
+    public function index()
+    {
         $categorias = $this->categoriaRepository->getIndex();
         return view('categoria.index', compact('categorias'));
     }
@@ -30,7 +29,7 @@ class CategoriaController extends Controller
         return view('categoria.form');
     }
 
-    public function store(CategoriaRequest $request): RedirectResponse
+    public function store(CategoriaRequest $request)
     {
         try {
             CategoriaService::store($request, $this->categoriaRepository);
@@ -51,7 +50,7 @@ class CategoriaController extends Controller
         }
     }
 
-    public function edit(int $categoria_id): View|RedirectResponse
+    public function edit(int $categoria_id)
     {
         try {
             $categoria = Categoria::findOrFail($categoria_id);
@@ -61,17 +60,19 @@ class CategoriaController extends Controller
         }
     }
 
-    public function update(CategoriaRequest $request, int $categoria_id): RedirectResponse
+    public function update(CategoriaRequest $request, int $categoria_id)
     {
         try {
             CategoriaService::update($request, $categoria_id, $this->categoriaRepository);
             return redirect(route('categoria.index'))->with('messages', ['success' => ['Categoria atualizada com sucesso!']]);
         } catch (\Exception $e) {
+            dd($e);
+
             return back()->with('messages', ['error' => ['Não foi possível atualizar a categoria!']])->withInput($request->all());;
         }
     }
 
-    public function destroy(int $categoria_id): RedirectResponse
+    public function destroy(int $categoria_id)
     {
         try {
             $this->categoriaRepository->destroy($categoria_id);

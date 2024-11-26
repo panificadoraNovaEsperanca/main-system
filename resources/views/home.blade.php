@@ -1,5 +1,7 @@
 @extends('layouts.app')
 @section('content')
+@hasGroup('admnistrador')
+
     <div class="row">
         <div class="col-lg-3 col-6">
 
@@ -115,6 +117,7 @@ fetch(`/getPedidosByYear`, ).then(async (response) => {
 });
 
     </script>
+        @endhasGroup
 
     <!-- /.content -->
 @endsection
