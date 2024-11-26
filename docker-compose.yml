@@ -1,8 +1,8 @@
 version: "3"
 services:
-    db_homolog:
+    db:
         image: postgis/postgis:latest
-        container_name: db_homolog
+        container_name: db
         networks:
             - rede-aplicacao
         environment:
@@ -56,7 +56,7 @@ services:
             - ./tests:/var/www/html/tests
             - ./public:/var/www/html/public # Monta a pasta pública
         depends_on:
-            db_homolog:
+            db:
                 condition: service_healthy
 
 networks:
