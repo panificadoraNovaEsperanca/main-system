@@ -59,7 +59,7 @@ COPY --from=npm /app .
 
 # Expor as portas
 EXPOSE 80
-EXPOSE 8080
+EXPOSE 80
 EXPOSE 443
 
 # Permissões para o start.sh
