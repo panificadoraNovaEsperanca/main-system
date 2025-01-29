@@ -33,7 +33,7 @@
         <select class="custom-select select2" name="categoria_id">
           <option hidden disabled>Selecione uma opção</option>
           @foreach ($categorias as $categoria)
-            <option {{ $categoria->id == $produto->categoria_id ? 'selected' : '' }}
+            <option {{ isset($produto) &&  $categoria->id == $produto->categoria_id ? 'selected' : '' }}
               value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
           @endforeach
         </select>
