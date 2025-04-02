@@ -61,6 +61,12 @@
 
     </div>
 
+    <div class=" d-flex justify-content-center">
+
+        <div style="width: 80%; margin: 0 auto" id="myChartParent">
+            <canvas style="width: 100%" id="myChart"></canvas>
+        </div>
+    </div>
     <script>
         
 $( document ).ready(function() {
@@ -89,7 +95,8 @@ fetch(`/getPedidosByYear`, ).then(async (response) => {
                 dataa.push(item.quantidade)
             }
             const ctx = document.getElementById('myChart');
-		new Chart(ctx, {
+            console.log(window.Chart)
+		new window.Chart(ctx, {
                 type: 'bar',
                 options: {
                     responsive: true,

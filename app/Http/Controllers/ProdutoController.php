@@ -36,7 +36,7 @@ class ProdutoController extends Controller
     {
 
         $produtos = Produto::withTrashed()->when(request()->search != '', function ($query) {
-            $query->where(DB::raw('lower(nome)'), 'like', '%' . request()->search . '%');
+            $query->where(DB::raw('lower(nome)'), 'ilike', '%' . request()->search . '%');
         })
         ->orderBy('id','asc')
         ->paginate(request()->paginacao ?? 10);

@@ -20,16 +20,16 @@ class Categoria extends Model
         return $query->orderBy('id')->withTrashed()
         ->when(request()->has('search'), function ($query) {
             $request = request()->all();
-            return $query->where('nome', 'like', '%' . $request['search'] . '%')
-                ->orWhere('descricao', 'like', '%' . $request['search'] . '%');
+            return $query->where('nome', 'ilike', '%' . $request['search'] . '%')
+                ->orWhere('descricao', 'ilike', '%' . $request['search'] . '%');
         })->paginate(request()->paginacao ?? 10);
     }
     public function scopeIndexHome($query){
         return $query->orderBy('id')
         ->when(request()->has('search'), function ($query) {
             $request = request()->all();
-            return $query->where('nome', 'like', '%' . $request['search'] . '%')
-                ->orWhere('descricao', 'like', '%' . $request['search'] . '%');
+            return $query->where('nome', 'ilike', '%' . $request['search'] . '%')
+                ->orWhere('descricao', 'ilike', '%' . $request['search'] . '%');
         })->paginate(request()->paginacao ?? 10);
     }
 }
