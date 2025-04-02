@@ -66,7 +66,8 @@
         </a>
       </li>
     @endhasGroup
-    
+    @hasGroup('admnistrador|producao')
+
     <li class="nav-item">
       <a href="{{ route('producao.index') }}" class="nav-link">
         <i class="nav-icon fa-solid fa-industry"></i>
@@ -84,7 +85,8 @@
         </p>
       </a>
     </li>
-    
+    @endhasGroup
+
     @hasGroup('admnistrador')
       <li class="nav-item">
         <a href="{{ route('pedido.atualiza') }}" class="nav-link">

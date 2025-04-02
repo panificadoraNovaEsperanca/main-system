@@ -16,9 +16,14 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::whereNot('id',1)->paginate();
+        try{
+            $users = User::whereNot('id',1)->paginate();
         
-        return view('users.index', compact('users'));
+            return view('users.index', compact('users'));
+        }catch(Exception $e){
+            dd($e);
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**

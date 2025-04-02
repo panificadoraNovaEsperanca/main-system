@@ -37,6 +37,7 @@
                     {{ $pedidos->appends([
                         'paginacao' => $_GET['paginacao'] ?? 10,
                         'search' => $_GET['search'] ?? '',
+                        'motoristas' => $_GET['motoristas'] ?? null,
                     ]) }}
 
                 </div>
@@ -152,6 +153,13 @@
 
 @push('scripts')
     <script>
+
+        $('#selectAll').on('change', function() {
+      let val = $(this).is(':checked');
+      $('.pedidoCheck').each((index, element) => {
+        $(element).prop('checked', val)
+      })
+    })
         $('.select2').select2({
             width: '100%'
         })

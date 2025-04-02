@@ -176,30 +176,36 @@ class MotoristaController extends Controller
 
     }
     public function motoristaEntregaIndex(){
+        $motoristas = request()->query('motoristas');
+        $search = request()->query('search', '');
+        $status = request()->query('status', '');
+        $paginacao = request()->query('paginacao', 50);
         
-        if(request()->motoristas == ''){
-            $pedidos = Pedido::where('id','=',0)->paginate(request()->paginacao ?? 50);
-            $motoristas = Motorista::select(['nome','id'])->get();
-            return view('motorista.entrega',compact('pedidos','motoristas'));
+        if (empty($motoristas)) {
+            $pedidos = Pedido::where('id', 0)->paginate($paginacao);
+            $motoristas = Motorista::select(['nome', 'id'])->get();
+            return view('motorista.entrega', compact('pedidos', 'motoristas'));
         }
+        
         $dtInicial = Carbon::now()->startOfDay();
         $dtFinal = Carbon::now()->endOfDay();
+        
         $pedidos = Pedido::with(['cliente'])
-        ->when(request()->motoristas,function($query){
-            $query->whereHas('motorista', function ($queryMotora) {
-                $queryMotora->whereIn('id',request()->motoristas);
-            });
-        })
-        ->whereBetween('dt_previsao', [$dtInicial, $dtFinal])
-        ->when(request()->search != '', function ($query) {
-            $query->whereHas('cliente', function ($queryCliente) {
-                $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower(request()->search) . '%');
-            });
-        })
-        ->when(request()->status != '' && request()->status != '-1', function ($query) {
-            $query->where('status', request()->status);
-        })
-        ->paginate(request()->paginacao ?? 50);
+            ->when(!empty($motoristas), function ($query) use ($motoristas) {
+                $query->whereHas('motorista', function ($queryMotora) use ($motoristas) {
+                    $queryMotora->whereIn('id', $motoristas);
+                });
+            })
+            ->whereBetween('dt_previsao', [$dtInicial, $dtFinal])
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->whereHas('cliente', function ($queryCliente) use ($search) {
+                    $queryCliente->where(DB::raw('lower(name)'), 'like', '%' . strtolower($search) . '%');
+                });
+            })
+            ->when($status !== '' && $status !== '-1', function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->paginate($paginacao);
         $motoristas = Motorista::select(['nome','id'])->get();
         return view('motorista.entrega',compact('pedidos','motoristas'));
     }
