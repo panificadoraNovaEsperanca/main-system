@@ -20,17 +20,14 @@ class ProducaoBaixaController extends Controller
     public function index()
     {
         
-        $producaos = Producao::with(['produto','produto.categoria'])
-        ->when(request()->turno != null,function($query){
-            $query->where('turno','=',request()->turno);
+        $producaos = Producao::with(['produto', 'produto.categoria'])
+        ->when(request()->query('data'), function ($query) {
+            $inicio = Carbon::createFromFormat('d/m/Y', request()->query('data'))->startOfDay();
+            $fim = Carbon::createFromFormat('d/m/Y', request()->query('data'))->endOfDay();
+            $query->whereBetween('dt_inicio', [$inicio, $fim]);
         })
-        ->when(request()->data != null,function($query){
-            
-            $inicio = Carbon::createFromFormat('d/m/Y',request()->data)->startOfDay();
-            $fim = Carbon::createFromFormat('d/m/Y',request()->data)->endOfDay();
-            $query->whereBetween('dt_inicio',[$inicio,$fim]);
-        })
-        ->paginate(request()->paginacao ?? 30);
+        ->paginate(request()->query('paginacao', 30)); // 30 é o valor padrão
+    
         $producaoCategoria = [];
 
         foreach($producaos as $producao){
@@ -50,7 +47,7 @@ class ProducaoBaixaController extends Controller
         try {
 
             $producao = Producao::findOrFail($request->producao_id);
-            $producao->update(['status' => true]);
+            $producao->update(['status' => !$producao->status]);
             return response()->json(['success' => true, 'data' => '','message' => 'Produção confirmada com sucesso'], 200);
         } catch (Exception $e) {
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);

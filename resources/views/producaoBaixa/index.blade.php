@@ -12,28 +12,6 @@
     <form class="mr-2 d-flex flex-column" id="formSearch" action="{{ route('producaoBaixa.index') }}" method="GET">
     <div class="row">
       <div class="col-md-3 col-sm-12">
-
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
-          </div>
-          <select value="{{ $_GET['turno'] ?? '' }}" name="turno" class="custom-select trigger mr-2" 
-            id="">
-            <option hidden value="">Selecione uma opção</option>
-            <option {{ $_GET['turno'] == 'MANHÃ' ? 'selected':'' }}  value="MANHÃ" >
-                MANHÃ
-            </option>
-            <option {{ $_GET['turno'] == 'TARDE' ? 'selected':'' }} value="TARDE">
-                TARDE
-            </option>
-            
-
-        </select>
-        </div>
-    
-      </div>
-
-      <div class="col-md-3 col-sm-12">
         <div class="form-group">
           <div class="input-group">
             <div class="input-group-prepend">
@@ -100,9 +78,7 @@
                                   <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
 
                                   <td>
-                                    @if(!$producao->status)
-                                      <button data-id="{{$producao->id}}" type="button" class="btn btn-success confirmarProducao">OK<i class=" fa fa-2x fa-check"></i>
-                                    @endif
+                                      <button data-id="{{$producao->id}}" type="button" class="btn btn-success confirmarProducao">{{$producao->status ? 'Desfazer':'Ok'}}<i class=" fa  fa-check"></i>
                                   </button>
                                   </td>
                               </tr>

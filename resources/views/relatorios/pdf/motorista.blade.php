@@ -55,6 +55,10 @@
     <table style=" {{ $loop->last == 1 ? '' : 'page-break-after: always;' }} margin:20px 0 0 0 ">
       <thead>
         <tr>
+          <th colspan="7">  Competência: {{ $dia }}
+          </th>
+        </tr>
+        <tr>
           <th>N° Pedido</th>
           <th>Endereço</th>
           <th>Cliente</th>
