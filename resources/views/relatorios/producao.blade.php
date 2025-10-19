@@ -10,10 +10,10 @@
     <div class="row">
       <div class="col-6">
         <div class="form-group">
-          <label for="">Produto</label>
+          <label for="">Categoria</label>
           <div class="input-group  ">
             <select class="custom-select produtos select2" id="produtos" data-id="${id}" name="produto[]">
-              @foreach ($produtos as $produto)
+              @foreach ($categorias as $produto)
                 <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
               @endforeach
             </select>

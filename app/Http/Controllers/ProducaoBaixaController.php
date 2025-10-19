@@ -26,6 +26,11 @@ class ProducaoBaixaController extends Controller
             $fim = Carbon::createFromFormat('d/m/Y', request()->query('data'))->endOfDay();
             $query->whereBetween('dt_inicio', [$inicio, $fim]);
         })
+         ->when(!request()->query('data'), function ($query) {
+            $inicio = Carbon::now()->startOfDay();
+            $fim = Carbon::now()->endOfDay();
+            $query->whereBetween('dt_inicio', [$inicio, $fim]);
+        })
         ->paginate(request()->query('paginacao', 30)); // 30 é o valor padrão
     
         $producaoCategoria = [];

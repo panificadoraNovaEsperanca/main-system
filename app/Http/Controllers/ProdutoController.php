@@ -191,8 +191,8 @@ class ProdutoController extends Controller
 
     public function relatorioProducaoIndex()
     {
-        $produtos = Categoria::all();
-        return view('relatorios.producao', compact('produtos'));
+        $categorias = Categoria::all();
+        return view('relatorios.producao', compact('categorias'));
     }
 
     public function processRelatorioProducao(Request $request)
@@ -210,7 +210,7 @@ class ProdutoController extends Controller
                 })
                 ->selectRaw('categorias.nome as categoria ,produtos.nome as nome, sum(producaos.quantidade) as quantidade, producaos.turno  as turno')
                 ->join('produtos', 'producaos.produto_id', '=', 'produtos.id')
-                ->join('categorias', 'produtos.categoria_id', '=', 'categorias.id') // Realiza o INNER JOIN
+                ->join('categorias', 'produtos.categoria_id', '=', 'categorias.id')
 
                 ->groupBy('producaos.produto_id','produtos.nome','producaos.turno','categorias.nome')
                 ->get();
