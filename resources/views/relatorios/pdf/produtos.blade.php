@@ -5,11 +5,43 @@
     <meta charset="UTF-8">
     <title>Relatório de Produtos</title>
     <style>
-        @page { size: A4 landscape; }
-        body, html { margin: 0.5%; padding: 0; }
-        td, th { border: 1px solid black; text-align: center }
-        table { width: 100%; border-collapse: collapse; font-size: 12px }
-        .categoria-row { background:#ddd; font-weight:bold; text-align:left; }
+        @page {
+            size: A4 landscape;
+        }
+
+        body,
+        html {
+            margin: 0.5%;
+            padding: 0;
+        }
+
+        td,
+        th {
+            border: 1px solid black;
+            text-align: center
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px
+        }
+
+        .categoria-row {
+            background: #ddd;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .separador-categoria {
+            background-color: #666;
+            height: 8px;
+        }
+
+        .separador-categoria td {
+            border: none;
+            padding: 10px;
+        }
     </style>
 </head>
 
@@ -26,21 +58,28 @@
             </tr>
         </thead>
         <tbody>
-        @forelse ($porCategoria as $categoria => $items)
-            @foreach ($items as $item)
+            @forelse ($porCategoria as $categoria => $items)
+                @foreach ($items as $index => $item)
+                    <tr>
+                            <td style="text-align:center" class="categoria-row" >
+                                {{ $categoria }}
+                            </td>
+                        <td>{{ $item->nome_produto }}</td>
+                        <td>{{ $item->total }}</td>
+                    </tr>
+                @endforeach
+                
+                @if(!$loop->last)
+                    <!-- Linha separadora entre categorias -->
+                    <tr class="separador-categoria">
+                        <td colspan="3"></td>
+                    </tr>
+                @endif
+            @empty
                 <tr>
-                    @if ($loop->first)
-                        <td class="categoria-row" rowspan="{{ count($items) }}">
-                            {{ $categoria }}
-                        </td>
-                    @endif
-                    <td>{{ $item->nome_produto }}</td>
-                    <td>{{ $item->total }}</td>
+                    <td colspan="3">Sem resultados</td>
                 </tr>
-            @endforeach
-        @empty
-            <tr><td colspan="3">Sem resultados</td></tr>
-        @endforelse
+            @endforelse
         </tbody>
     </table>
 </body>
