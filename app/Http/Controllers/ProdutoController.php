@@ -38,8 +38,8 @@ class ProdutoController extends Controller
         $produtos = Produto::withTrashed()->when(request()->search != '', function ($query) {
             $query->where(DB::raw('lower(nome)'), 'ilike', '%' . request()->search . '%');
         })
-        ->orderBy('id','asc')
-        ->paginate(request()->paginacao ?? 10);
+            ->orderBy('id', 'asc')
+            ->paginate(request()->paginacao ?? 10);
         return view('produto.index', compact('produtos'));
     }
 
@@ -47,7 +47,7 @@ class ProdutoController extends Controller
     {
 
         $categorias = Categoria::all();
-        return view('produto.form',compact('categorias'));
+        return view('produto.form', compact('categorias'));
     }
 
     public function store(ProdutoRequest $request): RedirectResponse
@@ -67,7 +67,9 @@ class ProdutoController extends Controller
                     'e' => $request->precoE,
                     'f' => $request->precoF,
                     'g' => $request->precoG,
-                ]
+                ],
+                'setor' => $request->setor,
+                'quantidade_embalagem' => $request->quantidade_embalagem
             ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto criado com sucesso!']]);
         } catch (\Exception $e) {
@@ -97,10 +99,10 @@ class ProdutoController extends Controller
             $produto = Produto::findOrFail($id);
             $categorias = Categoria::all();
 
-            return view('produto.form', compact('produto','categorias'));
+            return view('produto.form', compact('produto', 'categorias'));
         } catch (\Exception $e) {
-		Log::info(json_encode($e,true));
-		return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
+            Log::info(json_encode($e, true));
+            return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
         }
     }
 
@@ -121,7 +123,9 @@ class ProdutoController extends Controller
                     'f' => str_replace(',', '.', $request->precoF),
                     'g' => str_replace(',', '.', $request->precoG),
 
-                ]
+                ],
+                'setor' => $request->setor,
+                'quantidade_embalagem' => $request->quantidade_embalagem
             ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto atualizado com sucesso!']]);
         } catch (\Exception $e) {
@@ -154,31 +158,49 @@ class ProdutoController extends Controller
         try {
 
             $datas = explode(' - ', $request->intervalo);
-
             $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0]);
             $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1]);
 
             $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
                 ->whereNotIn('status', ['CANCELADO'])
                 ->pluck('id')->toArray();
+
             $produtos = DB::table('pedido_produtos')
-                ->selectRaw('pedido_produtos.produto_id as produto,sum(quantidade) as total, produtos.nome as nome_produto')
+                ->selectRaw('
+                pedido_produtos.produto_id,
+                sum(pedido_produtos.quantidade) as total,
+                produtos.nome as nome_produto,
+                categorias.nome as nome_categoria
+            ')
                 ->join('produtos', 'produtos.id', '=', 'pedido_produtos.produto_id')
+                ->join('categorias', 'categorias.id', '=', 'produtos.categoria_id')
                 ->whereIn('pedido_produtos.pedido_id', $pedidos)
                 ->when($request->produto != '', function ($query) {
                     $query->where('pedido_produtos.produto_id', '=', request()->produto);
                 })
-                ->groupBy('pedido_produtos.produto_id', 'produtos.nome')->get();
-            $pdf =  Pdf::loadView('relatorios.pdf.produtos', [
-                'total' => $produtos,
-                'inicio' => $inicio,
-                'fim' => $fim
+                ->groupBy('pedido_produtos.produto_id', 'produtos.nome', 'categorias.nome')
+                ->orderBy('categorias.nome')
+                ->orderBy('produtos.nome')
+                ->get();
+
+            // Agrupa por categoria para o Blade
+            $porCategoria = $produtos->groupBy('nome_categoria');
+
+            $pdf = Pdf::loadView('relatorios.pdf.produtos', [
+                'porCategoria' => $porCategoria,
+                'inicio'       => $inicio,
+                'fim'          => $fim
             ]);
-            return $pdf->download("Relatório produtos.pdf");
+
+            return $pdf->download("Relatorio_produtos.pdf");
         } catch (\Exception $e) {
-            return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao processar requisição. ' . $e->getMessage()
+            ], 400);
         }
     }
+
     public function relatorioProdutoIndex()
     {
         try {
@@ -201,21 +223,20 @@ class ProdutoController extends Controller
             $datas = explode(' - ', $request->data);
             $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
-            
-            $producaos = Producao::whereBetween('dt_inicio', [$inicio, $fim])
-            ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
-                    $produtos = Produto::whereIn('categoria_id',$request->produto)->pluck('id')->toArray();
-                    $query->whereIn('produto_id', $produtos);
 
+            $producaos = Producao::whereBetween('dt_inicio', [$inicio, $fim])
+                ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
+                    $produtos = Produto::whereIn('categoria_id', $request->produto)->pluck('id')->toArray();
+                    $query->whereIn('produto_id', $produtos);
                 })
                 ->selectRaw('categorias.nome as categoria ,produtos.nome as nome, sum(producaos.quantidade) as quantidade, producaos.turno  as turno')
                 ->join('produtos', 'producaos.produto_id', '=', 'produtos.id')
                 ->join('categorias', 'produtos.categoria_id', '=', 'categorias.id')
 
-                ->groupBy('producaos.produto_id','produtos.nome','producaos.turno','categorias.nome')
+                ->groupBy('producaos.produto_id', 'produtos.nome', 'producaos.turno', 'categorias.nome')
                 ->get();
             $producaoCategorias = [];
-            foreach($producaos as $producao) {
+            foreach ($producaos as $producao) {
                 $producaoCategorias[$producao->categoria][] = $producao;
             }
             $pdf =  Pdf::loadView('relatorios.pdf.producao', [

@@ -76,16 +76,18 @@
 
     <script>
         $(document).ready(function() {
-            // Template HTML para nova linha
+            // Template HTML para nova linha - CORRIGIDO
             function getNovaLinhaHTML(categoriaId) {
+                // Encontrar a categoria correta e seus produtos
+                const categoriaElement = $(`.linhas-categoria[data-categoria-id="${categoriaId}"]`);
+                const primeiraLinha = categoriaElement.find('.linha-producao').first();
+                const optionsProdutos = primeiraLinha.find('.produtos').html();
+                
                 return `
                     <tr class="linha-producao">
                         <td>
                             <select class="custom-select produtos" name="produto_id[]">
-                                <option value="">Selecione um produto</option>
-                                @foreach ($categoria->produtos as $produto)
-                                    <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
-                                @endforeach
+                                ${optionsProdutos}
                             </select>
                         </td>
                         <td>
@@ -216,12 +218,12 @@
                 validateOnBlur: false
             });
 
-            // Adicionar nova linha
+            // Adicionar nova linha - CORRIGIDO
             $(document).on('click', '.btn-adicionar-linha', function() {
                 const categoriaId = $(this).data('categoria-id');
                 const tbody = $(this).prev('table').find('tbody');
 
-                // Criar nova linha a partir do template
+                // Criar nova linha a partir do template CORRETO
                 const novaLinha = $(getNovaLinhaHTML(categoriaId));
 
                 // Adicionar à tabela
