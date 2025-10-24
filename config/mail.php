@@ -32,15 +32,22 @@ return [
     |            "postmark", "log", "array", "failover"
     |
     */
-
+// MAIL_MAILER=smtp
+// MAIL_HOST=smtp.gmail.com
+// MAIL_PORT=587
+// MAIL_USERNAME=panificadoranovaesperanca6@gmail.com
+// MAIL_PASSWORD="wwegwtkwziizrszp"
+// MAIL_ENCRYPTION=tls
+// MAIL_FROM_ADDRESS=panificadoranovaesperanca6@gmail.com
+// MAIL_FROM_NAME="Sistema Panificadora Nova Esperança"
     'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
-            'port' => env('MAIL_PORT', 587),
-            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
+            'host' => 'smtp.gmail.com',
+            'port' => 587,
+            'encryption' => 'tls',
+            'username' => 'panificadoranovaesperanca6@gmail.com',
+            'password' => 'wwegwtkwziizrszp',
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],

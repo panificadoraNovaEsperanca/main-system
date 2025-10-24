@@ -69,6 +69,9 @@ class ProdutoController extends Controller
                     'g' => $request->precoG,
                 ],
                 'setor' => $request->setor,
+                'setor_1' => $request->setor_1,
+                'setor_2' => $request->setor_2,
+                'setor_3' => $request->setor_3,
                 'quantidade_embalagem' => $request->quantidade_embalagem
             ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto criado com sucesso!']]);
@@ -125,6 +128,9 @@ class ProdutoController extends Controller
 
                 ],
                 'setor' => $request->setor,
+                'setor_1' => $request->setor_1,
+                'setor_2' => $request->setor_2,
+                'setor_3' => $request->setor_3,
                 'quantidade_embalagem' => $request->quantidade_embalagem
             ]);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto atualizado com sucesso!']]);

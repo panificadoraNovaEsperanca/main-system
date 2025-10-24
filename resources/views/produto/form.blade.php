@@ -98,10 +98,25 @@
                     <span class="mt-1  text-red p-1 rounded"><small>{{ $message }}</small></span>
                 @enderror
             </div>
-            <div class="col-3">
-                <label for="exampleInputEmail1" class="form-label">Setor de produção</label>
+            <div class="col-2">
+                <label for="exampleInputEmail1" class="form-label">Setor de produção 1</label>
                 <input value="{{ isset($produto) && isset($produto->setor) ? $produto->setor : '' }}" class="form-control"
                     name="setor">
+            </div>
+              <div class="col-2">
+                <label for="exampleInputEmail1" class="form-label">Setor de produção 2</label>
+                <input value="{{ isset($produto) && isset($produto->setor_1) ? $produto->setor_1 : '' }}" class="form-control"
+                    name="setor_1">
+            </div>
+              <div class="col-2">
+                <label for="exampleInputEmail1" class="form-label">Setor de produção 3</label>
+                <input value="{{ isset($produto) && isset($produto->setor_2) ? $produto->setor_2 : '' }}" class="form-control"
+                    name="setor_2">
+            </div>
+              <div class="col-2">
+                <label for="exampleInputEmail1" class="form-label">Setor de produção 4</label>
+                <input value="{{ isset($produto) && isset($produto->setor_3) ? $produto->setor_3 : '' }}" class="form-control"
+                    name="setor_3">
             </div>
             <div class="col-2">
                 <label for="exampleInputEmail1" class="form-label">Quantidade por embalagem</label>

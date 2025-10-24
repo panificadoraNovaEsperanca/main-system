@@ -6,10 +6,12 @@ use App\Http\Controllers\PermissaoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InsumoController;
 use App\Http\Controllers\LancamentoController;
 use App\Http\Controllers\MotoristaController;
 use App\Http\Controllers\PedidoController;
@@ -38,15 +40,12 @@ use Illuminate\Support\Facades\DB;
 Route::get('/', function () {
 
     $user = Auth::user();
-    if($user == null){
+    if ($user == null) {
         return redirect('/login');
     }
 
-    
+
     return redirect('/home');
-    
-
-
 });
 
 Auth::routes();
@@ -92,7 +91,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('lancamento', LancamentoController::class)->middleware('permission:admin|root');;
     Route::resource('producao', ProducaoController::class)->middleware('permission:admin|root');;
     Route::resource('producaoBaixa', ProducaoBaixaController::class)->middleware('permission:admin|root|producao');;
-
+    Route::resource('insumo', InsumoController::class)->middleware('permission:admin|root|almoxarifado');
+    Route::resource('estoque', EstoqueController::class)->middleware('permission:admin|root|almoxarifado');
 
     Route::resource('cliente', ClienteController::class)->middleware('permission:admin|root');;
     Route::resource('pedido', PedidoController::class)->middleware('permission:admin|root');;
@@ -105,11 +105,12 @@ Route::middleware('auth')->group(function () {
     Route::post('atualizar', [PedidoController::class, 'atualizarPedidos'])->name('pedido.atualizar');
     Route::post('confirmarProducao', [ProducaoBaixaController::class, 'confirmarProducao'])->name('producao.confirmar');
 
-    
+
 
 
     Route::group(['prefix' => 'ativar'], function () {
         Route::put('/cliente/{categoria_id}', [ClienteController::class, 'ativar'])->name('cliente.ativar');
+        Route::put('/insumo/{insumo_id}', [InsumoController::class, 'ativar'])->name('insumo.ativar');
         Route::put('/marca/{marca_id}', [MarcaController::class, 'ativar'])->name('marca.ativar');
         Route::put('/produto/{produto_id}', [ProdutoController::class, 'ativar'])->name('produto.ativar');
         Route::put('/fornecedor/{fornecedor_id}', [FornecedorController::class, 'ativar'])->name('fornecedor.ativar');

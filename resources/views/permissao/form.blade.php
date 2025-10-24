@@ -21,19 +21,18 @@
             </div>
             <div class="col-4">
                 <label for="exampleInputEmail1" class="form-label">Grupo</label>
-        
+
                 <select class="custom-select select2" multiple="multiple" name="grupo[]">
-                  <option selected  disabled>Selecione uma opção</option>
-                  @foreach ($grupos as $grupo)
-                    <option {{in_array($grupo->id,$gruposSelecionados) 
-                    
-                    
-                    ? 'selected' : ''}} value="{{ $grupo->id }}">{{ $grupo->nome }}</option>
-                  @endforeach
+                    <option selected disabled>Selecione uma opção</option>
+                    @foreach ($grupos as $grupo)
+                        <option
+                            {{ in_array($grupo->id, $gruposSelecionados) ? 'selected' : '' }}
+                            value="{{ $grupo->id }}">{{ $grupo->nome }}</option>
+                    @endforeach
                 </select>
-              </div>
+            </div>
         </div>
-     
+
 
 
         <button type="submit" class="btn btn-primary mt-3">Salvar</button>
