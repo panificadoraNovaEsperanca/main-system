@@ -15,13 +15,15 @@ class CheckPermission
         $grupos = explode('|', $permissao);
         $bool   = false;
         $user = Auth::user();
-        if($user->obtemTodosGrupos() == 'administrador' || $user->obtemTodosGrupos() == 'root'){
+        $grupoUsuario = strtolower($user->obtemTodosGrupos());
+        if($grupoUsuario == 'administrador' || $grupoUsuario == 'root'){
             return $next($request);
         }
         if($user != null){
             foreach ($grupos as $grupo) {
                 /** @var User $user */
-                $bool = $user->pertenceAoGrupo($grupo);
+                $bool = $user->pertenceAoGrupo(strtolower($grupo));
+                if($bool) break;
             }
             abort_unless($bool, Response::HTTP_FORBIDDEN, 'Você não tem permissão para acessar esta página!');
 

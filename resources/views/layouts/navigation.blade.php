@@ -177,6 +177,14 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('produto.relatorio.cliente.index') }}" class="nav-link">
+                                <i class="nav-icon fa-solid fa-users"></i>
+                                <p>
+                                    Produtos por Cliente
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('producao.relatorio') }}" class="nav-link">
                                 <i class="nav-icon fa-solid fa-industry"></i>
                                 <p>

@@ -9,6 +9,24 @@
             @method('PUT')
         @endif
 
+        <div class="row mb-4">
+            <div class="col-6">
+                <div class="form-group">
+                    <label>Data e Hora de Produção (será aplicada a todos os itens)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="far fa-calendar-alt"></i>
+                            </span>
+                        </div>
+                        <input autocomplete="off" type="text" value=""
+                            class="form-control float-right" id="dataProducaoGlobal" name="dataProducaoGlobal">
+                    </div>
+                    <small class="text-muted">Esta data será replicada para todos os itens adicionados</small>
+                </div>
+            </div>
+        </div>
+
         <div id="accordion">
             @foreach ($categorias as $categoria)
                 <div class="card card-primary">
@@ -52,7 +70,7 @@
                                         </td>
                                         <td>
                                             <input autocomplete="off" type="text" value=""
-                                                class="form-control float-right dataHora" name="data_inicio[]">
+                                                class="form-control float-right dataHora" name="data_inicio[]" readonly>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-danger btn-remover-linha" disabled>
@@ -81,20 +99,30 @@
                 // Encontrar a categoria correta e seus produtos
                 const categoriaElement = $(`.linhas-categoria[data-categoria-id="${categoriaId}"]`);
                 const primeiraLinha = categoriaElement.find('.linha-producao').first();
-                const optionsProdutos = primeiraLinha.find('.produtos').html();
+                
+                // Clonar o select de produtos da primeira linha para manter todas as opções
+                const selectOriginal = primeiraLinha.find('.produtos').first();
+                let optionsHTML = '<option value="">Selecione um produto</option>';
+                
+                // Pegar todas as opções do select original, exceto a primeira (placeholder)
+                selectOriginal.find('option').each(function() {
+                    if ($(this).val() !== '') {
+                        optionsHTML += `<option value="${$(this).val()}">${$(this).text()}</option>`;
+                    }
+                });
                 
                 return `
                     <tr class="linha-producao">
                         <td>
                             <select class="custom-select produtos" name="produto_id[]">
-                                ${optionsProdutos}
+                                ${optionsHTML}
                             </select>
                         </td>
                         <td>
                             <input type="number" class="form-control quantidade" value="" name="quantidade[]" min="0">
                         </td>
                         <td>
-                            <input autocomplete="off" type="text" value="" class="form-control float-right dataHora" name="data_inicio[]">
+                            <input autocomplete="off" type="text" value="" class="form-control float-right dataHora" name="data_inicio[]" readonly>
                         </td>
                         <td>
                             <button type="button" class="btn btn-sm btn-danger btn-remover-linha">
@@ -123,6 +151,20 @@
                 let valido = true;
                 const mensagens = [];
 
+                // Verificar se a data global foi preenchida primeiro
+                const dataGlobal = $('#dataProducaoGlobal').val();
+                if (!dataGlobal) {
+                    mensagens.push('A data de produção no topo da página é obrigatória');
+                    $('#dataProducaoGlobal').addClass('is-invalid');
+                    valido = false;
+                } else if (!validarData(dataGlobal)) {
+                    mensagens.push('Data global inválida. Use o formato dd/mm/aaaa hh:mm');
+                    $('#dataProducaoGlobal').addClass('is-invalid');
+                    valido = false;
+                } else {
+                    $('#dataProducaoGlobal').removeClass('is-invalid');
+                }
+
                 $('.linhas-categoria').each(function() {
                     const categoriaId = $(this).data('categoria-id');
                     const categoriaNome = $(this).closest('.card').find('.btn').text().trim();
@@ -133,14 +175,26 @@
                         const dataInput = $(this).find('.dataHora');
                         
                         const produtoValor = produtoSelect.val();
-                        const quantidadeValor = quantidadeInput.val();
+                        const quantidadeValor = quantidadeInput.val()?.trim();
                         const dataValor = dataInput.val();
 
-                        // Se todos os campos estão vazios, ignora a linha
-                        if (!produtoValor && !quantidadeValor && !dataValor) {
-                            return true; // continua para próxima linha
+                        // Verifica se a linha está completamente vazia
+                        // Considera vazia se não tem produto E não tem quantidade válida
+                        // (a data pode estar preenchida pela data global, mas isso não conta como linha preenchida)
+                        const temProduto = produtoValor && produtoValor !== '';
+                        const temQuantidade = quantidadeValor && quantidadeValor !== '' && quantidadeValor !== '0' && parseFloat(quantidadeValor) > 0;
+                        const linhaVazia = !temProduto && !temQuantidade;
+
+                        // Se a linha está completamente vazia (sem produto e sem quantidade), ignora completamente
+                        if (linhaVazia) {
+                            // Remove classes de erro e continua
+                            produtoSelect.removeClass('is-invalid');
+                            quantidadeInput.removeClass('is-invalid');
+                            dataInput.removeClass('is-invalid');
+                            return true; // continua para próxima linha - NÃO VALIDA ESTA LINHA
                         }
 
+                        // Se chegou aqui, a linha tem algum conteúdo, então valida tudo
                         // Validação do produto
                         if (!produtoValor) {
                             mensagens.push(`Linha ${index + 1} da categoria "${categoriaNome}": Produto é obrigatório`);
@@ -151,7 +205,7 @@
                         }
 
                         // Validação da quantidade
-                        if (!quantidadeValor || quantidadeValor <= 0) {
+                        if (!quantidadeValor || quantidadeValor === '' || quantidadeValor === '0' || parseFloat(quantidadeValor) <= 0) {
                             mensagens.push(`Linha ${index + 1} da categoria "${categoriaNome}": Quantidade deve ser maior que zero`);
                             quantidadeInput.addClass('is-invalid');
                             valido = false;
@@ -159,9 +213,9 @@
                             quantidadeInput.removeClass('is-invalid');
                         }
 
-                        // Validação da data
+                        // Validação da data (já deve estar preenchida pela data global)
                         if (!dataValor) {
-                            mensagens.push(`Linha ${index + 1} da categoria "${categoriaNome}": Data de início é obrigatória`);
+                            mensagens.push(`Linha ${index + 1} da categoria "${categoriaNome}": Data de início é obrigatória. Preencha o campo de data no topo da página.`);
                             dataInput.addClass('is-invalid');
                             valido = false;
                         } else if (!validarData(dataValor)) {
@@ -174,16 +228,16 @@
                     });
                 });
 
-                // Verificar se há pelo menos uma linha preenchida
+                // Verificar se há pelo menos uma linha preenchida completamente
                 const linhasPreenchidas = $('.linha-producao').filter(function() {
                     const produtoValor = $(this).find('.produtos').val();
-                    const quantidadeValor = $(this).find('.quantidade').val();
+                    const quantidadeValor = $(this).find('.quantidade').val()?.trim();
                     const dataValor = $(this).find('.dataHora').val();
-                    return produtoValor && quantidadeValor && dataValor;
+                    return produtoValor && quantidadeValor && quantidadeValor !== '' && quantidadeValor !== '0' && parseFloat(quantidadeValor) > 0 && dataValor;
                 }).length;
 
-                if (linhasPreenchidas === 0) {
-                    mensagens.push('Pelo menos uma linha deve ser preenchida completamente');
+                if (linhasPreenchidas === 0 && valido) {
+                    mensagens.push('Pelo menos uma linha deve ser preenchida completamente (produto e quantidade)');
                     valido = false;
                 }
 
@@ -212,6 +266,19 @@
                 width: '100%'
             });
 
+            // Campo global de data
+            $('#dataProducaoGlobal').datetimepicker({
+                format: 'd/m/Y H:i',
+                lang: 'pt',
+                validateOnBlur: false
+            });
+
+            // Replicar data global para todos os campos de data
+            $('#dataProducaoGlobal').on('change', function() {
+                const dataGlobal = $(this).val();
+                $('.dataHora').val(dataGlobal);
+            });
+
             $('.dataHora').datetimepicker({
                 format: 'd/m/Y H:i',
                 lang: 'pt',
@@ -231,6 +298,12 @@
 
                 // Inicializar plugins na nova linha
                 inicializarPluginsLinha(novaLinha);
+
+                // Aplicar data global se existir
+                const dataGlobal = $('#dataProducaoGlobal').val();
+                if (dataGlobal) {
+                    novaLinha.find('.dataHora').val(dataGlobal);
+                }
 
                 // Habilitar botões de remover de todas as linhas
                 tbody.find('.btn-remover-linha').prop('disabled', false);
@@ -268,11 +341,14 @@
                 // Remover linhas vazias antes do envio
                 $('.linha-producao').each(function() {
                     const produtoId = $(this).find('.produtos').val();
-                    const quantidade = $(this).find('.quantidade').val();
-                    const dataInicio = $(this).find('.dataHora').val();
+                    const quantidade = $(this).find('.quantidade').val()?.trim();
                     
-                    // Remove a linha se estiver vazia
-                    if (!produtoId || !quantidade || !dataInicio) {
+                    // Remove a linha se não tiver produto OU não tiver quantidade válida
+                    // (não precisa verificar data pois ela é preenchida automaticamente)
+                    const temProduto = produtoId && produtoId !== '';
+                    const temQuantidade = quantidade && quantidade !== '' && quantidade !== '0' && parseFloat(quantidade) > 0;
+                    
+                    if (!temProduto || !temQuantidade) {
                         $(this).remove();
                     }
                 });

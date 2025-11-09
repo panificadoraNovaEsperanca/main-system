@@ -39,11 +39,12 @@ class AppServiceProvider extends ServiceProvider
             if($user->grupoPermissao == null ){
                 return true;
             }
-            if($user->grupoPermissao == null && $user->obtemTodosGrupos() == 'administrador' || $user->obtemTodosGrupos() == 'root'){
+            $grupoUsuario = strtolower($user->obtemTodosGrupos());
+            if($grupoUsuario == 'administrador' || $grupoUsuario == 'root'){
                 return true;
             }
             foreach ($grupos as $grupo) {
-                $bool = $user->pertenceAoGrupo($grupo);
+                $bool = $user->pertenceAoGrupo(strtolower($grupo));
             }
 
             return $bool;
@@ -52,11 +53,12 @@ class AppServiceProvider extends ServiceProvider
             $grupos = explode('|', $groups);
             $bool   = false;
             $user = Auth::user();
-            if($user->obtemTodosGrupos() == 'administrador' || $user->obtemTodosGrupos() == 'root'){
+            $grupoUsuario = strtolower($user->obtemTodosGrupos());
+            if($grupoUsuario == 'administrador' || $grupoUsuario == 'root'){
                 return true;
             }
             foreach ($grupos as $grupo) {
-                if($user->pertenceAPermissao($grupo)){
+                if($user->pertenceAPermissao(strtolower($grupo))){
                     return true;
                 }
              

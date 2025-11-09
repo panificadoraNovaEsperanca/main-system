@@ -171,6 +171,8 @@ class ProdutoController extends Controller
                 ->whereNotIn('status', ['CANCELADO'])
                 ->pluck('id')->toArray();
 
+            // Usa leftJoin para incluir produtos sem categoria_id
+            // COALESCE garante que produtos sem categoria apareçam como "Outros"
             $produtos = DB::table('pedido_produtos')
                 ->selectRaw('
                 pedido_produtos.produto_id,
@@ -222,6 +224,61 @@ class ProdutoController extends Controller
     {
         $categorias = Categoria::all();
         return view('relatorios.producao', compact('categorias'));
+    }
+
+    public function relatorioProdutoClienteIndex()
+    {
+        try {
+            $produtos = Produto::get();
+            return view('relatorios.produtoCliente', compact('produtos'));
+        } catch (\Exception $e) {
+            return back()->with('messages', ['error' => ['Não foi possível abrir os relatórios!' . $e->getMessage()]]);
+        }
+    }
+
+    public function relatorioProdutoCliente(Request $request)
+    {
+        try {
+            $datas = explode(' - ', $request->intervalo);
+            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0]);
+            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1]);
+
+            $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
+                ->whereNotIn('status', ['CANCELADO'])
+                ->pluck('id')->toArray();
+
+            $clientes = DB::table('pedido_produtos')
+                ->selectRaw('
+                    clientes.id as cliente_id,
+                    clientes.name as nome_cliente,
+                    clientes.cnpj,
+                    SUM(pedido_produtos.quantidade) as total_quantidade,
+                    SUM(pedido_produtos.quantidade * pedido_produtos.preco) as total_valor
+                ')
+                ->join('pedidos', 'pedidos.id', '=', 'pedido_produtos.pedido_id')
+                ->join('clientes', 'clientes.id', '=', 'pedidos.cliente_id')
+                ->whereIn('pedido_produtos.pedido_id', $pedidos)
+                ->where('pedido_produtos.produto_id', '=', $request->produto)
+                ->groupBy('clientes.id', 'clientes.name', 'clientes.cnpj')
+                ->orderBy('clientes.name')
+                ->get();
+
+            $produto = Produto::findOrFail($request->produto);
+
+            $pdf = Pdf::loadView('relatorios.pdf.produtoCliente', [
+                'clientes' => $clientes,
+                'produto' => $produto,
+                'inicio' => $inicio,
+                'fim' => $fim
+            ]);
+
+            return $pdf->download("Relatorio_produto_cliente.pdf");
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao processar requisição. ' . $e->getMessage()
+            ], 400);
+        }
     }
 
     public function processRelatorioProducao(Request $request)

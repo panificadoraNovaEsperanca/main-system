@@ -63,6 +63,7 @@
                               <th>Quantidade</th>
                               <th>Status</th>
                               <th>Data de Início</th>
+                              <th>Usuário</th>
                               <th class="d-flex justify-content-center">Ações</th>
                           </tr>
                       </thead>
@@ -76,6 +77,7 @@
                                   <td>{{ $producao->quantidade }}</td>
                                   <td>{{ $producao->status ? 'Concluído' : 'Pendente' }}</td>
                                   <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
+                                  <td>{{ $producao->user ? $producao->user->name : 'N/A' }}</td>
 
                                   <td>
                                       <button data-id="{{$producao->id}}" type="button" class="btn btn-success confirmarProducao">{{$producao->status ? 'Desfazer':'Ok'}}<i class=" fa  fa-check"></i>

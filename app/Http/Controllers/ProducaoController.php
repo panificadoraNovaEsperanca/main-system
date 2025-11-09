@@ -54,6 +54,11 @@ class ProducaoController extends Controller
             $producaos = [];
             $linhasProcessadas = 0;
 
+            // Validar data global obrigatória
+            if (empty($request->dataProducaoGlobal)) {
+                return back()->with('messages', ['error' => ['A data de produção é obrigatória! Preencha o campo de data no topo da página.']])->withInput($request->all());
+            }
+
             // Processar os arrays do formulário
             if ($request->has('produto_id') && is_array($request->produto_id)) {
                 foreach ($request->produto_id as $index => $produtoId) {
@@ -62,16 +67,28 @@ class ProducaoController extends Controller
                         continue;
                     }
 
-                    // Validar se todos os campos necessários existem
-                    if (!isset($request->quantidade[$index]) || !isset($request->data_inicio[$index])) {
+                    // Validar se quantidade existe e está preenchida
+                    if (!isset($request->quantidade[$index])) {
                         continue;
                     }
 
-                    $quantidade = $request->quantidade[$index];
-                    $dataInicio = $request->data_inicio[$index];
+                    $quantidade = trim($request->quantidade[$index] ?? '');
+                    
+                    // Ignorar linhas sem quantidade ou com quantidade zero
+                    if (empty($quantidade) || $quantidade == '0' || $quantidade == 0) {
+                        continue;
+                    }
 
-                    // Validar dados básicos
-                    if (empty($quantidade) || empty($dataInicio)) {
+                    // Validar se quantidade é um número válido e maior que zero
+                    if (!is_numeric($quantidade) || (int)$quantidade <= 0) {
+                        continue;
+                    }
+
+                    // Usar data global se não houver data específica na linha
+                    $dataInicio = $request->data_inicio[$index] ?? $request->dataProducaoGlobal;
+
+                    // Validar data
+                    if (empty($dataInicio)) {
                         continue;
                     }
 
@@ -87,7 +104,7 @@ class ProducaoController extends Controller
 
             // Validar se há produções para cadastrar
             if (empty($producaos)) {
-                return back()->with('messages', ['error' => ['Nenhuma produção válida para cadastrar!']])->withInput($request->all());
+                return back()->with('messages', ['error' => ['Nenhuma produção válida para cadastrar! Verifique se todos os campos obrigatórios foram preenchidos.']])->withInput($request->all());
             }
 
             // Validar cada produção individualmente
@@ -109,6 +126,7 @@ class ProducaoController extends Controller
                     'produto_id' => $producao['produto_id'],
                     'quantidade' => $producao['quantidade'],
                     'dt_inicio' => Carbon::createFromFormat('d/m/Y H:i', $producao['data_inicio']),
+                    'user_id' => auth()->id(),
                 ]);
             }
 

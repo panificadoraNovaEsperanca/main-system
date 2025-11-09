@@ -56,7 +56,7 @@ class User extends Authenticatable
 
     public function pertenceAoGrupo(string $grupo): bool
     {
-        return $grupo == $this->obtemTodosGrupos();
+        return strtolower($grupo) == strtolower($this->obtemTodosGrupos());
     }
     public function pertenceAPermissao(string $grupo): bool
     {
@@ -73,6 +73,9 @@ class User extends Authenticatable
     public function obtemTodasPermissoes(): array
     {
         return Cache::rememberForever('permissao_usuario_id' . $this->id, function () {
+            if ($this->grupoPermissao == null) {
+                return [];
+            }
             return $this->grupoPermissao->roles->pluck('slug')->toArray();
         });
     }

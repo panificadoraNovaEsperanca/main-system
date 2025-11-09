@@ -20,7 +20,7 @@ class ProducaoBaixaController extends Controller
     public function index()
     {
         
-        $producaos = Producao::with(['produto', 'produto.categoria'])
+        $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
         ->when(request()->query('data'), function ($query) {
             $inicio = Carbon::createFromFormat('d/m/Y', request()->query('data'))->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y', request()->query('data'))->endOfDay();
@@ -50,9 +50,11 @@ class ProducaoBaixaController extends Controller
 
     public function confirmarProducao(Request $request){
         try {
-
             $producao = Producao::findOrFail($request->producao_id);
-            $producao->update(['status' => !$producao->status]);
+            $producao->update([
+                'status' => !$producao->status,
+                'user_id' => auth()->id()
+            ]);
             return response()->json(['success' => true, 'data' => '','message' => 'Produção confirmada com sucesso'], 200);
         } catch (Exception $e) {
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);

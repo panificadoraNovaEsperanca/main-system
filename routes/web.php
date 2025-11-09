@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/relatorioProduto', [ProdutoController::class, 'relatorioProduto'])->name('produto.relatorio')->middleware('permission:admin|root');;
     Route::get('/produto-relatorio', [ProdutoController::class, 'relatorioProdutoIndex'])->name('produto.relatorio.index')->middleware('permission:admin|root');
+    Route::post('/relatorioProdutoCliente', [ProdutoController::class, 'relatorioProdutoCliente'])->name('produto.relatorio.cliente')->middleware('permission:admin|root');
+    Route::get('/produto-cliente-relatorio', [ProdutoController::class, 'relatorioProdutoClienteIndex'])->name('produto.relatorio.cliente.index')->middleware('permission:admin|root');
 
     Route::get('/relatorioProducao', [ProdutoController::class, 'relatorioProducaoIndex'])->name('producao.relatorio')->middleware('permission:admin|root');
     Route::post('/processRelatorioProducao', [ProdutoController::class, 'processRelatorioProducao'])->name('producao.relatorio.processar')->middleware('permission:admin|root');
@@ -105,7 +107,7 @@ Route::middleware('auth')->group(function () {
     Route::post('atualizar', [PedidoController::class, 'atualizarPedidos'])->name('pedido.atualizar');
     Route::post('confirmarProducao', [ProducaoBaixaController::class, 'confirmarProducao'])->name('producao.confirmar');
 
-
+    Route::post('etiquetas',[MotoristaController::class, 'etiquetas'])->name('etiquetas');
 
 
     Route::group(['prefix' => 'ativar'], function () {

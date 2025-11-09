@@ -90,9 +90,9 @@ class PedidoController extends Controller
             foreach ($request->produto as $linha => $valor) {
                 $preco = 0;
                 if ($cliente->tipo_cliente == 'h') {
-                    $preco = $request->precoProduto[$linha];
+                    $preco = $request->precoProduto[$linha] ?? 0;
                 } else {
-                    $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                    $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente] ?? 0;
                 }
                 PedidoProduto::create([
                     'pedido_id' => $pedido->id,
@@ -119,10 +119,9 @@ class PedidoController extends Controller
                     foreach ($request->produto as $linha => $valor) {
                         $preco = 0;
                         if ($cliente->tipo_cliente == 'h') {
-                            $preco = $request->precoProduto[$linha];
+                            $preco = $request->precoProduto[$linha] ?? 0;
                         } else {
-
-                            $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                            $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente] ?? 0;
                         }
                         PedidoProduto::create([
                             'pedido_id' => $novoPedido->id,
@@ -188,9 +187,9 @@ class PedidoController extends Controller
             foreach ($request->produto as $linha => $valor) {
                 $preco = 0;
                 if ($cliente->tipo_cliente == 'h') {
-                    $preco = $request->precoProduto[$linha];
+                    $preco = $request->precoProduto[$linha] ?? 0;
                 } else {
-                    $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                    $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente] ?? 0;
                 }
                 PedidoProduto::updateOrCreate(['pedido_id' => $id, 'produto_id' => $valor], [
                     'pedido_id' => $id,
@@ -216,10 +215,9 @@ class PedidoController extends Controller
                     foreach ($request->produto as $linha => $valor) {
                         $preco = 0;
                         if ($cliente->tipo_cliente == 'h') {
-                            $preco = $request->precoProduto[$linha];
+                            $preco = $request->precoProduto[$linha] ?? 0;
                         } else {
-
-                            $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente];
+                            $preco = Produto::findOrFail($valor)->precos[$cliente->tipo_cliente] ?? 0;
                         }
                         PedidoProduto::create([
                             'pedido_id' => $novoPedido->id,

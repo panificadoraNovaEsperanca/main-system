@@ -42,7 +42,7 @@
 
                 </select>
             </div>
-                {{ $produtos->appends(['paginacao' => $_GET['paginacao'] ?? 10]) }}
+                {{ $produtos->appends(request()->query())->links() }}
 
         </div>
     </form>
