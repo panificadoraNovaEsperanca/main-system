@@ -80,6 +80,17 @@
 
             @hasGroup('admnistrador')
                 <li class="nav-item">
+                    <a href="{{ route('setor.index') }}" class="nav-link">
+                        <i class="nav-icon fa-solid fa-building"></i>
+                        <p>
+                            Setores
+                        </p>
+                    </a>
+                </li>
+            @endhasGroup
+
+            @hasGroup('admnistrador')
+                <li class="nav-item">
                     <a href="{{ route('pedido.index') }}" class="nav-link">
                         <i class="nav-icon fa-solid fa-clipboard-list"></i>
                         <p>

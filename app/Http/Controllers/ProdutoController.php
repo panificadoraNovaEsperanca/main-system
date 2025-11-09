@@ -11,6 +11,7 @@ use App\Models\Pedido;
 use App\Models\PedidoProduto;
 use App\Models\Producao;
 use App\Models\Produto;
+use App\Models\Setor;
 use App\Repositories\ProdutoRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -47,15 +49,32 @@ class ProdutoController extends Controller
     {
 
         $categorias = Categoria::all();
-        return view('produto.form', compact('categorias'));
+        $setores = collect([]);
+        
+        // Carrega setores apenas para administradores
+        $user = Auth::user();
+        if ($user) {
+            $grupoUsuario = strtolower($user->obtemTodosGrupos());
+            if ($grupoUsuario == 'administrador' || $grupoUsuario == 'root' || $grupoUsuario == 'admnistrador') {
+                try {
+                    $setores = Setor::all();
+                } catch (\Exception $e) {
+                    $setores = collect([]);
+                }
+            }
+        }
+        
+        return view('produto.form', compact('categorias', 'setores'));
     }
 
     public function store(ProdutoRequest $request): RedirectResponse
     {
         try {
+            $user = Auth::user();
+            $grupoUsuario = $user ? strtolower($user->obtemTodosGrupos()) : '';
+            $isAdmin = in_array($grupoUsuario, ['administrador', 'root', 'admnistrador']);
 
-
-            Produto::create([
+            $data = [
                 'nome' => $request->nome,
                 'unidade' => $request->unidade,
                 'categoria_id' => $request->categoria_id,
@@ -68,12 +87,15 @@ class ProdutoController extends Controller
                     'f' => $request->precoF,
                     'g' => $request->precoG,
                 ],
-                'setor' => $request->setor,
-                'setor_1' => $request->setor_1,
-                'setor_2' => $request->setor_2,
-                'setor_3' => $request->setor_3,
                 'quantidade_embalagem' => $request->quantidade_embalagem
-            ]);
+            ];
+
+            // Apenas administradores podem definir setor
+            if ($isAdmin && $request->has('setor_id')) {
+                $data['setor_id'] = $request->setor_id ?: null;
+            }
+
+            Produto::create($data);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto criado com sucesso!']]);
         } catch (\Exception $e) {
 
@@ -101,8 +123,22 @@ class ProdutoController extends Controller
 
             $produto = Produto::findOrFail($id);
             $categorias = Categoria::all();
+            $setores = collect([]);
+            
+            // Carrega setores apenas para administradores
+            $user = Auth::user();
+            if ($user) {
+                $grupoUsuario = strtolower($user->obtemTodosGrupos());
+                if ($grupoUsuario == 'administrador' || $grupoUsuario == 'root' || $grupoUsuario == 'admnistrador') {
+                    try {
+                        $setores = Setor::all();
+                    } catch (\Exception $e) {
+                        $setores = collect([]);
+                    }
+                }
+            }
 
-            return view('produto.form', compact('produto', 'categorias'));
+            return view('produto.form', compact('produto', 'categorias', 'setores'));
         } catch (\Exception $e) {
             Log::info(json_encode($e, true));
             return back()->with('messages', ['error' => ['Não foi possível encontrar o produto!']]);
@@ -112,11 +148,14 @@ class ProdutoController extends Controller
     public function update(ProdutoRequest $request, int $id): RedirectResponse
     {
         try {
-            Produto::findOrFail($id)->update([
+            $user = Auth::user();
+            $grupoUsuario = $user ? strtolower($user->obtemTodosGrupos()) : '';
+            $isAdmin = in_array($grupoUsuario, ['administrador', 'root', 'admnistrador']);
+
+            $data = [
                 'nome' => $request->nome,
                 'unidade' => $request->unidade,
                 'categoria_id' => $request->categoria_id,
-
                 'precos' => [
                     'a' => str_replace(',', '.', $request->precoA),
                     'b' => str_replace(',', '.', $request->precoB),
@@ -125,14 +164,16 @@ class ProdutoController extends Controller
                     'e' => str_replace(',', '.', $request->precoE),
                     'f' => str_replace(',', '.', $request->precoF),
                     'g' => str_replace(',', '.', $request->precoG),
-
                 ],
-                'setor' => $request->setor,
-                'setor_1' => $request->setor_1,
-                'setor_2' => $request->setor_2,
-                'setor_3' => $request->setor_3,
                 'quantidade_embalagem' => $request->quantidade_embalagem
-            ]);
+            ];
+
+            // Apenas administradores podem definir setor
+            if ($isAdmin && $request->has('setor_id')) {
+                $data['setor_id'] = $request->setor_id ?: null;
+            }
+
+            Produto::findOrFail($id)->update($data);
             return redirect(route('produto.index'))->with('messages', ['success' => ['Produto atualizado com sucesso!']]);
         } catch (\Exception $e) {
             return back()->with('messages', ['error' => ['Não foi possível atualizar o produto!']])->withInput($request->all());

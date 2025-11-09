@@ -19,6 +19,7 @@ use App\Http\Controllers\ProducaoBaixaController;
 use App\Http\Controllers\ProducaoController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SetorController;
 use App\Http\Controllers\UserController;
 use App\Models\Categoria;
 use App\Models\Marca;
@@ -86,6 +87,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/getPedidosByYear', [HomeController::class, 'getPedidosByYear']);
 
     Route::resource('categoria', CategoriaController::class)->middleware('permission:admin|root');
+    Route::resource('setor', SetorController::class)->middleware('permission:admin|root');
     Route::resource('grupo', GrupoController::class)->middleware('permission:admin|root');;
     Route::resource('permissao', PermissaoController::class)->middleware('permission:admin|root');;
     Route::resource('user', UserController::class)->middleware('permission:admin|root');;
@@ -117,5 +119,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/produto/{produto_id}', [ProdutoController::class, 'ativar'])->name('produto.ativar');
         Route::put('/fornecedor/{fornecedor_id}', [FornecedorController::class, 'ativar'])->name('fornecedor.ativar');
         Route::put('/motorista/{motorista_id}', [MotoristaController::class, 'ativar'])->name('motorista.ativar');
+        Route::put('/setor/{setor_id}', [SetorController::class, 'ativar'])->name('setor.ativar');
     });
 });
