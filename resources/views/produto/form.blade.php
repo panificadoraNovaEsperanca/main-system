@@ -29,9 +29,8 @@
             </div>
             <div class="col-4">
                 <label for="exampleInputEmail1" class="form-label">Categoria</label>
-
                 <select class="custom-select select2" name="categoria_id">
-                    <option hidden disabled>Selecione uma opção</option>
+                    <option hidden disabled {{$produto->categoria_id == null ? 'selected' : ''}}>Selecione uma opção</option>
                     @foreach ($categorias as $categoria)
                         <option {{ isset($produto) && $categoria->id == $produto->categoria_id ? 'selected' : '' }}
                             value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
