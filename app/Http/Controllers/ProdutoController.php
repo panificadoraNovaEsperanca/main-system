@@ -176,16 +176,17 @@ class ProdutoController extends Controller
                 pedido_produtos.produto_id,
                 sum(pedido_produtos.quantidade) as total,
                 produtos.nome as nome_produto,
-                categorias.nome as nome_categoria
+                COALESCE(categorias.nome, \'Outros\') as nome_categoria
             ')
                 ->join('produtos', 'produtos.id', '=', 'pedido_produtos.produto_id')
-                ->join('categorias', 'categorias.id', '=', 'produtos.categoria_id')
+                ->leftJoin('categorias', 'categorias.id', '=', 'produtos.categoria_id')
                 ->whereIn('pedido_produtos.pedido_id', $pedidos)
                 ->when($request->produto != '', function ($query) {
                     $query->where('pedido_produtos.produto_id', '=', request()->produto);
                 })
-                ->groupBy('pedido_produtos.produto_id', 'produtos.nome', 'categorias.nome')
-                ->orderBy('categorias.nome')
+                ->groupBy('pedido_produtos.produto_id', 'produtos.nome')
+                ->groupByRaw('COALESCE(categorias.nome, \'Outros\')')
+                ->orderByRaw('COALESCE(categorias.nome, \'Outros\')')
                 ->orderBy('produtos.nome')
                 ->get();
 
