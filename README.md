@@ -1,5 +1,59 @@
 Requisitos: Docker, docker-compose e composer(execução do laravel sail)
-Passos para executar o projeto
+
+## Ambientes
+
+### Desenvolvimento
+
+Para executar o projeto em ambiente de desenvolvimento (HTTP apenas):
+
+```bash
+docker-compose -f docker-compose-dev.yml up -d
+```
+
+O ambiente de desenvolvimento estará disponível em `http://localhost`
+
+### Produção (HTTPS)
+
+Para executar o projeto em ambiente de produção com HTTPS:
+
+```bash
+docker-compose up -d
+```
+
+#### Configuração de Certificados SSL
+
+O ambiente de produção utiliza certificados SSL do Let's Encrypt. Os certificados devem estar localizados em:
+
+- `/etc/letsencrypt/docker-nginx/fullchain.pem`
+- `/etc/letsencrypt/docker-nginx/privkey.pem`
+
+**Para gerar/renovar certificados Let's Encrypt:**
+
+1. Certifique-se de que o domínio `admin.paesnovaesperanca.com.br` está apontando para o servidor
+2. Instale o certbot:
+   ```bash
+   sudo apt-get update
+   sudo apt-get install certbot
+   ```
+3. Gere o certificado:
+   ```bash
+   sudo certbot certonly --standalone -d admin.paesnovaesperanca.com.br --email panificadoranovaesperanca6@gmail.com --agree-tos --non-interactive
+   ```
+4. Copie os certificados para o diretório esperado:
+   ```bash
+   sudo mkdir -p /etc/letsencrypt/docker-nginx
+   sudo cp /etc/letsencrypt/live/admin.paesnovaesperanca.com.br/fullchain.pem /etc/letsencrypt/docker-nginx/
+   sudo cp /etc/letsencrypt/live/admin.paesnovaesperanca.com.br/privkey.pem /etc/letsencrypt/docker-nginx/
+   ```
+
+**Renovação automática:**
+
+Configure um cron job para renovar os certificados automaticamente:
+```bash
+0 0 * * * certbot renew --quiet && docker-compose restart nginx
+```
+
+## Passos para executar o projeto (método antigo)
 
 - sudo chmod +x run.sh
 - ./run.sh
