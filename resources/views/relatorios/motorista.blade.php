@@ -60,13 +60,12 @@
                     <div class="form-group">
                         <label for="selectImpressora">Impressora:</label>
                         <select class="form-control" id="selectImpressora">
-                            <option value="PDF">PDF (Teste)</option>
-                            <option value="ETIQUETADEIRA">ETIQUETADEIRA</option>
+                            <option value="">Carregando...</option>
                         </select>
                     </div>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="checkModoTeste">
-                        <label class="form-check-label" for="checkModoTeste">Modo Teste (5 etiquetas)</label>
+                        <label class="form-check-label" for="checkModoTeste">Imprimir apenas 1 etiqueta (opcional)</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -291,37 +290,40 @@
                 const impressoras = await qz.printers.find();
                 const selectImpressora = document.getElementById('selectImpressora');
                 
-                // Limpar opções existentes, mas manter as opções padrão
-                const opcoesPadrao = [
-                    { value: 'PDF', text: 'PDF (Teste)' },
-                    { value: 'ETIQUETADEIRA', text: 'ETIQUETADEIRA' }
-                ];
-                
+                // Limpar todas as opções
                 selectImpressora.innerHTML = '';
                 
-                // Adicionar opções padrão
-                opcoesPadrao.forEach(opcao => {
+                // Buscar apenas a impressora zebra_zd220
+                const zebra_zd220 = impressoras.find(p => 
+                    p.toLowerCase() === 'zebra_zd220'.toLowerCase()
+                );
+                
+                if (zebra_zd220) {
+                    // Adicionar apenas a Zebra
                     const option = document.createElement('option');
-                    option.value = opcao.value;
-                    option.textContent = opcao.text;
+                    option.value = zebra_zd220;
+                    option.textContent = zebra_zd220;
                     selectImpressora.appendChild(option);
-                });
-                
-                // Adicionar impressoras encontradas
-                impressoras.forEach(impressora => {
-                    // Não adicionar duplicatas
-                    if (!opcoesPadrao.find(op => op.value === impressora)) {
-                        const option = document.createElement('option');
-                        option.value = impressora;
-                        option.textContent = impressora;
-                        selectImpressora.appendChild(option);
-                    }
-                });
-                
-                console.log('Impressoras encontradas:', impressoras);
+                    console.log('Impressora Zebra encontrada:', zebra_zd220);
+                } else {
+                    // Se não encontrar, mostrar mensagem
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Zebra ZD220 não encontrada';
+                    option.disabled = true;
+                    selectImpressora.appendChild(option);
+                    console.warn('Impressora Zebra não encontrada. Impressoras disponíveis:', impressoras);
+                }
             } catch (error) {
                 console.error('Erro ao buscar impressoras:', error);
-                // Manter as opções padrão em caso de erro
+                // Em caso de erro, limpar e mostrar mensagem
+                const selectImpressora = document.getElementById('selectImpressora');
+                selectImpressora.innerHTML = '';
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Erro ao buscar impressoras';
+                option.disabled = true;
+                selectImpressora.appendChild(option);
             }
         }
 

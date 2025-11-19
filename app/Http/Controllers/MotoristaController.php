@@ -169,7 +169,7 @@ class MotoristaController extends Controller
             $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
             $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
 
-            // Flag de teste - se true, imprime apenas 5 etiquetas
+            // Flag opcional - se true, imprime apenas 1 etiqueta (opcional para teste)
             $modoTeste = $request->get('teste', false);
 
             $motoristasId = Motorista::when($request->motorista != null && $request->motorista != '', function ($query) use ($request) {
@@ -180,10 +180,11 @@ class MotoristaController extends Controller
 
             $etiquetas = [];
             $contadorEtiquetas = 0;
-            $maxEtiquetas = $modoTeste ? 5 : PHP_INT_MAX;
+            // Se modo teste estiver ativo, limita a 1 etiqueta. Caso contrário, imprime todas
+            $maxEtiquetas = $modoTeste ? 1 : PHP_INT_MAX;
 
             foreach ($motoristasId as $motorista_id) {
-                $pedidos = Pedido::with(['produtos.produto', 'cliente', 'motorista'])
+                $pedidos = Pedido::with(['produtos.produto.setor', 'cliente', 'motorista'])
                     ->where('motorista_id', $motorista_id)
                     ->whereBetween('dt_previsao', [$inicio, $fim])
                     ->orderBy('dt_previsao', 'ASC')
@@ -192,7 +193,7 @@ class MotoristaController extends Controller
                 foreach ($pedidos as $pedido) {
                     // Ordenar produtos por setor
                     $produtosOrdenados = $pedido->produtos->sortBy(function ($pedidoProduto) {
-                        return $pedidoProduto->produto->setor ?? '999';
+                        return $pedidoProduto->produto->setor->nome ?? '999';
                     });
 
                     foreach ($produtosOrdenados as $pedidoProduto) {
@@ -211,6 +212,9 @@ class MotoristaController extends Controller
 
                             $quantidadeEtiqueta = min($quantidadeEmbalagem, $quantidadeTotal - ($i * $quantidadeEmbalagem));
 
+                            // Pegar apenas o nome do setor (se existir a relação)
+                            $setorNome = $produto->setor ? $produto->setor->nome : 'N/A';
+
                             $etiquetas[] = [
                                 'data' => $inicio->format('d/m/Y'),
                                 'motorista' => $this->removerCaracteresEspeciais($pedido->motorista->nome),
@@ -218,7 +222,7 @@ class MotoristaController extends Controller
                                 'produto' => $this->removerCaracteresEspeciais($produto->nome),
                                 'quantidade' => $quantidadeEtiqueta,
                                 'pedido' => $pedido->id,
-                                'setor' => $this->removerCaracteresEspeciais($produto->setor ?? 'N/A'),
+                                'setor' => $this->removerCaracteresEspeciais($setorNome),
                                 'indice' => $contadorEtiquetas + 1,
                                 'modoTeste' => $modoTeste
                             ];
@@ -292,57 +296,62 @@ class MotoristaController extends Controller
         $zpl = "";
 
         foreach ($etiquetas as $index => $etiqueta) {
-            // Configurações iniciais da etiqueta - Largura máxima (832 dots para 4 polegadas)
+            // Configurações para etiqueta 100x50mm (203 DPI - ZD220)
+            // 100mm = 3.937" = ~800 dots | 50mm = 1.969" = ~400 dots
             $zpl .= "^XA\n"; // Início da etiqueta
             $zpl .= "^MMT\n"; // Modo de thermal transfer
-            $zpl .= "^PW832\n"; // Largura máxima da etiqueta (832 dots = 4 polegadas)
-            $zpl .= "^LL0400\n"; // Comprimento da etiqueta
-            $zpl .= "^LS0\n"; // Ajuste de posição
+            $zpl .= "^PR6\n"; // Velocidade de impressão
+            $zpl .= "^MD30\n"; // Densidade máxima (0-30, 30 = máximo escuro)
+            $zpl .= "^PW800\n"; // Largura: 800 dots = 100mm @ 203 DPI
+            $zpl .= "^LL400\n"; // Comprimento: 400 dots = 50mm @ 203 DPI
+            $zpl .= "^LS0\n"; // Ajuste de posição vertical
+            $zpl .= "^LH0,0\n"; // Posição de origem
+            $zpl .= "^JMA\n"; // Justificar margem automática
+            $zpl .= "^JUS\n"; // Justificar para cima
+            $zpl .= "^BY2,3,50\n"; // Configuração de código de barras (se necessário)
 
             // Se for modo teste, adicionar indicação
             if ($etiqueta['modoTeste']) {
-                $zpl .= "^FO50,20^A0N,25,25^FD** MODO TESTE **^FS\n";
-                $zpl .= "^FO700,20^A0N,25,25^FD{$etiqueta['indice']}/5^FS\n";
-                $yStart = 70;
-            } else {
+                $zpl .= "^FO20,10^A0N,35,35^FD** TESTE **^FS\n";
                 $yStart = 50;
+            } else {
+                $yStart = 20;
             }
 
             $yPos = $yStart;
+            $fontSize = 40; // Fonte ainda maior para melhor legibilidade
+            $lineHeight = 52; // Espaçamento ainda maior entre linhas para melhor legibilidade
+            $xStart = 15; // Margem esquerda mínima
+            $textWidth = 770; // Largura máxima do campo de texto (800 - 30 de margens)
 
-            // Data
-            $zpl .= "^FO50,{$yPos}^A0N,28,28^FDData: {$etiqueta['data']}^FS\n";
-            $yPos += 40;
+            // Setor - no topo da etiqueta
+            $setorText = "Setor: " . substr($etiqueta['setor'], 0, 50);
+            $zpl .= "^FO{$xStart},{$yPos}^FB{$textWidth},1,0,L^A0N,{$fontSize},{$fontSize}^FD{$setorText}^FS\n";
+            $yPos += $lineHeight;
 
-            // Motorista - usando campo com largura maior
-            $motoristaText = "Motorista: " . substr($etiqueta['motorista'], 0, 50); // Limita tamanho
-            $zpl .= "^FO50,{$yPos}^A0N,28,28^FD{$motoristaText}^FS\n";
-            $yPos += 40;
+            // Data - usando campo de texto com largura máxima
+            $dataText = "Data: {$etiqueta['data']}";
+            $zpl .= "^FO{$xStart},{$yPos}^FB{$textWidth},1,0,L^A0N,{$fontSize},{$fontSize}^FD{$dataText}^FS\n";
+            $yPos += $lineHeight;
 
-            // Cliente - usando campo com largura maior
-            $clienteText = "Cliente: " . substr($etiqueta['cliente'], 0, 50); // Limita tamanho
-            $zpl .= "^FO50,{$yPos}^A0N,28,28^FD{$clienteText}^FS\n";
-            $yPos += 40;
+            // Motorista - texto completo usando campo com largura máxima
+            $motoristaText = "Motorista: " . substr($etiqueta['motorista'], 0, 50);
+            $zpl .= "^FO{$xStart},{$yPos}^FB{$textWidth},1,0,L^A0N,{$fontSize},{$fontSize}^FD{$motoristaText}^FS\n";
+            $yPos += $lineHeight;
 
-            // Produto - usando campo com largura maior
-            $produtoText = "Produto: " . substr($etiqueta['produto'], 0, 50); // Limita tamanho
-            $zpl .= "^FO50,{$yPos}^A0N,28,28^FD{$produtoText}^FS\n";
-            $yPos += 40;
+            // Cliente - texto completo usando campo com largura máxima
+            $clienteText = "Cliente: " . substr($etiqueta['cliente'], 0, 50);
+            $zpl .= "^FO{$xStart},{$yPos}^FB{$textWidth},1,0,L^A0N,{$fontSize},{$fontSize}^FD{$clienteText}^FS\n";
+            $yPos += $lineHeight;
 
-            // Quantidade
-            $zpl .= "^FO50,{$yPos}^A0N,28,28^FDQuantidade: {$etiqueta['quantidade']}^FS\n";
-            $yPos += 40;
+            // Produto - texto completo usando campo com largura máxima
+            $produtoText = "Produto: " . substr($etiqueta['produto'], 0, 50);
+            $zpl .= "^FO{$xStart},{$yPos}^FB{$textWidth},1,0,L^A0N,{$fontSize},{$fontSize}^FD{$produtoText}^FS\n";
+            $yPos += $lineHeight;
 
-            // Pedido
-            $zpl .= "^FO50,{$yPos}^A0N,28,28^FDPedido: {$etiqueta['pedido']}^FS\n";
-            $yPos += 40;
-
-            // Setor - posicionado à direita
-            $zpl .= "^FO650,{$yPos}^A0N,24,24^FDSetor: {$etiqueta['setor']}^FS\n";
-
-            // // Código de barras com número do pedido e índice
-            // $barcodeData = "{$etiqueta['pedido']}-{$etiqueta['indice']}";
-            // $zpl .= "^FO50,350^B3N,,Y,N^FD{$barcodeData}^FS\n";
+            // Quantidade (sem pedido)
+            $qtdText = "Quantidade: {$etiqueta['quantidade']}";
+            $zpl .= "^FO{$xStart},{$yPos}^FB{$textWidth},1,0,L^A0N,{$fontSize},{$fontSize}^FD{$qtdText}^FS\n";
 
             // Finalizar etiqueta
             $zpl .= "^PQ1,0,1,Y^XZ\n";
