@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Padaria Nova Esperança') }} - Login</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -14,18 +14,21 @@
     <link rel="stylesheet" href="{{ asset('css/icheck-bootstrap.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
+    <!-- Login Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/login-custom.css') }}">
 </head>
 <body class="hold-transition login-page">
-<div class="login-box">
-    <div class="login-logo">
-        <a href="/">Padaria Nova Esperança</a>
-    </div>
-    <!-- /.login-logo -->
-    <div class="card">
-        @yield('content')
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-left">
+            <h1 class="login-logo">Padaria Nova Esperança</h1>
+            <p class="login-subtitle">Bem-vindo ao sistema de gestão</p>
+        </div>
+        <div class="login-right">
+            @yield('content')
+        </div>
     </div>
 </div>
-<!-- /.login-box -->
 
 @vite('resources/js/app.js')
 <!-- Bootstrap 4 -->

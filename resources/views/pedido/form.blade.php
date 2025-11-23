@@ -1,6 +1,225 @@
 @extends('layouts.app')
 @section('title', isset($pedido) ? "Editar pedido: $pedido->id" : 'Cadastrar ')
 
+@push('styles')
+<style>
+  /* ============================================
+     ESTILOS CUSTOMIZADOS - FORMULÁRIO DE PEDIDO
+     ============================================ */
+  
+  /* Container principal */
+  .pedido-form-container {
+    padding: 20px 0;
+  }
+  
+  /* Labels melhorados */
+  .form-group label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+  
+  /* Inputs melhorados */
+  .form-control,
+  .custom-select {
+    border: 1.5px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+  }
+  
+  .form-control:focus,
+  .custom-select:focus {
+    border-color: #3D2C1F;
+    box-shadow: 0 0 0 0.2rem rgba(61, 44, 31, 0.15);
+    outline: none;
+  }
+  
+  /* Input group melhorado */
+  .input-group-text {
+    background-color: #f8f9fa;
+    border: 1.5px solid #dee2e6;
+    border-right: none;
+    color: #6c757d;
+  }
+  
+  .input-group .form-control {
+    border-left: none;
+  }
+  
+  .input-group .form-control:focus {
+    border-left: 1.5px solid #3D2C1F;
+  }
+  
+  /* Card de produtos melhorado */
+  .card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+  }
+  
+  .card-header {
+    background: linear-gradient(135deg, #3D2C1F 0%, #5a4430 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    padding: 1rem 1.25rem;
+    border-bottom: none;
+  }
+  
+  .card-header .card-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  /* Botão Adicionar Produto melhorado */
+  #addProduto {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  
+  #addProduto:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  }
+  
+  #addProduto:active {
+    transform: translateY(0);
+  }
+  
+  /* Tabela de produtos - usa padrão global, apenas ajustes específicos */
+  #produtos {
+    /* Herda estilos do .table global */
+  }
+  
+  #produtos tfoot td {
+    text-align: right;
+  }
+  
+  /* Botão Excluir melhorado */
+  .killme {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    border: none;
+    transition: all 0.2s ease;
+  }
+  
+  .killme:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+  }
+  
+  /* Botão Salvar - usa padrão global, apenas margens específicas */
+  button[type="submit"] {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: auto;
+    min-width: 120px;
+  }
+  
+  /* Checkbox melhorado */
+  .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #3D2C1F;
+    border-color: #3D2C1F;
+  }
+  
+  .custom-control-label {
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+  }
+  
+  /* Mensagens de erro melhoradas */
+  .text-red {
+    color: #dc3545 !important;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: block;
+  }
+  
+  /* Select2 melhorado */
+  .select2-container--default .select2-selection--single {
+    border: 1.5px solid #dee2e6;
+    border-radius: 6px;
+    height: 38px;
+    padding: 0.25rem 0;
+  }
+  
+  .select2-container--default .select2-selection--single:focus {
+    border-color: #3D2C1F;
+  }
+  
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+    padding-left: 12px;
+  }
+  
+  .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+    right: 8px;
+  }
+  
+  /* Espaçamento melhorado */
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .row {
+    margin-bottom: 0;
+  }
+  
+  /* Textarea melhorado */
+  textarea.form-control {
+    resize: vertical;
+    min-height: 60px;
+  }
+  
+  /* Inputs numéricos melhorados */
+  input[type="number"] {
+    text-align: right;
+  }
+  
+  input[type="number"]:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .card-body {
+      padding: 1rem;
+    }
+    
+    #addProduto {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    
+    #produtos {
+      font-size: 0.85rem;
+    }
+    
+    #produtos thead th,
+    #produtos tbody td {
+      padding: 0.5rem;
+    }
+  }
+</style>
+@endpush
 
 @section('content')
   <form enctype="multipart/form-data"
@@ -18,6 +237,8 @@
               @if (isset($pedido))
                 <option selected value="{{ $pedido->cliente->id }}-{{ $pedido->cliente->tipo_cliente }}">
                   {{ $pedido->cliente->name }}</option>
+              @elseif(old('cliente'))
+                <option selected value="{{ old('cliente') }}">{{ old('cliente') }}</option>
               @endif
             </select>
           </div>
@@ -34,6 +255,8 @@
               @if (isset($pedido))
                 <option selected value="{{ $pedido->motorista->id }}">
                   {{ $pedido->motorista->nome }}</option>
+              @elseif(old('motorista'))
+                <option selected value="{{ old('motorista') }}">{{ old('motorista') }}</option>
               @endif
             </select>
           </div>
@@ -44,14 +267,14 @@
       </div>
       <div class="col-6">
         <div class="form-group">
-          <label>Data e Hora da entrega</label>
+          <label for="dataHora">Data e Hora da entrega</label>
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">
                 <i class="far fa-calendar-alt"></i>
               </span>
             </div>
-            <input autocomplete="off" type="text" value="{{ isset($pedido) ? $pedido->dt_previsao_formatted : '' }}"
+            <input autocomplete="off" type="text" value="{{ old('dataHora', isset($pedido) ? $pedido->dt_previsao_formatted : '') }}"
               class="form-control float-right" id="dataHora" name="dataHora">
 
           </div>
@@ -67,12 +290,12 @@
             <select class="custom-select" {{ !isset($pedido) ? 'disabled' : '' }} name="status">
               <option hidden>Selecione uma opção</option>
               <option
-                {{ isset($pedido) && $pedido->status == 'AGENDADO' ? 'selected' : (!isset($pedido) ? 'selected' : '') }}
+                {{ old('status', isset($pedido) ? $pedido->status : 'AGENDADO') == 'AGENDADO' ? 'selected' : '' }}
                 value="AGENDADO">Agendado
               </option>
-              <option {{ isset($pedido) && $pedido->status == 'ENTREGUE' ? 'selected' : '' }} value="ENTREGUE">Entregue
+              <option {{ old('status', isset($pedido) ? $pedido->status : '') == 'ENTREGUE' ? 'selected' : '' }} value="ENTREGUE">Entregue
               </option>
-              <option {{ isset($pedido) && $pedido->status == 'CANCELADO' ? 'selected' : '' }} value="CANCELADO">
+              <option {{ old('status', isset($pedido) ? $pedido->status : '') == 'CANCELADO' ? 'selected' : '' }} value="CANCELADO">
                 Cancelado</option>
 
             </select>
@@ -83,30 +306,27 @@
         </div>
       </div>
 
-      <div class="w-100  card  card ">
+      <div class="w-100 card">
 
-        <div class="card-header ">
+        <div class="card-header">
           <h3 class="card-title">Produtos</h3>
-          <div class="card-tools">
-
-          </div>
-
         </div>
-        <div class="card-body row">
-          <div class="col-1 d-flex justify-content-center align-items-start">
-            <button id="addProduto" type="button" class="btn btn-success rounded shadow">Adicionar Produto
-            </button>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-12">
+              <button id="addProduto" type="button" class="btn btn-success">Adicionar Produto</button>
+            </div>
           </div>
-          <div class="col-11">
-            <table class="table table-bordered" id="produtos">
-              <thead class="thead-primary">
-                <tr class="bg-primary">
+          <div class="table-responsive">
+            <table class="table" id="produtos">
+              <thead>
+                <tr>
                   <th scope="col">Produto</th>
                   <th scope="col">Quantidade</th>
                   <th scope="col">Valor Unitário</th>
                   <th scope="col">Observação</th>
                   <th scope="col">Total</th>
-                  <th scope="col"></th>
+                  <th scope="col" style="width: 100px;">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,12 +372,10 @@
                 @endif
               </tbody>
               <tfoot>
-                <tr class=" bg-primary">
+                <tr>
+                  <td colspan="4" style="text-align: right; font-weight: 600; padding-right: 1rem;">Total Geral:</td>
+                  <td id="totalProdutos" style="font-weight: 700; font-size: 1.1rem;">{{ number_format($total, 2, ',', '.') }}</td>
                   <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td id="totalProdutos" colspan="">{{ $total }}</td>
                 </tr>
               </tfoot>
             </table>
@@ -169,7 +387,7 @@
 
         <div class="form-group clearfix">
           <div class="custom-control custom-checkbox">
-            <input type="checkbox" data-ok="0" class="custom-control-input" name="repete" id="repete">
+            <input type="checkbox" data-ok="0" class="custom-control-input" name="repete" id="repete" {{ old('repete') ? 'checked' : '' }}>
             <label class="custom-control-label" for="repete">Replicar pedido?</label>
           </div>
         </div>
@@ -186,7 +404,7 @@
                   </span>
                 </div>
                 <input autocomplete="off" type="text" class="form-control float-right" name="periodo"
-                  id="periodo">
+                  id="periodo" value="{{ old('periodo') }}">
 
               </div>
             </div>
@@ -199,12 +417,25 @@
     </div>
 
 
-    <input type="hidden" id="cliente_id" name="cliente_id" value="{{ isset($pedido) ? $pedido->cliente_id : '' }}">
-    <button type="submit" class="btn btn-primary mt-3">Salvar</button>
+    <input type="hidden" id="cliente_id" name="cliente_id" value="{{ old('cliente_id', isset($pedido) ? $pedido->cliente_id : '') }}">
+    
+    <div class="row" style="margin-top: 2rem; margin-bottom: 2rem;">
+      <div class="col-12">
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save mr-2"></i>Salvar Pedido
+          </button>
+        </div>
+      </div>
+    </div>
 
   </form>
 
   <input type="hidden" id="produtosCatalogo" value="{{ json_encode($produtos) }}">
+  <input type="hidden" id="oldProdutos" value="{{ json_encode(old('produto', [])) }}">
+  <input type="hidden" id="oldQuantidades" value="{{ json_encode(old('quantidade', [])) }}">
+  <input type="hidden" id="oldPrecos" value="{{ json_encode(old('precoProduto', [])) }}">
+  <input type="hidden" id="oldObservacoes" value="{{ json_encode(old('observacao', [])) }}">
   <script></script>
 @endsection
 
@@ -215,8 +446,98 @@
         width: '100%'
       })
 
+      // Restaurar produtos após erro de validação
+      function restaurarProdutos() {
+        let oldProdutos = JSON.parse($('#oldProdutos').val() || '[]');
+        let oldQuantidades = JSON.parse($('#oldQuantidades').val() || '[]');
+        let oldPrecos = JSON.parse($('#oldPrecos').val() || '[]');
+        let oldObservacoes = JSON.parse($('#oldObservacoes').val() || '[]');
+        
+        if (oldProdutos.length > 0 && (tipo_cliente != '' || $('#cliente_id').val() != '')) {
+          oldProdutos.forEach((produtoId, index) => {
+            if (produtoId && produtoId != '0' && produtoId != 0) {
+              let produtos = JSON.parse($('#produtosCatalogo').val());
+              // Converter para número para comparação
+              let produtoIdNum = parseInt(produtoId);
+              let produto = produtos.find(p => p.id == produtoIdNum || p.id == produtoId);
+              if (produto) {
+                let id = $('#produtos tbody tr').length;
+                let precoLiberado = tipo_cliente == 'h';
+                let selectProdutos = `<select class="custom-select produtos " id="select2-${id}" data-id="${id}" name="produto[]" >
+                        <option value="0" hidden>Selecione uma opção</option>`;
+                for (let p of produtos) {
+                  selectProdutos += `<option ${p.id == produtoId ? 'selected' : ''} value="${p.id}">${p.id} - ${p.nome}</option>`;
+                }
+                selectProdutos += "</select>"
+                
+                let quantidade = oldQuantidades[index] || '';
+                let preco = oldPrecos[index] || (tipo_cliente && tipo_cliente != 'h' ? (produto.precos[tipo_cliente] || '') : '');
+                let observacao = oldObservacoes[index] || '';
+                let total = quantidade && preco ? (parseFloat(quantidade) * parseFloat(preco)) : 0;
+                
+                let tr = `<tr data-id="${id}">
+                                <td>${selectProdutos}</td>
+                                <td><input type="number" step="0.1" class="quantidadeProduto form-control " data-id="${id}" id="quantidade-${id}" name="quantidade[]" value="${quantidade}"></td>
+                                <td><input type="number" step="0.1" ${precoLiberado ? '' : 'disabled'} class="form-control precoProduto" id="precoProduto-${id}" data-id="${id}" name="precoProduto[]" value="${preco}"></td>
+                                <td><textarea rows="2" type="text" class="observacao form-control" data-id="${id}" name="observacao[]" style="white-space: pre-wrap; word-wrap: break-word;">${observacao}</textarea></td>
+                                <td><input type="number" step="0.1" disabled class="form-control" id="valorCalculado-${id}" value="${total}"></td>
+                                <td><button class="btn btn-danger killme" data-id="0" type="button">Excluir</button></td>
+                        </tr>`;
+                $('#produtos tbody').append(tr);
+                $(`#select2-${id}`).select2({
+                  width: '100%'
+                });
+              }
+            }
+          });
+          
+          // Recalcular total
+          let total = 0;
+          $('#produtos tbody tr').each(function() {
+            let id = $(this).data('id');
+            let valor = $(`#valorCalculado-${id}`).val() || 0;
+            total += parseFloat(valor);
+          });
+          $('#totalProdutos').text(total.toFixed(2).replace('.', ','));
+        }
+      }
+      
+      @if(!isset($pedido) && old('produto') && !old('cliente'))
+        // Se não houver cliente para restaurar, tentar restaurar produtos diretamente
+        setTimeout(function() {
+          if (tipo_cliente != '' || $('#cliente_id').val() != '') {
+            restaurarProdutos();
+          }
+        }, 1000);
+      @endif
     });
-    let tipo_cliente = '{{ isset($pedido) ? $pedido->cliente->tipo_cliente : '' }}';
+    @php
+      $tipoClienteOld = '';
+      if (old('cliente') && !isset($pedido)) {
+        $clienteParts = explode('-', old('cliente'));
+        $tipoClienteOld = $clienteParts[1] ?? '';
+      }
+      $tipoCliente = $tipoClienteOld ?: (isset($pedido) ? $pedido->cliente->tipo_cliente : '');
+    @endphp
+    let tipo_cliente = '{{ $tipoCliente }}';
+    
+    // Restaurar cliente selecionado se houver old()
+    @if(old('cliente') && !isset($pedido))
+      $(document).ready(function() {
+        let clienteOld = '{{ old('cliente') }}';
+        if (clienteOld) {
+          let clienteParts = clienteOld.split('-');
+          $('#cliente_id').val(clienteParts[0]);
+          tipo_cliente = clienteParts[1] || '';
+          
+          // Aguardar select2 estar pronto e então definir o valor
+          setTimeout(function() {
+            $('#cliente').val(clienteOld).trigger('change');
+          }, 500);
+        }
+      });
+    @endif
+    
     $('#cliente').on('change', function() {
       let cliente = this.value.split('-')
       $('#cliente_id').val(cliente[0])
@@ -255,6 +576,12 @@
         });
       }
     })
+    // Restaurar estado do checkbox repete
+    @if(old('repete'))
+      $('#repete').prop('checked', true);
+      $('#repeticao').show();
+    @endif
+    
     $('#repete').on('change', function() {
       if ($(this).is(':checked')) {
         $('#repeticao').fadeIn('fast', function() {
@@ -303,7 +630,7 @@
             undefined ? 0 : $(`#valorCalculado-${a}`).val()
           total += parseFloat(valor);
         }
-        $('#totalProdutos').text(total);
+        $('#totalProdutos').text(total.toFixed(2).replace('.', ','));
 
       }
     })
@@ -321,7 +648,7 @@
             undefined ? 0 : $(`#valorCalculado-${a}`).val()
           total += parseFloat(valor);
         }
-        $('#totalProdutos').text(total);
+        $('#totalProdutos').text(total.toFixed(2).replace('.', ','));
 
       }
     })
@@ -394,16 +721,37 @@
       format: 'dd/mm/yyyy',
       lang: 'pt'
     });
-    $('#cliente').select2({
+    // Preparar opção inicial se houver old()
+    @if(old('cliente') && !isset($pedido))
+      @php
+        $clienteParts = explode('-', old('cliente'));
+        $clienteId = $clienteParts[0] ?? '';
+        $clienteTipo = $clienteParts[1] ?? '';
+        $cliente = \App\Models\Cliente::find($clienteId);
+      @endphp
+      @if($cliente)
+        var clienteInicial = {
+          id: {!! json_encode(old('cliente')) !!},
+          text: {!! json_encode($cliente->name) !!}
+        };
+      @else
+        var clienteInicial = {
+          id: {!! json_encode(old('cliente')) !!},
+          text: {!! json_encode(old('cliente')) !!}
+        };
+      @endif
+    @else
+      var clienteInicial = null;
+    @endif
+    
+    var clienteSelect2Config = {
       width: "100%",
       ajax: {
         url: '/clientsByName',
         dataType: "json",
         type: "GET",
-        delay: 450, // wait 250 milliseconds before triggering the request
-
+        delay: 450,
         data: function(params) {
-
           var queryParameters = {
             nome: params.term
           }
@@ -417,22 +765,67 @@
                 id: `${item.id}-${item.tipo_cliente}`,
               }
             })
-
           };
         }
       }
-    });
+    };
+    
+    // Adicionar opção inicial se houver old()
+    @if(old('cliente') && !isset($pedido))
+      if (clienteInicial) {
+        clienteSelect2Config.data = [clienteInicial];
+      }
+    @endif
+    
+    $('#cliente').select2(clienteSelect2Config);
+    
+    // Restaurar cliente selecionado após select2 estar pronto
+    @if(old('cliente') && !isset($pedido))
+      setTimeout(function() {
+        let clienteOld = {!! json_encode(old('cliente')) !!};
+        if (clienteOld && clienteInicial) {
+          let clienteParts = clienteOld.split('-');
+          $('#cliente_id').val(clienteParts[0]);
+          tipo_cliente = clienteParts[1] || '';
+          
+          $('#cliente').val(clienteOld).trigger('change');
+          
+          // Após cliente ser restaurado, restaurar produtos
+          setTimeout(function() {
+            restaurarProdutos();
+          }, 300);
+        }
+      }, 500);
+    @endif
 
-    $('#motorista').select2({
+    // Preparar opção inicial do motorista se houver old()
+    @if(old('motorista') && !isset($pedido))
+      @php
+        $motorista = \App\Models\Motorista::find(old('motorista'));
+      @endphp
+      @if($motorista)
+        var motoristaInicial = {
+          id: {!! json_encode(old('motorista')) !!},
+          text: {!! json_encode($motorista->nome . ' - ' . $motorista->turno) !!}
+        };
+      @else
+        var motoristaInicial = {
+          id: {!! json_encode(old('motorista')) !!},
+          text: {!! json_encode(old('motorista')) !!}
+        };
+      @endif
+    @else
+      var motoristaInicial = null;
+    @endif
+    
+    var motoristaSelect2Config = {
       width: "100%",
       ajax: {
         url: '/motoristaByName',
         dataType: "json",
         type: "GET",
-        delay: 450, // wait 250 milliseconds before triggering the request
-
+        delay: 450,
         data: function(params) {
-
           var queryParameters = {
             nome: params.term
           }
@@ -446,10 +839,29 @@
                 id: item.id
               }
             })
-
           };
         }
       }
-    });
+    };
+    
+    // Adicionar opção inicial se houver old()
+    @if(old('motorista') && !isset($pedido))
+      if (motoristaInicial) {
+        motoristaSelect2Config.data = [motoristaInicial];
+      }
+    @endif
+    
+    $('#motorista').select2(motoristaSelect2Config);
+    
+    // Restaurar motorista selecionado após select2 estar pronto
+    @if(old('motorista') && !isset($pedido))
+      setTimeout(function() {
+        let motoristaOld = {!! json_encode(old('motorista')) !!};
+        if (motoristaOld && motoristaInicial) {
+          $('#motorista').val(motoristaOld).trigger('change');
+        }
+      }, 500);
+    @endif
   </script>
 @endpush
+

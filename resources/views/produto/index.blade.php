@@ -49,8 +49,8 @@
     <div class="table-responsive">
 
         @if (!$produtos->isEmpty())
-            <table id="produtosTable" class="table shadow rounded table-striped table-hover">
-                <thead class="bg-primary ">
+            <table id="produtosTable" class="table table-striped table-hover">
+                <thead>
                     <tr>
                         <th>Id</th>
                         <th>Nome</th>

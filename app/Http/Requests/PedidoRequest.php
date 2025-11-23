@@ -21,10 +21,12 @@ class PedidoRequest extends FormRequest
         return [
             'motorista' => 'required',
             'dataHora' => 'required',
-            'produto' => 'min:1',
-            'quantidade' => 'min:1',
+            'produto' => 'required|array|min:1',
+            'produto.*' => 'required|exists:produtos,id',
+            'quantidade' => 'required|array|min:1',
+            'quantidade.*' => 'required|numeric|min:0.1',
             'cliente' => 'required',
-            'dataHora' => 'required',
+            'cliente_id' => 'required',
         ];
     }
 
@@ -36,13 +38,18 @@ class PedidoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'motorista.required' => 'Obrigatório',
-            'dataHora.required' => 'Obrigatório',
-            'status.required' => 'Obrigatório',
-            'dataHora.required' => 'Obrigatório',
-            'produto.min:1' => 'Obrigatório',
-            'quantidade.min:1' => 'Obrigatório',
-            'cliente.required' => 'Obrigatório',
+            'motorista.required' => 'O campo motorista é obrigatório',
+            'dataHora.required' => 'O campo data e hora é obrigatório',
+            'produto.required' => 'É necessário adicionar pelo menos um produto',
+            'produto.min' => 'É necessário adicionar pelo menos um produto',
+            'produto.*.required' => 'Todos os produtos devem ser selecionados',
+            'quantidade.required' => 'É necessário informar a quantidade dos produtos',
+            'quantidade.min' => 'É necessário informar a quantidade dos produtos',
+            'quantidade.*.required' => 'A quantidade é obrigatória',
+            'quantidade.*.numeric' => 'A quantidade deve ser um número',
+            'quantidade.*.min' => 'A quantidade deve ser maior que zero',
+            'cliente.required' => 'O campo cliente é obrigatório',
+            'cliente_id.required' => 'O campo cliente é obrigatório',
         ];
     }
 }

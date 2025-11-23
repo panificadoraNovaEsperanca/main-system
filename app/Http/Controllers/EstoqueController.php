@@ -54,7 +54,7 @@ class EstoqueController extends Controller
 
                 $insumo->save();
                 if ($request->tipo === 'saida' && $insumo->quantidade_atual < $insumo->quantidade_minima) {
-                    Mail::to('heryckmota@gmail.com')
+                    Mail::to('padarianovaesperanca@gmail.com')
                         ->send(new InsumoAbaixoDoMinimoMail($insumo));
                 }
                 Estoque::create([

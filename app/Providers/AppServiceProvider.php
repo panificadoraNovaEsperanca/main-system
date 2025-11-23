@@ -27,7 +27,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrap();
-          if(config('app.env') === 'production') {
+        
+        // Força HTTPS apenas em produção E quando APP_URL usar HTTPS
+        // Não força HTTPS em localhost ou desenvolvimento
+        $appUrl = config('app.url', 'http://localhost');
+        $isProduction = config('app.env') === 'production';
+        $isHttpsUrl = strpos($appUrl, 'https://') === 0;
+        $isLocalhost = strpos($appUrl, 'localhost') !== false || strpos($appUrl, '127.0.0.1') !== false;
+        
+        if($isProduction && $isHttpsUrl && !$isLocalhost) {
             \URL::forceScheme('https');
         }
 

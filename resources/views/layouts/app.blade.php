@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="{{ asset('css/fontawesome.min.css') }}">
   <link rel="stylesheet" href="{{ asset('css/vendor/bootstrap-extended.min.css') }}">
   <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
+  <!-- Modern Theme CSS -->
+  <link rel="stylesheet" href="{{ asset('css/modern-theme.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
@@ -45,35 +47,36 @@
 
     <nav class="main-header navbar navbar-expand navbar-light navbar-white d-flex justify-content-between">
       <ul class="navbar-nav">
-
         <li class="nav-item">
-          <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+            <i class="fa fa-bars"></i>
+          </a>
         </li>
       </ul>
       <div class="">
-
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
-
-          <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
-            <i class="fa-solid fa-user mr-2"></i>
-            {{ Auth::user()->name }}
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" style="left: inherit; right: 0px;">
-            <a href="{{ route('profile.show') }}" class="dropdown-item">
-              <i class="mr-2 fas fa-file"></i>
-              {{ __('Meu perfil') }}
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false" role="button">
+              <i class="fa-solid fa-user mr-2"></i>
+              {{ Auth::user()->name }}
+              <i class="fa-solid fa-chevron-down ml-2" style="font-size: 0.75rem;"></i>
             </a>
-            <div class="dropdown-divider"></div>
-            <form method="POST" action="{{ route('logout') }}">
-              @csrf
-              <a href="{{ route('logout') }}" class="dropdown-item"
-                onclick="event.preventDefault(); this.closest('form').submit();">
-                <i class="mr-2 fas fa-sign-out-alt"></i>
-                {{ __('Log Out') }}
+            <div class="dropdown-menu dropdown-menu-right">
+              <a href="{{ route('profile.show') }}" class="dropdown-item">
+                <i class="mr-2 fas fa-user"></i>
+                {{ __('Meu perfil') }}
               </a>
-            </form>
-          </div>
+              <div class="dropdown-divider"></div>
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <a href="{{ route('logout') }}" class="dropdown-item"
+                  onclick="event.preventDefault(); this.closest('form').submit();">
+                  <i class="mr-2 fas fa-sign-out-alt"></i>
+                  {{ __('Log Out') }}
+                </a>
+              </form>
+            </div>
           </li>
         </ul>
       </div>
@@ -84,10 +87,10 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#3D2C1F">
       <!-- Brand Logo -->
-      <a href="/home" class="brand-link  d-flex align-items-center flex-column">
+      <a href="/home" class="brand-link d-flex align-items-center flex-column">
         <img src="https://paesnovaesperanca.com.br/wp-content/uploads/2023/08/logo.png"
-          alt="Panificadora Nova Esperança Logo" class="" style="opacity: .8; width:100%">
-        <span class="brand-text d-none text-center font-weight-light">Padaria Nova Esperança</span>
+          alt="Panificadora Nova Esperança Logo" class="brand-image">
+        <span class="brand-text d-none text-center font-weight-light text-white">Padaria Nova Esperança</span>
       </a>
 
       @include('layouts.navigation')

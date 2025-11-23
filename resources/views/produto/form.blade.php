@@ -269,12 +269,12 @@
         </div>
 
         <!-- Botões de Ação -->
-        <div class="row mt-4">
+        <div class="row mt-4 mb-4">
             <div class="col-12">
-                <button type="submit" class="btn btn-primary btn-lg">
+                <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save mr-2"></i>Salvar Produto
                 </button>
-                <a href="{{ route('produto.index') }}" class="btn btn-secondary btn-lg ml-2">
+                <a href="{{ route('produto.index') }}" class="btn btn-secondary ml-2">
                     <i class="fas fa-times mr-2"></i>Cancelar
                 </a>
             </div>

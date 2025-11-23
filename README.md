@@ -7,7 +7,7 @@ Requisitos: Docker, docker-compose e composer(execução do laravel sail)
 Para executar o projeto em ambiente de desenvolvimento (HTTP apenas):
 
 ```bash
-docker-compose -f docker-compose-dev.yml up -d
+docker compose -f docker-compose-dev.yml up -d
 ```
 
 O ambiente de desenvolvimento estará disponível em `http://localhost`
