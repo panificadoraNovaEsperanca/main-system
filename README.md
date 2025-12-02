@@ -51,9 +51,24 @@ O ambiente de produção utiliza certificados SSL do Let's Encrypt. Os certifica
    ```
 4. Copie os certificados para o diretório esperado:
    ```bash
+   # Criar o diretório se não existir
    sudo mkdir -p /etc/letsencrypt/docker-nginx
+   
+   # Remover diretórios caso existam (erro comum)
+   sudo rm -rf /etc/letsencrypt/docker-nginx/fullchain.pem
+   sudo rm -rf /etc/letsencrypt/docker-nginx/privkey.pem
+   
+   # Copiar os certificados
    sudo cp /etc/letsencrypt/live/admin.paesnovaesperanca.com.br/fullchain.pem /etc/letsencrypt/docker-nginx/
    sudo cp /etc/letsencrypt/live/admin.paesnovaesperanca.com.br/privkey.pem /etc/letsencrypt/docker-nginx/
+   
+   # Ajustar permissões (importante para segurança)
+   sudo chmod 644 /etc/letsencrypt/docker-nginx/fullchain.pem
+   sudo chmod 600 /etc/letsencrypt/docker-nginx/privkey.pem
+   sudo chown root:root /etc/letsencrypt/docker-nginx/*.pem
+   
+   # Verificar se os arquivos foram copiados corretamente
+   ls -lh /etc/letsencrypt/docker-nginx/
    ```
 
 **Renovação automática:**
