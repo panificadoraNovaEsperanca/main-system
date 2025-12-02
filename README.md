@@ -30,10 +30,20 @@ O ambiente de produção utiliza certificados SSL do Let's Encrypt. Os certifica
 **Para gerar/renovar certificados Let's Encrypt:**
 
 1. Certifique-se de que o domínio `admin.paesnovaesperanca.com.br` está apontando para o servidor
-2. Instale o certbot:
+2. Instale o certbot (Amazon Linux):
    ```bash
-   sudo apt-get update
-   sudo apt-get install certbot
+   # Para Amazon Linux 2
+   sudo yum update -y
+   sudo yum install -y certbot
+   
+   # Se certbot não estiver disponível, instale via snap ou EPEL:
+   # Via snap (recomendado):
+   sudo yum install -y snapd
+   sudo systemctl enable --now snapd.socket
+   sudo ln -s /var/lib/snapd/snap /snap
+   sudo snap install core; sudo snap refresh core
+   sudo snap install --classic certbot
+   sudo ln -sf /snap/bin/certbot /usr/bin/certbot
    ```
 3. Gere o certificado:
    ```bash

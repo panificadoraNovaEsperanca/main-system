@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 RUN apt-get install -y nodejs
 
 # Instalar Yarn globalmente
@@ -42,7 +42,7 @@ RUN npm install
 RUN npm run build
 
 # Etapa 2: Node.js (instalar dependências do frontend)
-FROM node:18-alpine AS npm
+FROM node:20-alpine AS npm
 WORKDIR /app
 COPY --from=composer /build .
 
