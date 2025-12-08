@@ -131,7 +131,7 @@
   <div class="table-responsive">
 
     @if (!$pedidos->isEmpty())
-      <table id="pedidoTable" class="table shadow rounded table-striped table-hover">
+      <table id="pedidoTable" class="table shadow rounded table-striped">
         <thead class="bg-primary ">
           <tr>
             <th><input type="checkbox" id="selectAll"></th>
@@ -185,7 +185,7 @@
 
       </table>
 
-      <button class="btn btn-danger" id="deleteOrders"><i class="fa fa-trash"></i> Excluir pedidos
+      <button class="btn btn-danger mt-3" id="deleteOrders"><i class="fa fa-trash"></i> Excluir pedidos
         selecionados</button>
     @else
       <x-not-found />
@@ -193,61 +193,97 @@
     @endif
 
   </div>
-  <div class="modal fade" id="produtoModal" tabindex="-1" aria-labelledby="produtoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="produtoModalLabel">
-            Pedido n° <b><span id="idPedido"></span></b>
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="">
-            <div class="row">
-              <div class="col-6">
-                <label for="exampleInputEmail1" class="form-label">Cliente</label>
-                <input disabled value="" class="form-control" id="nomeCliente">
-              </div>
-              <div class="col-6">
-                <label for="exampleInputEmail1" class="form-label">Motorista</label>
-                <input disabled value="" class="form-control" id="nomeMotorista">
-              </div>
-              <div class="col-6">
-                <label for="exampleInputEmail1" class="form-label">Data de Entrega</label>
-                <input disabled value="" class="form-control" id="dataEntrega">
-              </div>
-              <div class="col-6">
-                <label for="exampleInputEmail1" class="form-label">Status</label>
-                <input disabled value="" class="form-control" id="status">
-              </div>
-              <div class="col-12 mt-4">
-                <table class="table table-bordered" id="tableProdutos">
-                  <thead>
-                    <tr>
-                      <th>Nome</th>
-                      <th>Quantidade</th>
-                      <th>Preço unitário de venda</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tableProdutosBody">
 
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </form>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          </div>
+@endsection
+
+<style>
+  #produtoModalOverlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 99999 !important;
+    display: none;
+  }
+  
+  #produtoModalContent {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: white !important;
+    border-radius: 4px !important;
+    width: 90% !important;
+    max-width: 800px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    z-index: 100000 !important;
+    display: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  #produtoModalContent * {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  #produtoModalContent .btn:hover,
+  #produtoModalContent .table tbody tr:hover {
+    background-color: inherit !important;
+    color: inherit !important;
+  }
+</style>
+
+<div id="produtoModalOverlay"></div>
+<div id="produtoModalContent">
+  <div style="padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+      <h5 style="margin: 0;">
+        Pedido n° <b><span id="idPedido"></span></b>
+      </h5>
+      <button type="button" id="closeModalBtn" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px; line-height: 30px;">&times;</button>
+    </div>
+    <div>
+      <div class="row">
+        <div class="col-6">
+          <label class="form-label">Cliente</label>
+          <input disabled value="" class="form-control" id="nomeCliente">
+        </div>
+        <div class="col-6">
+          <label class="form-label">Motorista</label>
+          <input disabled value="" class="form-control" id="nomeMotorista">
+        </div>
+        <div class="col-6">
+          <label class="form-label">Data de Entrega</label>
+          <input disabled value="" class="form-control" id="dataEntrega">
+        </div>
+        <div class="col-6">
+          <label class="form-label">Status</label>
+          <input disabled value="" class="form-control" id="status">
+        </div>
+        <div class="col-12 mt-4">
+          <table class="table table-bordered" id="tableProdutos">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Quantidade</th>
+                <th>Preço unitário de venda</th>
+              </tr>
+            </thead>
+            <tbody id="tableProdutosBody">
+
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
+    <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: right;">
+      <button type="button" id="closeModalBtn2" class="btn btn-secondary">Fechar</button>
+    </div>
   </div>
-
-
-
-@endsection
+</div>
 
 @push('scripts')
   <script>
@@ -327,9 +363,52 @@
       document.getElementById('formSearch').submit()
     })
 
-    $('.infoPedido').on('click', function() {
-      console.log(this)
-      fetch(`/pedido/${this.dataset.id}`).then(async (response) => {
+    // Função simples para abrir modal
+    function openModal() {
+      document.getElementById('produtoModalOverlay').style.display = 'block';
+      document.getElementById('produtoModalContent').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Função simples para fechar modal
+    function closeModal() {
+      document.getElementById('produtoModalOverlay').style.display = 'none';
+      document.getElementById('produtoModalContent').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    
+    // Event listeners para fechar modal
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('closeModalBtn2').addEventListener('click', closeModal);
+    document.getElementById('produtoModalOverlay').addEventListener('click', closeModal);
+    
+    // Fechar com ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (document.getElementById('produtoModalContent').style.display === 'block') {
+          closeModal();
+        }
+      }
+    });
+    
+    // Abrir modal ao clicar no botão
+    let modalLoading = false;
+    $(document).off('click', '.infoPedido').on('click', '.infoPedido', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (modalLoading) return;
+      modalLoading = true;
+      
+      const button = $(this);
+      const pedidoId = button.data('id');
+      
+      if (!pedidoId) {
+        modalLoading = false;
+        return;
+      }
+      
+      fetch(`/pedido/${pedidoId}`).then(async (response) => {
         let result = await response.json();
 
         $('#tableProdutosBody').empty();
@@ -347,8 +426,13 @@
                         </tr>`
         }
         $('#tableProdutosBody').append(html)
-        $('#produtoModal').modal('show')
-      })
+        
+        openModal();
+        modalLoading = false;
+      }).catch(error => {
+        console.error('Erro ao carregar dados do pedido:', error);
+        modalLoading = false;
+      });
 
     })
   </script>
