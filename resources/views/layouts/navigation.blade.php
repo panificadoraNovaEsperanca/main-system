@@ -74,8 +74,14 @@
                         @hasGroup('administrador|almoxarifado')
                             <li class="nav-item">
                                 <a href="{{ route('estoque.index') }}" class="nav-link">
+                                    <i class="nav-icon fa-solid fa-history"></i>
+                                    <p>Histórico de Transações</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('estoque.status') }}" class="nav-link">
                                     <i class="nav-icon fa-solid fa-warehouse"></i>
-                                    <p>Estoque</p>
+                                    <p>Status do Estoque</p>
                                 </a>
                             </li>
                         @endhasGroup

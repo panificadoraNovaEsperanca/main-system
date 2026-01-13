@@ -19,16 +19,30 @@ class EstoqueController extends Controller
 
     public function index(): View|RedirectResponse
     {
-
-        $estoques = Estoque::when(request()->search != '', function ($query) {
-            $query->where('id', 'ilike', '%' . request()->search . '%');
-        })
+        // Apenas histórico de transações
+        $estoques = Estoque::with(['insumo', 'operador'])
+            ->when(request()->search != '', function ($query) {
+                $query->where('id', 'ilike', '%' . request()->search . '%')
+                    ->orWhereHas('insumo', function ($q) {
+                        $q->where('nome', 'ilike', '%' . request()->search . '%');
+                    });
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(request()->paginacao ?? 10);
 
-        $insumos = Insumo::orderBy('quantidade_atual', 'asc')
+        return view('estoque.index', compact('estoques'));
+    }
+
+    public function status(): View|RedirectResponse
+    {
+        // Status do estoque (insumos)
+        $insumos = Insumo::when(request()->search != '', function ($query) {
+                $query->where('nome', 'ilike', '%' . request()->search . '%');
+            })
+            ->orderBy('quantidade_atual', 'asc')
             ->paginate(request()->paginacao ?? 10);
-        return view('estoque.index', compact('estoques','insumos'));
+            
+        return view('estoque.status', compact('insumos'));
     }
 
     public function create(): View|RedirectResponse

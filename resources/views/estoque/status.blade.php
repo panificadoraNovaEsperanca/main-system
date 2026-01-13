@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Histórico de Transações')
+@section('title', 'Status do Estoque')
 
 @section('actions')
     <a href="{{ route('estoque.create') }}" class="btn btn-primary">
@@ -7,10 +7,8 @@
     </a>
 @endsection
 
-
 @section('content')
-    <form class="mr-2 d-flex row justify-content-between" id="formSearch" action="{{ route('estoque.index') }}" method="GET">
-
+    <form class="mr-2 d-flex row justify-content-between" id="formSearch" action="{{ route('estoque.status') }}" method="GET">
 
         <div class="d-flex col-md-12 col-sm-12 col-6">
             <div class="d-flex  mb-3">
@@ -29,58 +27,51 @@
                             {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '30' ? 'selected' : '' }}>
                             30
                         </option>
-
-
                     </select>
                 </div>
-                {{ $estoques->appends(['paginacao' => $_GET['paginacao'] ?? 10]) }}
-
+                {{ $insumos->appends(['paginacao' => $_GET['paginacao'] ?? 10, 'search' => $_GET['search'] ?? '']) }}
             </div>
             <div class=" input-group mb-3 d-flex">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
                 </div>
                 <input value="{{ $_GET['search'] ?? '' }}" type="text" id="search" name="search" class="form-control"
-                    placeholder="" aria-label="" aria-describedby="basic-addon1">
-                <a href="{{ route('estoque.index') }}" class="btn btn-primary ">Limpar busca</a>
-
+                    placeholder="Buscar insumo..." aria-label="" aria-describedby="basic-addon1">
+                <a href="{{ route('estoque.status') }}" class="btn btn-primary ">Limpar busca</a>
             </div>
         </div>
-
-
     </form>
 
-
-
     <div class="table-responsive">
-
-        @if (!$estoques->isEmpty())
-            <table id="estoquesTable" class="table shadow rounded table-striped table-hover">
+        @if (!$insumos->isEmpty())
+            <table id="insumosTable" class="table shadow rounded table-striped table-hover">
                 <thead class="bg-primary ">
                     <tr>
-                        <th>Id</th>
                         <th>Insumo</th>
-                        <th>Tipo</th>
-                        <th>Quantidade</th>
-                        <th>Descrição</th>
-                        <th>Usuário Operador</th>
-                        <th>Data</th>
+                        <th>Unidade de Medida</th>
+                        <th>Quantidade Mínima</th>
+                        <th>Quantidade Atual</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody class="">
-                    @foreach ($estoques as $estoque)
+                    @foreach ($insumos as $insumo)
                         <tr>
-                            <td>{{ $estoque->id }}</td>
-                            <td>{{ $estoque->insumo->nome }}</td>
+                            <td>{{ $insumo->nome }}</td>
+                            <td>{{ $insumo->unidade_medida }}</td>
+                            <td>{{ $insumo->quantidade_minima ?? '-' }}</td>
                             <td>
-                                <span class="badge {{ $estoque->tipo == 'entrada' ? 'badge-success' : 'badge-danger' }}">
-                                    {{ $estoque->tipo == 'entrada' ? 'ENTRADA' : 'SAÍDA' }}
-                                </span>
+                                <strong>{{ $insumo->quantidade_atual ?? '0' }}</strong>
                             </td>
-                            <td>{{ $estoque->valor }}</td>
-                            <td>{{ $estoque->descricao ?? '-' }}</td>
-                            <td>{{ $estoque->operador->name ?? 'N/A' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($estoque->created_at)->format('d/m/Y H:i') }}</td>
+                            <td>
+                                @if($insumo->quantidade_atual > $insumo->quantidade_minima)
+                                    <span class="badge badge-success">Normal</span>
+                                @elseif($insumo->quantidade_atual == $insumo->quantidade_minima)
+                                    <span class="badge badge-warning">Atenção</span>
+                                @else
+                                    <span class="badge badge-danger">Necessário Reposição</span>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -89,6 +80,7 @@
             <x-not-found />
         @endif
     </div>
+    @include('insumo.modalInfo')
 
 @endsection
 
@@ -102,3 +94,4 @@
         })
     </script>
 @endpush
+

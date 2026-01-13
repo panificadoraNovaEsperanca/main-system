@@ -97,6 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('producaoBaixa', ProducaoBaixaController::class)->middleware('permission:admin|root|producao');;
     Route::resource('insumo', InsumoController::class)->middleware('permission:admin|root|almoxarifado');
     Route::resource('estoque', EstoqueController::class)->middleware('permission:admin|root|almoxarifado');
+    Route::get('estoque-status', [EstoqueController::class, 'status'])->name('estoque.status')->middleware('permission:admin|root|almoxarifado');
 
     Route::resource('cliente', ClienteController::class)->middleware('permission:admin|root');;
     Route::resource('pedido', PedidoController::class)->middleware('permission:admin|root');;
