@@ -68,6 +68,11 @@ class UserController extends Controller
                 }
             }
             DB::commit();
+            
+            // Limpar cache de permissões do usuário
+            \Illuminate\Support\Facades\Cache::forget('grupo_usuario_' . $user->id);
+            \Illuminate\Support\Facades\Cache::forget('permissao_usuario_id' . $user->id);
+            
             return redirect(route('user.index'))->with('messages', ['success' => ['Usuário criada com sucesso!']]);
         } catch (Exception $e) {
             DB::rollback();
@@ -125,6 +130,10 @@ class UserController extends Controller
                 ]);
             }
       
+            // Limpar cache de permissões do usuário
+            \Illuminate\Support\Facades\Cache::forget('grupo_usuario_' . $user->id);
+            \Illuminate\Support\Facades\Cache::forget('permissao_usuario_id' . $user->id);
+            
              return redirect(route('user.index'))->with('messages', ['success' => ['Usuário atualizado com sucesso!']]);
          } catch (Exception $e) {
              return back()->with('messages', ['error' => ['Não foi possível criar o usuário!']])->withInput($request->all());

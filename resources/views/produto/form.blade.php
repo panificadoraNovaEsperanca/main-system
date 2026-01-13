@@ -115,7 +115,7 @@
                         <span class="mt-1 text-danger p-1 rounded"><small>{{ $message }}</small></span>
                     @enderror
                 </div>
-                @hasGroup('admnistrador')
+                @hasGroup('administrador')
                 <div class="col-md-2 mb-3">
                     <label for="setor_id" class="form-label">Setor</label>
                     <select class="custom-select select2" name="setor_id" id="setor_id">

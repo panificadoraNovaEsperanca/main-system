@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    @hasGroup('admnistrador')
+    @hasGroup('administrador')
         <!-- Cards -->
         <div class="row">
             <div class="col-lg-3 col-6">

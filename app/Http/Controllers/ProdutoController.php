@@ -55,7 +55,8 @@ class ProdutoController extends Controller
         $user = Auth::user();
         if ($user) {
             $grupoUsuario = strtolower($user->obtemTodosGrupos());
-            if ($grupoUsuario == 'administrador' || $grupoUsuario == 'root' || $grupoUsuario == 'admnistrador') {
+            $isAdmin = in_array($grupoUsuario, ['administrador', 'admin', 'admnistrador', 'root']);
+            if ($isAdmin) {
                 try {
                     $setores = Setor::all();
                 } catch (\Exception $e) {
@@ -72,7 +73,7 @@ class ProdutoController extends Controller
         try {
             $user = Auth::user();
             $grupoUsuario = $user ? strtolower($user->obtemTodosGrupos()) : '';
-            $isAdmin = in_array($grupoUsuario, ['administrador', 'root', 'admnistrador']);
+            $isAdmin = in_array($grupoUsuario, ['administrador', 'admin', 'admnistrador', 'root']);
 
             $data = [
                 'nome' => $request->nome,
@@ -129,7 +130,8 @@ class ProdutoController extends Controller
             $user = Auth::user();
             if ($user) {
                 $grupoUsuario = strtolower($user->obtemTodosGrupos());
-                if ($grupoUsuario == 'administrador' || $grupoUsuario == 'root' || $grupoUsuario == 'admnistrador') {
+                $isAdmin = in_array($grupoUsuario, ['administrador', 'admin', 'admnistrador', 'root']);
+                if ($isAdmin) {
                     try {
                         $setores = Setor::all();
                     } catch (\Exception $e) {
@@ -150,7 +152,7 @@ class ProdutoController extends Controller
         try {
             $user = Auth::user();
             $grupoUsuario = $user ? strtolower($user->obtemTodosGrupos()) : '';
-            $isAdmin = in_array($grupoUsuario, ['administrador', 'root', 'admnistrador']);
+            $isAdmin = in_array($grupoUsuario, ['administrador', 'admin', 'admnistrador', 'root']);
 
             $data = [
                 'nome' => $request->nome,

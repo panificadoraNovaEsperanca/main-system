@@ -48,11 +48,25 @@ class AppServiceProvider extends ServiceProvider
                 return true;
             }
             $grupoUsuario = strtolower($user->obtemTodosGrupos());
-            if($grupoUsuario == 'administrador' || $grupoUsuario == 'root'){
+            
+            // Verificar se é administrador (todas as variações possíveis)
+            $isAdmin = in_array($grupoUsuario, ['administrador', 'admin', 'admnistrador', 'root']);
+            if($isAdmin){
                 return true;
             }
+            
             foreach ($grupos as $grupo) {
-                $bool = $user->pertenceAoGrupo(strtolower($grupo));
+                $grupoNormalizado = strtolower(trim($grupo));
+                // Normalizar variações de administrador
+                if (in_array($grupoNormalizado, ['administrador', 'admin', 'admnistrador'])) {
+                    if ($isAdmin) {
+                        $bool = true;
+                        break;
+                    }
+                } else {
+                    $bool = $user->pertenceAoGrupo($grupoNormalizado);
+                    if($bool) break;
+                }
             }
 
             return $bool;
@@ -62,9 +76,13 @@ class AppServiceProvider extends ServiceProvider
             $bool   = false;
             $user = Auth::user();
             $grupoUsuario = strtolower($user->obtemTodosGrupos());
-            if($grupoUsuario == 'administrador' || $grupoUsuario == 'root'){
+            
+            // Verificar se é administrador (todas as variações possíveis)
+            $isAdmin = in_array($grupoUsuario, ['administrador', 'admin', 'admnistrador', 'root']);
+            if($isAdmin){
                 return true;
             }
+            
             foreach ($grupos as $grupo) {
                 if($user->pertenceAPermissao(strtolower($grupo))){
                     return true;

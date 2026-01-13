@@ -51,13 +51,19 @@ class ProducaoBaixaController extends Controller
     public function confirmarProducao(Request $request){
         try {
             $producao = Producao::findOrFail($request->producao_id);
+            
+            // Sempre usar o usuário logado
+            $userId = auth()->id();
+            
             $producao->update([
                 'status' => !$producao->status,
-                'user_id' => auth()->id()
+                'user_id' => $userId
             ]);
-            return response()->json(['success' => true, 'data' => '','message' => 'Produção confirmada com sucesso'], 200);
+            
+            $mensagem = $producao->status ? 'Produção confirmada com sucesso' : 'Produção desfeita com sucesso';
+            return response()->json(['success' => true, 'data' => '','message' => $mensagem], 200);
         } catch (Exception $e) {
-            return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
+            return response()->json(['success' => false, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }
     }
 

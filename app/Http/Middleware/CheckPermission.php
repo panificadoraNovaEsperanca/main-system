@@ -15,25 +15,32 @@ class CheckPermission
         $grupos = explode('|', $permissao);
         $bool   = false;
         $user = Auth::user();
-        $grupoUsuario = strtolower($user->obtemTodosGrupos());
-        if($grupoUsuario == 'administrador' || $grupoUsuario == 'root'){
-            return $next($request);
-        }
-        if($user != null){
-            foreach ($grupos as $grupo) {
-                /** @var User $user */
-                $bool = $user->pertenceAoGrupo(strtolower($grupo));
-                if($bool) break;
+        
+        if($user == null){
+            if($request->getRequestUri() === '/painel/login'){
+                return $next($request);
             }
-            abort_unless($bool, Response::HTTP_FORBIDDEN, 'Você não tem permissão para acessar esta página!');
-
+            abort(401,'Login Expirado!');
+        }
+        
+        // Limpar cache se necessário e obter grupo
+        $grupoUsuario = strtolower($user->obtemTodosGrupos());
+        
+        // Verificar se é administrador ou root (com diferentes variações possíveis)
+        $isAdmin = in_array($grupoUsuario, ['administrador', 'admin', 'admnistrador', 'root']);
+        if($isAdmin){
             return $next($request);
         }
-
-        if($request->getRequestUri() === '/painel/login'){
-            return $next($request);
+        
+        // Verificar se o usuário pertence a algum dos grupos permitidos
+        foreach ($grupos as $grupo) {
+            /** @var User $user */
+            $bool = $user->pertenceAoGrupo(strtolower($grupo));
+            if($bool) break;
         }
-        abort(401,'Login Expirado!');
+        
+        abort_unless($bool, Response::HTTP_FORBIDDEN, 'Você não tem permissão para acessar esta página!');
 
+        return $next($request);
     }
 }

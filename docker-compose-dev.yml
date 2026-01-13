@@ -57,7 +57,7 @@ services:
       - ./nginx-dev.conf:/etc/nginx/conf.d/default.conf
       - ./public:/var/www/html/public  # Apenas a pasta pública precisa estar montada
     ports:
-      - "80:80"
+      - "99:80"
     networks:
       - rede-aplicacao
     depends_on:

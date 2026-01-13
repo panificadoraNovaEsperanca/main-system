@@ -55,7 +55,7 @@ Auth::routes();
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('permission:admin|root');;
+    Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('permission:admin|root');
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/home', [HomeController::class, 'index'])->name('home');

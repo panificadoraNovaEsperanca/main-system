@@ -6,7 +6,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             
             <!-- Página Principal -->
-            @hasGroup('admnistrador')
+            @hasGroup('administrador')
                 <li class="nav-item">
                     <a href="{{ route('home') }}" class="nav-link">
                         <i class="nav-icon fa-solid fa-house"></i>
@@ -16,7 +16,7 @@
             @endhasGroup
 
             <!-- Cadastros -->
-            @hasGroup('admnistrador')
+            @hasGroup('administrador')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa-solid fa-folder"></i>
@@ -61,7 +61,7 @@
             @endhasGroup
 
             <!-- Almoxarifado -->
-            @hasGroup('admnistrador|almoxarifado')
+            @hasGroup('administrador|almoxarifado')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa-solid fa-layer-group"></i>
@@ -71,7 +71,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview" style="display: none;">
-                        @hasGroup('admnistrador|almoxarifado')
+                        @hasGroup('administrador|almoxarifado')
                             <li class="nav-item">
                                 <a href="{{ route('estoque.index') }}" class="nav-link">
                                     <i class="nav-icon fa-solid fa-warehouse"></i>
@@ -79,7 +79,7 @@
                                 </a>
                             </li>
                         @endhasGroup
-                        @hasGroup('admnistrador')
+                        @hasGroup('administrador')
                             <li class="nav-item">
                                 <a href="{{ route('insumo.index') }}" class="nav-link">
                                     <i class="nav-icon fa-solid fa-vial"></i>
@@ -92,7 +92,7 @@
             @endhasGroup
 
             <!-- Operações -->
-            @hasGroup('admnistrador|motorista')
+            @hasGroup('administrador|motorista')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa-solid fa-clipboard-list"></i>
@@ -102,7 +102,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview" style="display: none;">
-                        @hasGroup('admnistrador')
+                        @hasGroup('administrador')
                             <li class="nav-item">
                                 <a href="{{ route('pedido.index') }}" class="nav-link">
                                     <i class="nav-icon fa-solid fa-clipboard-list"></i>
@@ -116,7 +116,7 @@
                                 </a>
                             </li>
                         @endhasGroup
-                        @hasGroup('admnistrador|motorista')
+                        @hasGroup('administrador|motorista')
                             <li class="nav-item">
                                 <a href="{{ route('motorista.entrega.index') }}" class="nav-link">
                                     <i class="nav-icon fa-solid fa-truck-ramp-box"></i>
@@ -129,7 +129,7 @@
             @endhasGroup
 
             <!-- Produção -->
-            @hasGroup('admnistrador|producao')
+            @hasGroup('administrador|producao')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa-solid fa-gears"></i>
@@ -156,7 +156,7 @@
             @endhasGroup
 
             <!-- Relatórios -->
-            @hasGroup('admnistrador')
+            @hasGroup('administrador')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa-solid fa-folder-open"></i>
@@ -201,7 +201,7 @@
             @endhasGroup
 
             <!-- Configurações -->
-            @hasGroup('admnistrador')
+            @hasGroup('administrador')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fa-solid fa-sliders"></i>

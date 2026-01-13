@@ -11,7 +11,7 @@
 @section('content')
 
 
-    <form class="mr-2 d-flex flex-column" id="formSearch" action="{{ route('pedido.index') }}" method="GET">
+    <form class="mr-2 d-flex flex-column" id="formSearch" action="{{ route('producao.index') }}" method="GET">
         <div class="row">
 
             <div class="col-md-3 col-sm-12">
@@ -31,7 +31,7 @@
 
 
             <div class="col-md-2 col-sm-12 mb-3">
-                <a href="{{ route('pedido.index') }}" class="btn btn-primary w-100">Limpar busca</a>
+                <a href="{{ route('producao.index') }}" class="btn btn-primary w-100">Limpar busca</a>
 
             </div>
         </div>
@@ -195,32 +195,43 @@
                 console.log(error)
             });
         })
-        $('#dataHora').daterangepicker({
-            locale: {
-                format: 'DD/MM/YYYY'
+        $('#dataHora').datetimepicker({
+            i18n: {
+                de: {
+                    months: [
+                        'Janeiro',
+                        'Fevereiro',
+                        'Março',
+                        'Abril',
+                        'Maio',
+                        'Junho',
+                        'Julho',
+                        'Agosto',
+                        'Setembro',
+                        'Outubro',
+                        'Novembro',
+                        'Dezembro'
+                    ],
+                    dayOfWeek: [
+                        'Dom',
+                        'Seg',
+                        'Ter',
+                        'Qua',
+                        'Qui',
+                        'Sex',
+                        'Sáb'
+                    ]
+                }
             },
+            format: 'd/m/Y',
+            lang: 'pt',
+            timepicker: false
         });
-        document.getElementById('motorista').addEventListener('change', function() {
-            document.getElementById('formSearch').submit()
-        })
-        document.getElementById('cliente').addEventListener('change', function() {
-            document.getElementById('formSearch').submit()
-        })
-        document.getElementById('codigo').addEventListener('change', function() {
-            document.getElementById('formSearch').submit()
-        })
-        $("#dataHora").on("change.datetimepicker", ({
-            date,
-            oldDate
-        }) => {
-
-            document.getElementById('formSearch').submit()
-            return ''
-        })
-        document.getElementById('dataHora').addEventListener('change', function() {})
-        document.getElementById('status').addEventListener('change', function() {
-            document.getElementById('formSearch').submit()
-        })
+        
+        $('#dataHora').on('change', function() {
+            document.getElementById('formSearch').submit();
+        });
+        
         document.getElementById('paginacao').addEventListener('change', function() {
             document.getElementById('formSearch').submit()
         })

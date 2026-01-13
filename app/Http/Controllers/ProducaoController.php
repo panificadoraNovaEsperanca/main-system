@@ -20,12 +20,26 @@ class ProducaoController extends Controller
      */
     public function index()
     {
+        $queryPendentes = Producao::where('status', false)->with(['produto']);
+        $queryConcluidas = Producao::where('status', true)->with(['produto']);
 
-        $producaosPendentes = Producao::where('status', false)->with(['produto'])
-            ->paginate(request()->paginacao ?? 30);
+        // Filtro por data
+        if (request()->has('dataHora') && !empty(request()->dataHora)) {
+            try {
+                $data = Carbon::createFromFormat('d/m/Y', request()->dataHora);
+                $inicio = $data->copy()->startOfDay();
+                $fim = $data->copy()->endOfDay();
+                
+                $queryPendentes->whereBetween('dt_inicio', [$inicio, $fim]);
+                $queryConcluidas->whereBetween('dt_inicio', [$inicio, $fim]);
+            } catch (\Exception $e) {
+                // Se a data estiver em formato inválido, ignora o filtro
+            }
+        }
 
-        $producaosConcluidas = Producao::where('status', true)->with(['produto'])
-            ->paginate(request()->paginacao ?? 30);
+        $producaosPendentes = $queryPendentes->paginate(request()->paginacao ?? 30);
+        $producaosConcluidas = $queryConcluidas->paginate(request()->paginacao ?? 30);
+        
         return view('producao.index', compact('producaosPendentes', 'producaosConcluidas'));
     }
 
@@ -95,7 +109,8 @@ class ProducaoController extends Controller
                     $producaos[] = [
                         'produto_id' => $produtoId,
                         'quantidade' => (int) $quantidade,
-                        'data_inicio' => $dataInicio
+                        'data_inicio' => $dataInicio,
+                        'observacao' => $request->observacao[$index] ?? null
                     ];
 
                     $linhasProcessadas++;
@@ -122,11 +137,12 @@ class ProducaoController extends Controller
 
             // Cadastrar as produções
             foreach ($producaos as $producao) {
-                Producao::create([
+                    Producao::create([
                     'produto_id' => $producao['produto_id'],
                     'quantidade' => $producao['quantidade'],
                     'dt_inicio' => Carbon::createFromFormat('d/m/Y H:i', $producao['data_inicio']),
                     'user_id' => auth()->id(),
+                    'observacao' => $producao['observacao'] ?? null,
                 ]);
             }
 

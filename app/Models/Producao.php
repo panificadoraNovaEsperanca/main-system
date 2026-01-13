@@ -15,6 +15,7 @@ class Producao extends Model
         'produto_id',
         'user_id',
         'turno',
+        'observacao',
     ];
 
     public function produto(){

@@ -63,6 +63,7 @@
                               <th>Quantidade</th>
                               <th>Status</th>
                               <th>Data de Início</th>
+                              <th>Observação</th>
                               <th>Usuário</th>
                               <th class="d-flex justify-content-center">Ações</th>
                           </tr>
@@ -77,10 +78,11 @@
                                   <td>{{ $producao->quantidade }}</td>
                                   <td>{{ $producao->status ? 'Concluído' : 'Pendente' }}</td>
                                   <td>{{ \Carbon\Carbon::parse($producao->dt_inicio)->format('d/m/Y H:i') }}</td>
-                                  <td>{{ $producao->user ? $producao->user->name : 'N/A' }}</td>
+                                  <td>{{ $producao->observacao ?? '-' }}</td>
+                                  <td>{{ $producao->user ? ($producao->user->id . ' - ' . $producao->user->name) : 'N/A' }}</td>
 
                                   <td>
-                                      <button data-id="{{$producao->id}}" type="button" class="btn btn-success confirmarProducao">{{$producao->status ? 'Desfazer':'Ok'}}<i class=" fa  fa-check"></i>
+                                      <button data-id="{{$producao->id}}" data-status="{{$producao->status}}" type="button" class="btn {{$producao->status ? 'btn-success' : 'btn-danger'}} confirmarProducao">{{$producao->status ? 'Desfazer':'Ok'}}<i class=" fa  fa-check"></i>
                                   </button>
                                   </td>
                               </tr>
@@ -139,7 +141,12 @@
       lang: 'pt'
     });
         $('.confirmarProducao').on('click', async function() {
-          console.log(this.dataset.id)
+          const producaoId = this.dataset.id;
+          // Usar sempre o usuário logado (não precisa mais pedir)
+          confirmarBaixa(producaoId);
+        })
+        
+        function confirmarBaixa(producaoId) {
             fetch("confirmarProducao", {
                 method: "POST",
                 headers: {
@@ -148,17 +155,22 @@
                     "X-CSRF-Token": $('meta[name="csrf-token"]').val()
                 },
                 body: JSON.stringify({
-                    producao_id: this.dataset.id,
+                    producao_id: producaoId,
                     _token: "{{ csrf_token() }}",
 
                 })
             }).then((response) => {
                 response.json().then((res) => {
                     console.log(res)
-                    if (res.data.success && res.data == '') {
+                    if (res.success) {
                         Toast.fire({
                             icon: 'success',
                             title: res.message
+                        });
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: res.message || 'Erro ao processar requisição'
                         });
                     }
 
@@ -170,8 +182,12 @@
 
             }).catch((error) => {
                 console.log(error)
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Erro ao processar requisição'
+                });
             });
-        })
+        }
         $('.trigger').on('change',function(){
           document.getElementById('formSearch').submit()
 

@@ -49,6 +49,7 @@
                                         <th>Produto</th>
                                         <th>Quantidade</th>
                                         <th>Data de Início</th>
+                                        <th>Observação</th>
                                         <th width="100">Ações</th>
                                     </tr>
                                 </thead>
@@ -71,6 +72,9 @@
                                         <td>
                                             <input autocomplete="off" type="text" value=""
                                                 class="form-control float-right dataHora" name="data_inicio[]" readonly>
+                                        </td>
+                                        <td>
+                                            <textarea rows="2" class="form-control" name="observacao[]" placeholder="Observação"></textarea>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-danger btn-remover-linha" disabled>
@@ -123,6 +127,9 @@
                         </td>
                         <td>
                             <input autocomplete="off" type="text" value="" class="form-control float-right dataHora" name="data_inicio[]" readonly>
+                        </td>
+                        <td>
+                            <textarea rows="2" class="form-control" name="observacao[]" placeholder="Observação"></textarea>
                         </td>
                         <td>
                             <button type="button" class="btn btn-sm btn-danger btn-remover-linha">
