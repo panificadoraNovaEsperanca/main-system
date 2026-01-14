@@ -107,7 +107,8 @@ class ProdutoController extends Controller
     public function show(int $produto_id): JsonResponse
     {
         try {
-            $produto = $this->produtoRepository->getProduto($produto_id);
+            // Buscar produto diretamente do modelo para garantir que os preços sejam retornados
+            $produto = Produto::findOrFail($produto_id);
             return response()->json(['success' => true, 'data' => $produto], 200);
         } catch (\Exception $e) {
             if ($e instanceof ModelNotFoundException) {
