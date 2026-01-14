@@ -488,44 +488,23 @@
                   width: '100%'
                 });
                 
-                // Se não houver preço e não for tipo 'h', buscar do servidor
-                if (!preco && tipo_cliente && tipo_cliente != 'h' && (!produto.precos || !produto.precos[tipo_cliente])) {
-                  fetch(`/produto/${produtoId}`, {
-                    method: 'GET',
-                    headers: {
-                      'Accept': 'application/json',
-                      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                  })
-                  .then(response => response.json())
-                  .then(result => {
-                    if (result.success && result.data && result.data.precos && result.data.precos[tipo_cliente]) {
-                      $(`#precoProduto-${id}`).val(result.data.precos[tipo_cliente]);
-                      // Atualizar o array local
-                      let produtosAtualizados = JSON.parse($('#produtosCatalogo').val());
-                      let indexProd = produtosAtualizados.findIndex(p => p.id == produtoIdNum || p.id == produtoId);
-                      if (indexProd >= 0) {
-                        produtosAtualizados[indexProd] = result.data;
-                        $('#produtosCatalogo').val(JSON.stringify(produtosAtualizados));
-                      }
-                      // Recalcular total
-                      let quantidadeAtual = $(`#quantidade-${id}`).val();
-                      if (quantidadeAtual) {
-                        let precoTotal = parseFloat(quantidadeAtual) * parseFloat(result.data.precos[tipo_cliente]);
-                        $(`#valorCalculado-${id}`).val(precoTotal);
-                        let totalGeral = 0;
-                        $('#produtos tbody tr').each(function() {
-                          let rowId = $(this).data('id');
-                          let valor = $(`#valorCalculado-${rowId}`).val() || 0;
-                          totalGeral += parseFloat(valor);
-                        });
-                        $('#totalProdutos').text(totalGeral.toFixed(2).replace('.', ','));
-                      }
-                    }
-                  })
-                  .catch(error => {
-                    console.error('Erro ao buscar produto:', error);
-                  });
+                // Se não houver preço e o produto tiver preços no array, usar do array
+                if (!preco && tipo_cliente && tipo_cliente != 'h' && produto.precos && produto.precos[tipo_cliente]) {
+                  let precoDoArray = produto.precos[tipo_cliente].toString().replace(',', '.');
+                  $(`#precoProduto-${id}`).val(precoDoArray);
+                  // Recalcular total
+                  let quantidadeAtual = $(`#quantidade-${id}`).val();
+                  if (quantidadeAtual) {
+                    let precoTotal = parseFloat(quantidadeAtual) * parseFloat(precoDoArray);
+                    $(`#valorCalculado-${id}`).val(precoTotal);
+                    let totalGeral = 0;
+                    $('#produtos tbody tr').each(function() {
+                      let rowId = $(this).data('id');
+                      let valor = $(`#valorCalculado-${rowId}`).val() || 0;
+                      totalGeral += parseFloat(valor);
+                    });
+                    $('#totalProdutos').text(totalGeral.toFixed(2).replace('.', ','));
+                  }
                 }
               }
             }
@@ -640,60 +619,17 @@
       let produtos = JSON.parse($('#produtosCatalogo').val());
       let produto = produtos.find((element) => element.id == produtoId || element.id == parseInt(produtoId));
       
-      // Se o produto não foi encontrado no array local ou não tem preços, buscar via AJAX
-      if (!produto || !produto.precos || !produto.precos[tipo_cliente]) {
-        // Buscar produto atualizado do servidor
-        fetch(`/produto/${produtoId}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          }
-        })
-        .then(response => response.json())
-        .then(result => {
-          if (result.success && result.data) {
-            let produtoAtualizado = result.data;
-            // Atualizar o array local
-            let index = produtos.findIndex(p => p.id == produtoId || p.id == parseInt(produtoId));
-            if (index >= 0) {
-              produtos[index] = produtoAtualizado;
-            } else {
-              produtos.push(produtoAtualizado);
-            }
-            $('#produtosCatalogo').val(JSON.stringify(produtos));
-            
-            // Preencher o preço
-            if (produtoAtualizado.precos && produtoAtualizado.precos[tipo_cliente]) {
-              $(`#precoProduto-${id}`).val(produtoAtualizado.precos[tipo_cliente]);
-              // Recalcular total se houver quantidade
-              let quantidade = $(`#quantidade-${id}`).val();
-              if (quantidade) {
-                let precoTotal = parseFloat(quantidade) * parseFloat(produtoAtualizado.precos[tipo_cliente]);
-                $(`#valorCalculado-${id}`).val(precoTotal);
-                // Recalcular total geral
-                let total = 0;
-                $('#produtos tbody tr').each(function() {
-                  let rowId = $(this).data('id');
-                  let valor = $(`#valorCalculado-${rowId}`).val() || 0;
-                  total += parseFloat(valor);
-                });
-                $('#totalProdutos').text(total.toFixed(2).replace('.', ','));
-              }
-            }
-          }
-        })
-        .catch(error => {
-          console.error('Erro ao buscar produto:', error);
-        });
-      } else {
-        // Produto encontrado no array local, usar os dados locais
-        $(`#precoProduto-${id}`).val(produto.precos[tipo_cliente]);
+      if (produto && produto.precos && produto.precos[tipo_cliente]) {
+        // Converter vírgula para ponto no preço
+        let preco = produto.precos[tipo_cliente].toString().replace(',', '.');
+        $(`#precoProduto-${id}`).val(preco);
+        
         // Recalcular total se houver quantidade
         let quantidade = $(`#quantidade-${id}`).val();
-        if (quantidade && produto.precos[tipo_cliente]) {
-          let precoTotal = parseFloat(quantidade) * parseFloat(produto.precos[tipo_cliente]);
+        if (quantidade) {
+          let precoTotal = parseFloat(quantidade) * parseFloat(preco);
           $(`#valorCalculado-${id}`).val(precoTotal);
+          
           // Recalcular total geral
           let total = 0;
           $('#produtos tbody tr').each(function() {
@@ -788,33 +724,10 @@
         $('#produtos tbody').append(tr)
         if (produtos.length == 1) {
           let produtoUnico = produtos[0];
-          // Verificar se o produto tem preços, se não tiver, buscar do servidor
+          // Usar preços do array local
           if (produtoUnico.precos && produtoUnico.precos[tipo_cliente]) {
-            $(`#precoProduto-${id}`).val(produtoUnico.precos[tipo_cliente])
-          } else {
-            // Buscar produto atualizado do servidor
-            fetch(`/produto/${produtoUnico.id}`, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-              }
-            })
-            .then(response => response.json())
-            .then(result => {
-              if (result.success && result.data && result.data.precos && result.data.precos[tipo_cliente]) {
-                $(`#precoProduto-${id}`).val(result.data.precos[tipo_cliente]);
-                // Atualizar o array local
-                let index = produtos.findIndex(p => p.id == produtoUnico.id);
-                if (index >= 0) {
-                  produtos[index] = result.data;
-                  $('#produtosCatalogo').val(JSON.stringify(produtos));
-                }
-              }
-            })
-            .catch(error => {
-              console.error('Erro ao buscar produto:', error);
-            });
+            let preco = produtoUnico.precos[tipo_cliente].toString().replace(',', '.');
+            $(`#precoProduto-${id}`).val(preco);
           }
         }
         $(`#select2-${id}`).select2({
