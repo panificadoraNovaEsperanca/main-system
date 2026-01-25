@@ -55,7 +55,7 @@
    </div>
 </div>
     @if (!$lotes->isEmpty())
-        <table id="produtosTable" class="table shadow rounded table-striped table-hover">
+        <table id="produtosTable" class="table shadow rounded table-striped ">
             <thead class="bg-primary ">
                 <tr>
                     <th> Código do lote</th>

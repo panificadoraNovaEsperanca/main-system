@@ -44,7 +44,7 @@
         </div>
     </form>
     @if (!$setores->isEmpty())
-        <table id="setorTable" class="table shadow rounded table-striped table-hover">
+        <table id="setorTable" class="table shadow rounded table-striped ">
             <thead class="bg-primary ">
                 <tr>
                     <th>Id</th>

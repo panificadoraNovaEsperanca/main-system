@@ -43,7 +43,7 @@
                     <div id="collapse{{ $categoria->id }}" class="collapse" aria-labelledby="heading{{ $categoria->id }}"
                         data-parent="#accordion">
                         <div class="card-body" style="background: #dedede">
-                            <table class="table shadow rounded table-striped table-hover">
+                            <table class="table shadow rounded table-striped ">
                                 <thead class="bg-primary">
                                     <tr>
                                         <th>Produto</th>

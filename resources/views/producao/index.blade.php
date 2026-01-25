@@ -84,7 +84,7 @@
     <br>
     <h3>Produções Pendentes</h3>
     <div class="table-responsive">
-        <table id="pedidoTable" class="table shadow rounded table-striped table-hover">
+        <table id="pedidoTable" class="table shadow rounded table-striped ">
             <thead class="bg-primary ">
                 <tr>
                     <th>id</th>
@@ -121,7 +121,7 @@
     <h3>Produções Concluídas</h3>
     <div class="table-responsive">
 
-        <table id="pedidoTable" class="table shadow rounded table-striped table-hover">
+        <table id="pedidoTable" class="table shadow rounded table-striped ">
             <thead class="bg-primary ">
                 <tr>
                     <th>#</th>

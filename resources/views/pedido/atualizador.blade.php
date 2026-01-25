@@ -117,7 +117,7 @@
 
       <form method="POST" action="{{ route('pedido.atualizar') }}">
         @csrf
-        <table id="pedidoTable" class="table shadow rounded table-striped table-hover">
+        <table id="pedidoTable" class="table shadow rounded table-striped ">
 
 
           <thead class="bg-primary ">

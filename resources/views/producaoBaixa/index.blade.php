@@ -54,7 +54,7 @@
                 <div id="collapse{{$loop->index}}" class="collapse " aria-labelledby="heading{{$loop->index}}" data-parent="#accordionExample">
                   <div class="card-body" style="background: #dedede">
 
-                    <table id="pedidoTable" class="table shadow rounded table-striped table-hover">
+                    <table id="pedidoTable" class="table shadow rounded table-striped ">
   
                       <thead class="bg-primary ">
                           <tr>

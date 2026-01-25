@@ -23,7 +23,7 @@
             {{-- {{$produtosCategoria->appends(['paginacao' => $_GET['paginacao'] ?? 10])}} --}}
         </div>
         @if ($produtosCategoria->isNotEmpty())
-            <table id="produtosCategoriaTable" class="table shadow rounded table-striped table-hover">
+            <table id="produtosCategoriaTable" class="table shadow rounded table-striped ">
                 <thead class="bg-primary ">
                     <tr>
                         <th>Id</th>

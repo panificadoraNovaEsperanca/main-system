@@ -18,6 +18,7 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProducaoBaixaController;
 use App\Http\Controllers\ProducaoController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\RastreabilidadeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SetorController;
 use App\Http\Controllers\UserController;
@@ -111,6 +112,16 @@ Route::middleware('auth')->group(function () {
     Route::post('confirmarProducao', [ProducaoBaixaController::class, 'confirmarProducao'])->name('producao.confirmar');
 
     Route::post('etiquetas',[MotoristaController::class, 'etiquetas'])->name('etiquetas');
+
+    // Rastreabilidade
+    Route::get('/rastreabilidade/configuracao', [RastreabilidadeController::class, 'configuracao'])->name('rastreabilidade.configuracao')->middleware('permission:admin|root');
+    Route::post('/rastreabilidade/configuracao', [RastreabilidadeController::class, 'storeConfiguracao'])->name('rastreabilidade.storeConfiguracao')->middleware('permission:admin|root');
+    Route::post('/rastreabilidade/receita', [RastreabilidadeController::class, 'storeReceita'])->name('rastreabilidade.storeReceita')->middleware('permission:admin|root');
+    Route::get('/rastreabilidade', [RastreabilidadeController::class, 'index'])->name('rastreabilidade.index')->middleware('permission:admin|root|producao');
+    Route::post('/rastreabilidade', [RastreabilidadeController::class, 'store'])->name('rastreabilidade.store')->middleware('permission:admin|root|producao');
+    Route::delete('/rastreabilidade/lote/{rastreabilidadeLote}', [RastreabilidadeController::class, 'destroy'])->name('rastreabilidade.destroy')->middleware('permission:admin|root|producao');
+    Route::get('/rastreabilidade/relatorio', [RastreabilidadeController::class, 'relatorioIndex'])->name('rastreabilidade.relatorio.index')->middleware('permission:admin|root|producao');
+    Route::post('/rastreabilidade/relatorio', [RastreabilidadeController::class, 'gerarRelatorio'])->name('rastreabilidade.relatorio.gerar')->middleware('permission:admin|root|producao');
 
 
     Route::group(['prefix' => 'ativar'], function () {

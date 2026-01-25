@@ -165,7 +165,7 @@
       customClass: {
         popup: 'colored-toast',
       },
-      animation: true,
+      animation: false,
       showConfirmButton: false,
       timer: 3500,
       timerProgressBar: true,

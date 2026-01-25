@@ -46,7 +46,7 @@
     @if (!$clientes->isEmpty())
         <div class="table-responsive">
 
-            <table id="clienteTable" class="table  shadow rounded table-striped table-hover">
+            <table id="clienteTable" class="table  shadow rounded table-striped ">
                 <thead class="bg-primary ">
                     <tr>
                         <th>ID</th>

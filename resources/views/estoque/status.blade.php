@@ -44,7 +44,7 @@
 
     <div class="table-responsive">
         @if (!$insumos->isEmpty())
-            <table id="insumosTable" class="table shadow rounded table-striped table-hover">
+            <table id="insumosTable" class="table shadow rounded table-striped ">
                 <thead class="bg-primary ">
                     <tr>
                         <th>Insumo</th>

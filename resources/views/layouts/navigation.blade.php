@@ -157,6 +157,12 @@
                                 <p>Cadastro de Produção</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('rastreabilidade.index') }}" class="nav-link">
+                                <i class="nav-icon fa-solid fa-clipboard-check"></i>
+                                <p>Rastreabilidade</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             @endhasGroup

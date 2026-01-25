@@ -43,7 +43,7 @@
 </form>
 
     @if ($lancamentos->isNotEmpty())
-        <table id="produtosTable" class="table shadow rounded table-striped table-hover">
+        <table id="produtosTable" class="table shadow rounded table-striped ">
             <thead class="bg-primary ">
                 <tr>
                     <th>Lançamento</th>

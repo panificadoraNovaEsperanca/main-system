@@ -30,11 +30,9 @@
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
         }
         
         .preco-input-group:hover {
-            transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
@@ -49,7 +47,6 @@
             border: 2px solid #e9ecef;
             border-radius: 6px;
             padding: 10px;
-            transition: border-color 0.3s;
         }
         
         .preco-input-group input:focus {

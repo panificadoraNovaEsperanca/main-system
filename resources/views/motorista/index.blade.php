@@ -48,7 +48,7 @@
     </div>
   </form>
   @if (!$motoristas->isEmpty())
-    <table id="motoristaTable" class="table shadow rounded table-striped table-hover">
+    <table id="motoristaTable" class="table shadow rounded table-striped ">
       <thead class="bg-primary ">
         <tr>
           <th>Id</th>

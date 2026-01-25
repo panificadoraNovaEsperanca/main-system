@@ -49,7 +49,7 @@
     <div class="table-responsive">
 
         @if (!$produtos->isEmpty())
-            <table id="produtosTable" class="table table-striped table-hover">
+            <table id="produtosTable" class="table table-striped ">
                 <thead>
                     <tr>
                         <th>Id</th>

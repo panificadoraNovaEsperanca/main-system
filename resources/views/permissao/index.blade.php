@@ -43,7 +43,7 @@
         </div>
     </form>
     @if (!$permissoes->isEmpty())
-        <table id="grupoTable" class="table shadow rounded table-striped table-hover">
+        <table id="grupoTable" class="table shadow rounded table-striped ">
             <thead class="bg-primary ">
                 <tr>
                     <th>Id</th>
@@ -80,7 +80,7 @@
     @else
         <x-not-found />
     @endif
-    <div class="modal fade" id="fotoModal" tabindex="-1" aria-labelledby="fotoModalLabel" aria-hidden="true">
+    <div class="modal" id="fotoModal" tabindex="-1" aria-labelledby="fotoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">

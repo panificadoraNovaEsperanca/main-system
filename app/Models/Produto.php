@@ -23,4 +23,9 @@ class Produto extends Model
     public function setor(){
         return $this->belongsTo(Setor::class);
     }
+
+    public function produtoRastreavel()
+    {
+        return $this->hasOne(ProdutoRastreavel::class);
+    }
 }

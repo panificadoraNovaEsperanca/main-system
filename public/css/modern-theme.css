@@ -2,6 +2,22 @@
    TEMA MODERNO - PADARIA NOVA ESPERANÇA
    ============================================ */
 
+/* Desabilitar todas as animações e transições globalmente */
+*,
+*::before,
+*::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+}
+
+/* Remover todos os efeitos hover que alteram transform */
+*:hover {
+    transform: none !important;
+}
+
 :root {
     /* Cores do tema */
     --color-primary: #3D2C1F;
@@ -32,9 +48,6 @@
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-    
-    /* Transições */
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ============================================
@@ -71,7 +84,6 @@ body {
     font-weight: 500;
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius-sm);
-    transition: var(--transition);
     display: flex;
     align-items: center;
 }
@@ -97,7 +109,6 @@ body {
 
 .dropdown-item {
     padding: 0.75rem 1.5rem;
-    transition: var(--transition);
     color: var(--text-primary);
     font-weight: 500;
 }
@@ -129,13 +140,7 @@ body {
     box-shadow: var(--shadow-md);
     margin-bottom: 1.5rem;
     overflow: hidden;
-    transition: var(--transition);
     background: var(--bg-card);
-}
-
-.card:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
 }
 
 .card-header {
@@ -165,7 +170,6 @@ body {
     border-radius: var(--border-radius-sm);
     padding: 0.625rem 1.5rem;
     font-weight: 600;
-    transition: var(--transition);
     border: none;
     cursor: pointer;
     display: inline-flex;
@@ -206,13 +210,8 @@ body {
 
 .btn-primary:hover {
     background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-secondary) 100%);
-    transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(170, 85, 34, 0.4);
     color: var(--text-light);
-}
-
-.btn-primary:active {
-    transform: translateY(0);
 }
 
 .btn-secondary {
@@ -223,7 +222,6 @@ body {
 .btn-secondary:hover {
     background-color: var(--color-primary-dark);
     color: var(--text-light);
-    transform: translateY(-2px);
 }
 
 .btn-success {
@@ -296,7 +294,6 @@ body {
     border: 2px solid #e0e0e0;
     border-radius: var(--border-radius-sm);
     padding: 0.75rem 1rem;
-    transition: var(--transition);
     font-size: 1rem;
     background-color: #ffffff;
     width: 100%;
@@ -444,13 +441,11 @@ body {
 }
 
 .table tbody tr {
-    transition: var(--transition);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .table tbody tr:hover {
     background-color: var(--color-light);
-    transform: scale(1.01);
     box-shadow: var(--shadow-sm);
 }
 
@@ -581,7 +576,6 @@ body {
     border-radius: var(--border-radius-sm);
     color: var(--text-primary);
     padding: 0.5rem 1rem;
-    transition: var(--transition);
     font-weight: 500;
 }
 
@@ -589,7 +583,6 @@ body {
     background-color: var(--color-secondary);
     border-color: var(--color-secondary);
     color: var(--text-light);
-    transform: translateY(-2px);
 }
 
 .page-item.active .page-link {
@@ -650,25 +643,6 @@ body {
     }
 }
 
-/* ============================================
-   ANIMAÇÕES
-   ============================================ */
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.card,
-.modal-content {
-    animation: fadeIn 0.3s ease-out;
-}
 
 /* ============================================
    SCROLLBAR CUSTOMIZADA
@@ -688,9 +662,6 @@ body {
     border-radius: 5px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: var(--color-accent);
-}
 
 /* ============================================
    SOBRESCRITAS DO ADMINLTE
@@ -705,6 +676,40 @@ body {
     position: relative;
     display: flex;
     align-items: center;
+}
+
+/* Hover effect APENAS para a sidebar - sobrescreve regras globais */
+.nav-sidebar .nav-link:hover,
+.sidebar .nav-sidebar .nav-link:hover,
+.main-sidebar .nav-sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+/* Transição suave APENAS para a sidebar abrir/fechar */
+.main-sidebar,
+.main-sidebar::before,
+.sidebar-collapse .main-sidebar,
+.sidebar-collapse .main-sidebar::before,
+.sidebar-mini.sidebar-collapse .main-sidebar,
+.sidebar-mini.sidebar-collapse .main-sidebar::before {
+    transition: margin-left 0.2s ease-in-out, width 0.2s ease-in-out !important;
+}
+
+/* Transição para o content-wrapper quando sidebar abre/fecha */
+.content-wrapper,
+.main-footer,
+.main-header {
+    transition: margin-left 0.2s ease-in-out !important;
+}
+
+/* Transição para elementos internos da sidebar */
+.sidebar .nav-link p,
+.sidebar .user-panel .info,
+.main-sidebar .brand-text,
+.main-sidebar .logo-xl,
+.main-sidebar .logo-xs {
+    transition: margin-left 0.2s ease, opacity 0.2s ease, visibility 0.2s ease !important;
 }
 
 .nav-sidebar .nav-link p {
@@ -757,14 +762,12 @@ body {
     margin: 0 0.25rem;
     padding: 0.5rem 1rem !important;
     border: 2px solid #e0e0e0 !important;
-    transition: var(--transition);
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
     background: var(--color-secondary) !important;
     border-color: var(--color-secondary) !important;
     color: var(--text-light) !important;
-    transform: translateY(-2px);
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
@@ -787,7 +790,6 @@ body {
 }
 
 .swal2-confirm:hover {
-    transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(170, 85, 34, 0.4) !important;
 }
 
@@ -799,14 +801,6 @@ body {
 
 /* Icons melhorados */
 .fa, .fas, .far, .fal, .fab, .fa-solid, .fa-regular, .fa-light, .fa-brands {
-    transition: var(--transition);
-}
-
-.btn:hover .fa,
-.btn:hover .fas,
-.nav-link:hover .fa,
-.nav-link:hover .fas {
-    transform: scale(1.1);
 }
 
 /* Loading states */
@@ -871,7 +865,6 @@ body {
 .breadcrumb-item a {
     color: var(--color-secondary);
     text-decoration: none;
-    transition: var(--transition);
 }
 
 .breadcrumb-item a:hover {
@@ -893,7 +886,6 @@ body {
     border-bottom: 3px solid transparent;
     color: var(--text-secondary);
     padding: 0.75rem 1.5rem;
-    transition: var(--transition);
     border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
 }
 
@@ -929,12 +921,10 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--border-radius-sm);
     margin-bottom: 0.5rem;
-    transition: var(--transition);
 }
 
 .list-group-item:hover {
     background-color: var(--color-light);
-    transform: translateX(4px);
 }
 
 .list-group-item.active {
@@ -1033,12 +1023,10 @@ body {
     font-size: 0.95rem;
     color: white;
     box-shadow: 0 2px 6px rgba(61, 44, 31, 0.25);
-    transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
     background: linear-gradient(135deg, #5a4430 0%, #3D2C1F 100%);
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(61, 44, 31, 0.35);
     color: white;
 }
@@ -1048,7 +1036,6 @@ body {
     background: linear-gradient(135deg, #3D2C1F 0%, #5a4430 100%);
     color: white;
     box-shadow: 0 2px 6px rgba(61, 44, 31, 0.25);
-    transform: translateY(0);
 }
 
 .btn-primary:not(:disabled):not(.disabled):active {
@@ -1066,12 +1053,10 @@ body {
     font-size: 0.95rem;
     color: white;
     box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
-    transition: all 0.2s ease;
 }
 
 .btn-success:hover {
     background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
     color: white;
 }
@@ -1080,7 +1065,6 @@ body {
 .btn-success:focus {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     color: white;
-    transform: translateY(0);
 }
 
 /* Botões de ação negativa (excluir, cancelar) */
@@ -1093,12 +1077,10 @@ body {
     font-size: 0.95rem;
     color: white;
     box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
-    transition: all 0.2s ease;
 }
 
 .btn-danger:hover {
     background: #c82333;
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
     color: white;
 }
@@ -1107,7 +1089,6 @@ body {
 .btn-danger:focus {
     background: #bd2130;
     color: white;
-    transform: translateY(0);
 }
 
 /* Botões secundários */
@@ -1120,12 +1101,10 @@ body {
     font-size: 0.95rem;
     color: white;
     box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
-    transition: all 0.2s ease;
 }
 
 .btn-secondary:hover {
     background: #5a6268;
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
     color: white;
 }
@@ -1140,12 +1119,10 @@ body {
     font-size: 0.95rem;
     color: #212529;
     box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
-    transition: all 0.2s ease;
 }
 
 .btn-warning:hover {
     background: #e0a800;
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
     color: #212529;
 }
@@ -1203,7 +1180,6 @@ input[type="submit"].btn-primary:hover {
     height: auto !important;
     object-fit: contain !important;
     opacity: 0.9;
-    transition: max-width 0.3s ease, width 0.3s ease;
     display: block;
 }
 

@@ -26,7 +26,6 @@
     border: 1.5px solid #dee2e6;
     border-radius: 6px;
     padding: 0.5rem 0.75rem;
-    transition: all 0.2s ease;
     font-size: 0.95rem;
   }
   
@@ -87,17 +86,11 @@
     padding: 0.6rem 1.2rem;
     font-weight: 600;
     box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
-    transition: all 0.2s ease;
     white-space: nowrap;
   }
   
   #addProduto:hover {
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
-  }
-  
-  #addProduto:active {
-    transform: translateY(0);
   }
   
   /* Tabela de produtos - usa padrão global, apenas ajustes específicos */
@@ -115,11 +108,9 @@
     font-size: 0.85rem;
     border-radius: 4px;
     border: none;
-    transition: all 0.2s ease;
   }
   
   .killme:hover {
-    transform: translateY(-1px);
     box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
   }
   
@@ -603,13 +594,10 @@
     
     $('#repete').on('change', function() {
       if ($(this).is(':checked')) {
-        $('#repeticao').fadeIn('fast', function() {
-
-        })
+        $('#repeticao').show()
       } else {
-        $('#repeticao').fadeOut('fast', function() {
-          $('#periodo').val('')
-        })
+        $('#repeticao').hide()
+        $('#periodo').val('')
       }
     })
 
