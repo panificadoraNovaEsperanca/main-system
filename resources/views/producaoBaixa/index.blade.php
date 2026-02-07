@@ -13,28 +13,32 @@
     <div class="row">
       <div class="col-md-3 col-sm-12">
         <div class="form-group">
+          <label class="mb-1">Data do dia</label>
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">
                 <i class="far fa-calendar-alt"></i>
               </span>
             </div>
-            <input autocomplete="off" value="{{ $_GET['data'] ?? '' }}" placeholder="Data de entrega" type="text"
+            <input autocomplete="off" value="{{ $dataFiltroFormatada }}" placeholder="DD/MM/AAAA" type="text"
               class="form-control trigger float-right" name="data" id="data">
           </div>
-
+          <small class="text-muted">Selecione a data da produção que deseja consultar.</small>
         </div>
       </div>
 
-      <div class="col-md-2 col-sm-12 mb-3">
+      <div class="col-md-2 col-sm-12 mb-3 d-flex align-items-end">
         <a href="{{ route('producaoBaixa.index') }}" class="btn btn-primary w-100">Limpar busca</a>
-
       </div>
     </div>
-    <div class="col-md-1">
+    <div class="row mb-3">
+      <div class="col-12">
+        <p class="mb-0 text-muted">
+          <strong>Exibindo produção do dia {{ $dataFiltroFormatada }}.</strong>
+          Para ver outro dia, selecione a data acima — a lista será atualizada ao escolher.
+        </p>
+      </div>
     </div>
-
-
   </form>
     <div class="table-responsive">
 

@@ -19,32 +19,52 @@ class ProducaoBaixaController extends Controller
      */
     public function index()
     {
-        
+        $dataFiltro = $this->resolveDataFiltro();
+
+        $inicio = $dataFiltro['inicio'];
+        $fim = $dataFiltro['fim'];
+        $dataFiltroFormatada = $dataFiltro['formatada'];
+
         $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
-        ->when(request()->query('data'), function ($query) {
-            $inicio = Carbon::createFromFormat('d/m/Y', request()->query('data'))->startOfDay();
-            $fim = Carbon::createFromFormat('d/m/Y', request()->query('data'))->endOfDay();
-            $query->whereBetween('dt_inicio', [$inicio, $fim]);
-        })
-         ->when(!request()->query('data'), function ($query) {
-            $inicio = Carbon::now()->startOfDay();
-            $fim = Carbon::now()->endOfDay();
-            $query->whereBetween('dt_inicio', [$inicio, $fim]);
-        })
-        ->paginate(request()->query('paginacao', 30)); // 30 é o valor padrão
-    
+            ->whereBetween('dt_inicio', [$inicio, $fim])
+            ->paginate(request()->query('paginacao', 30));
+
         $producaoCategoria = [];
 
-        foreach($producaos as $producao){
+        foreach ($producaos as $producao) {
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
-            
         }
-        if(count($_GET) == 0){
-            $_GET['turno'] = 'MANHÃ';
-            $_GET['data'] = Carbon::now()->format('d/m/Y');
+
+        return view('producaoBaixa.index', compact('producaoCategoria', 'dataFiltroFormatada'));
+    }
+
+    /**
+     * Resolve a data usada no filtro: query 'data' (d/m/Y) ou hoje.
+     * Em caso de data inválida, usa o dia atual.
+     */
+    private function resolveDataFiltro(): array
+    {
+        $dataQuery = request()->query('data');
+
+        if (!empty($dataQuery)) {
+            try {
+                $carbon = Carbon::createFromFormat('d/m/Y', $dataQuery);
+                return [
+                    'inicio' => $carbon->copy()->startOfDay(),
+                    'fim' => $carbon->copy()->endOfDay(),
+                    'formatada' => $carbon->format('d/m/Y'),
+                ];
+            } catch (\Exception $e) {
+                // Data inválida: cair no comportamento "hoje"
+            }
         }
-        
-        return view('producaoBaixa.index', compact('producaoCategoria'));
+
+        $hoje = Carbon::now();
+        return [
+            'inicio' => $hoje->copy()->startOfDay(),
+            'fim' => $hoje->copy()->endOfDay(),
+            'formatada' => $hoje->format('d/m/Y'),
+        ];
     }
 
 
