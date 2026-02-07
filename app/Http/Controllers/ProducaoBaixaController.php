@@ -32,6 +32,7 @@ class ProducaoBaixaController extends Controller
         $producaoCategoria = [];
         dump($producaos->items());
         foreach ($producaos as $producao) {
+            dump($producao->produto->categoria->nome);
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
         dd($producaoCategoria);
