@@ -27,7 +27,7 @@ class ProducaoBaixaController extends Controller
         
         $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
             ->whereBetween('dt_inicio', [$inicio, $fim])
-            ->paginate(request()->query('paginacao', 30));
+            ->paginate(request()->query('paginacao', 120));
         $producaoCategoria = [];
 
         foreach ($producaos as $producao) {
