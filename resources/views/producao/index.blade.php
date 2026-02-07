@@ -43,7 +43,7 @@
                 <select id="paginacao" name="paginacao" class="custom-select mr-2" style="min-width: 80px"
                     id="inputGroupSelect01">
 
-                    <option value="10" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '10' ? 'selected' : '' }}>
+                    <option value="30" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '10' ? 'selected' : '' }}>
                         30
                     </option>
                     <option value="50" {{ isset($_GET['paginacao']) && $_GET['paginacao'] == '50' ? 'selected' : '' }}>
@@ -59,12 +59,9 @@
             <div class="col-md-6 col-sm-12">
 
                 {{ $producaosPendentes->appends([
-                    'paginacao' => $_GET['paginacao'] ?? 10,
-                    'motorista' => $_GET['motorista'] ?? '',
-                    'cliente' => $_GET['cliente'] ?? '',
+                    'paginacao' => $_GET['paginacao'] ?? 30,
                     'dataHora' => $_GET['dataHora'] ?? '',
-                    'status' => $_GET['status'] ?? '',
-                ]) }}
+                ])->links() }}
             </div>
         </div>
 
@@ -150,6 +147,15 @@
             </tbody>
 
         </table>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col-md-12">
+            {{ $producaosConcluidas->appends([
+                'paginacao' => $_GET['paginacao'] ?? 10,
+                'dataHora' => $_GET['dataHora'] ?? '',
+            ])->links() }}
+        </div>
     </div>
     </div>
 
