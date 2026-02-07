@@ -26,54 +26,16 @@ class ProducaoBaixaController extends Controller
         $fim = $dataFiltro['fim']->toDateTimeString();
         $dataFiltroFormatada = $dataFiltro['formatada'];
         
-        dump('=== DATAS DO FILTRO ===');
-        dump('Inicio: ' . $inicio);
-        dump('Fim: ' . $fim);
-        
-        // Teste com filtro manual que funciona
-        $producaosManual = Producao::whereBetween('dt_inicio', ['2026-02-04 17:00:00', '2026-02-04 19:04:00'])->get();
-        $idsManual = $producaosManual->pluck('id')->toArray();
-        dump('Total manual (17:00-19:04): ' . $producaosManual->count());
-        dump('IDs manual: ' . json_encode($idsManual));
-        
-        // Query com filtro dinâmico
-        $query = Producao::with(['produto', 'produto.categoria', 'user'])
-            ->whereBetween('dt_inicio', [$inicio, $fim]);
-        
-        dump('=== SQL ===');
-        dump($query->toSql());
-        dump('Bindings: ' . json_encode($query->getBindings()));
-        
-        $producaos = $query->paginate(request()->query('paginacao', 100));
-        
-        dump('Total encontrado: ' . $producaos->total());
-        $idsDinamico = $producaos->pluck('id')->toArray();
-        dump('IDs dinâmico (primeira página): ' . json_encode($idsDinamico));
-        
-        // Verificar se os IDs do manual estão no dinâmico
-        $idsEncontrados = array_intersect($idsManual, $idsDinamico);
-        dump('IDs do manual encontrados no dinâmico: ' . json_encode($idsEncontrados));
-        dump('IDs do manual NÃO encontrados: ' . json_encode(array_diff($idsManual, $idsDinamico)));
-        
-        // Verificar alguns registros do banco na data
-        $registrosBanco = DB::table('producaos')
-            ->whereDate('dt_inicio', '2026-02-04')
-            ->select('id', 'dt_inicio')
-            ->limit(5)
-            ->get()
-            ->map(function($r) {
-                return ['id' => $r->id, 'dt_inicio' => $r->dt_inicio];
-            });
-        dump('Registros no banco (2026-02-04): ' . json_encode($registrosBanco));
+        $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
+            ->whereBetween('dt_inicio', [$inicio, $fim])
+            ->orderBy('dt_inicio', 'desc')
+            ->paginate(request()->query('paginacao', 100));
         
         $producaoCategoria = [];
 
         foreach ($producaos as $producao) {
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
-        
-        dump('Categorias encontradas: ' . count($producaoCategoria));
-        dd('Total: ' . $producaos->total());
         
         return view('producaoBaixa.index', compact('producaoCategoria', 'dataFiltroFormatada'));
     }
