@@ -30,6 +30,7 @@ class ProducaoBaixaController extends Controller
             ->paginate(request()->query('paginacao', 30));
 
         $producaoCategoria = [];
+        dump(Producao::whereBetween('dt_inicio', [$inicio, $fim])->get());
         dump(['inicio' => $inicio, 'fim' => $fim]);
         dump($producaos->items());
         foreach ($producaos as $producao) {
