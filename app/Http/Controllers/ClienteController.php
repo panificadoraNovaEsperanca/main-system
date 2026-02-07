@@ -142,14 +142,18 @@ class ClienteController extends Controller
         try {
             $datas = explode(' - ', $request->intervalo);
 
-            $inicio = Carbon::createFromFormat('d/m/Y', $datas[0])->startOfDay()->toDateTimeString();
-
-            $fim = Carbon::createFromFormat('d/m/Y', $datas[1])->endOfDay()->toDateTimeString();
+            $inicio = Carbon::createFromFormat('d/m/Y', $datas[0])->startOfDay();
+            $fim = Carbon::createFromFormat('d/m/Y', $datas[1])->endOfDay();
+            
+            // Criar cópias para usar nas queries
+            $inicioQuery = $inicio->copy();
+            $fimQuery = $fim->copy();
+            
             $dados = [];
             foreach ($request->cliente as $cliente) {
                 $dados[$cliente]['cliente'] = Cliente::findOrFail($cliente);
                 $pedidos = Pedido::where('cliente_id', $cliente)
-                    ->whereBetween('dt_previsao', [$inicio, $fim])
+                    ->whereBetween('dt_previsao', [$inicioQuery, $fimQuery])
                     ->when($request->status != '-1', function ($query) use ($request) {
                         $query->where('status', $request->status);
                     })
@@ -163,7 +167,7 @@ class ClienteController extends Controller
                             'pp.pedido_id',
                             DB::table('pedidos as pe')
                                 ->where('cliente_id', '=', $cliente)
-                                ->whereBetween('dt_previsao', [$inicio, $fim])
+                                ->whereBetween('dt_previsao', [$inicioQuery, $fimQuery])
                                 ->pluck('id')
                         )->selectRaw('p.id as id,
                     p.nome as nome,
