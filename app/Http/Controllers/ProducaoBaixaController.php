@@ -29,7 +29,10 @@ class ProducaoBaixaController extends Controller
             'fim' => $fim,
         ]);
         $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
-            ->whereBetween('dt_inicio', [$inicio, $fim])
+            ->whereBetween('dt_inicio', [
+                '2026-02-04 17:00:00',
+                '2026-02-04 19:04:00'
+            ])
             ->paginate(request()->query('paginacao', 30));
         $producaoCategoria = [];
 
