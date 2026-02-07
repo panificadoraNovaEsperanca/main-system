@@ -34,9 +34,10 @@ class ProducaoBaixaController extends Controller
         $producaoCategoria = [];
 
         foreach ($producaos as $producao) {
+            dump($producao->produto->nome);
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
-        
+        dd($producaoCategoria);s
         return view('producaoBaixa.index', compact('producaoCategoria', 'dataFiltroFormatada'));
     }
 
