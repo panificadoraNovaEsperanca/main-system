@@ -24,7 +24,10 @@ class ProducaoBaixaController extends Controller
         $inicio = $dataFiltro['inicio'];
         $fim = $dataFiltro['fim'];
         $dataFiltroFormatada = $dataFiltro['formatada'];
-
+        dump([
+            'inicio' => $inicio,
+            'fim' => $fim,
+        ]);
         $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
             // ->whereBetween('dt_inicio', [$inicio, $fim])
             ->whereBetween('dt_inicio', [
