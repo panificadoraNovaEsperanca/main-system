@@ -24,7 +24,7 @@ class ProducaoBaixaController extends Controller
         $inicio = $dataFiltro['inicio']->format('Y-m-d H:i:s');
         $fim = $dataFiltro['fim']->format('Y-m-d H:i:s');
         $dataFiltroFormatada = $dataFiltro['formatada'];
-        dd([
+        dump([
             'inicio' => $inicio,
             'fim' => $fim,
         ]);
