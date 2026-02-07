@@ -25,14 +25,67 @@ class ProducaoBaixaController extends Controller
         $fim = $dataFiltro['fim'];
         $dataFiltroFormatada = $dataFiltro['formatada'];
         
-        $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
-            ->whereBetween('dt_inicio', [$inicio, $fim])
-            ->paginate(request()->query('paginacao', 120));
+        dump('=== DEBUG FILTRO DINÂMICO ===');
+        dump([
+            'inicio_carbon' => $inicio,
+            'inicio_timezone' => $inicio->timezone->getName(),
+            'inicio_toDateTimeString' => $inicio->toDateTimeString(),
+            'inicio_toIso8601String' => $inicio->toIso8601String(),
+            'inicio_format' => $inicio->format('Y-m-d H:i:s'),
+            'fim_carbon' => $fim,
+            'fim_timezone' => $fim->timezone->getName(),
+            'fim_toDateTimeString' => $fim->toDateTimeString(),
+            'fim_toIso8601String' => $fim->toIso8601String(),
+            'fim_format' => $fim->format('Y-m-d H:i:s'),
+        ]);
+        
+        // Teste com filtro manual que funciona
+        dump('=== TESTE FILTRO MANUAL (que funciona) ===');
+        $producaosManual = Producao::with(['produto', 'produto.categoria', 'user'])
+            ->whereBetween('dt_inicio', [
+                '2026-02-04 17:00:00',
+                '2026-02-04 19:04:00'
+            ])
+            ->get();
+        dump('Total manual: ' . $producaosManual->count());
+        if ($producaosManual->count() > 0) {
+            dump('Primeiro manual dt_inicio: ' . $producaosManual->first()->dt_inicio);
+        }
+        
+        // Query com filtro dinâmico
+        $query = Producao::with(['produto', 'produto.categoria', 'user'])
+            ->whereBetween('dt_inicio', [$inicio, $fim]);
+        
+        dump('=== SQL GERADA ===');
+        dump($query->toSql());
+        dump($query->getBindings());
+        
+        $producaos = $query->paginate(request()->query('paginacao', 100));
+        
+        dump('=== RESULTADOS FILTRO DINÂMICO ===');
+        dump('Total encontrado: ' . $producaos->total());
+        dump('Count items: ' . $producaos->count());
+        
+        // Verificar alguns registros do banco na data
+        dump('=== REGISTROS NO BANCO (2026-02-04) ===');
+        $registrosBanco = DB::table('producaos')
+            ->whereDate('dt_inicio', '2026-02-04')
+            ->select('id', 'dt_inicio', 'produto_id')
+            ->limit(10)
+            ->get();
+        dump($registrosBanco);
+        
         $producaoCategoria = [];
 
         foreach ($producaos as $producao) {
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
+        
+        dd([
+            'producaoCategoria' => $producaoCategoria,
+            'dataFiltroFormatada' => $dataFiltroFormatada,
+            'total' => $producaos->total(),
+        ]);
         
         return view('producaoBaixa.index', compact('producaoCategoria', 'dataFiltroFormatada'));
     }
