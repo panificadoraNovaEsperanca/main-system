@@ -21,13 +21,14 @@ class ProducaoBaixaController extends Controller
     {
         $dataFiltro = $this->resolveDataFiltro();
 
-        $inicio = $dataFiltro['inicio'];
-        $fim = $dataFiltro['fim'];
+        // Converter para string no formato local para evitar conversão de timezone
+        $inicio = $dataFiltro['inicio']->toDateTimeString();
+        $fim = $dataFiltro['fim']->toDateTimeString();
         $dataFiltroFormatada = $dataFiltro['formatada'];
         
         dump('=== DATAS DO FILTRO ===');
-        dump('Inicio: ' . $inicio->format('Y-m-d H:i:s') . ' (timezone: ' . $inicio->timezone->getName() . ')');
-        dump('Fim: ' . $fim->format('Y-m-d H:i:s') . ' (timezone: ' . $fim->timezone->getName() . ')');
+        dump('Inicio: ' . $inicio);
+        dump('Fim: ' . $fim);
         
         // Teste com filtro manual que funciona
         $producaosManual = Producao::whereBetween('dt_inicio', ['2026-02-04 17:00:00', '2026-02-04 19:04:00'])->count();
