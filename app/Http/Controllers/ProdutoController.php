@@ -208,8 +208,12 @@ class ProdutoController extends Controller
         try {
 
             $datas = explode(' - ', $request->intervalo);
-            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->toDateTimeString();
-            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->toDateTimeString();
+            $inicioCarbon = Carbon::createFromFormat('d/m/Y H:i', $datas[0]);
+            $fimCarbon = Carbon::createFromFormat('d/m/Y H:i', $datas[1]);
+            
+            // Converter para string para usar na query
+            $inicio = $inicioCarbon->toDateTimeString();
+            $fim = $fimCarbon->toDateTimeString();
 
             $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
                 ->whereNotIn('status', ['CANCELADO'])
@@ -241,8 +245,8 @@ class ProdutoController extends Controller
 
             $pdf = Pdf::loadView('relatorios.pdf.produtos', [
                 'porCategoria' => $porCategoria,
-                'inicio'       => $inicio,
-                'fim'          => $fim
+                'inicio'       => $inicioCarbon,
+                'fim'          => $fimCarbon
             ]);
 
             return $pdf->download("Relatorio_produtos.pdf");
@@ -329,8 +333,12 @@ class ProdutoController extends Controller
     {
         try {
             $datas = explode(' - ', $request->data);
-            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay()->toDateTimeString();
-            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay()->toDateTimeString();
+            $inicioCarbon = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
+            $fimCarbon = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
+            
+            // Converter para string para usar na query
+            $inicio = $inicioCarbon->toDateTimeString();
+            $fim = $fimCarbon->toDateTimeString();
 
             $producaos = Producao::whereBetween('dt_inicio', [$inicio, $fim])
                 ->when($request->produto != null && count($request->produto), function ($query) use ($request) {
@@ -349,8 +357,8 @@ class ProdutoController extends Controller
             }
             $pdf =  Pdf::loadView('relatorios.pdf.producao', [
                 'producao' => $producaoCategorias,
-                'inicio' => $inicio,
-                'fim' => $fim,
+                'inicio' => $inicioCarbon,
+                'fim' => $fimCarbon,
             ]);
             $today = Carbon::now()->format('d-m-y H:i');
             return $pdf->download("Relatório producao $today.pdf");

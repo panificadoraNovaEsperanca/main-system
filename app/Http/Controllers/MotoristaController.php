@@ -136,8 +136,12 @@ class MotoristaController extends Controller
     {
         try {
             ini_set('memory_limit', '-1');
-            $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay()->toDateTimeString();
-            $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay()->toDateTimeString();
+            $inicioCarbon = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
+            $fimCarbon = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
+            
+            // Converter para string para usar na query
+            $inicio = $inicioCarbon->toDateTimeString();
+            $fim = $fimCarbon->toDateTimeString();
 
             $motoristasId = Motorista::when($request->motorista != null && $request->motorista != '', function ($query) use ($request) {
                 $query->where('id', $request->motorista);
@@ -155,9 +159,9 @@ class MotoristaController extends Controller
 
             $pdf =  Pdf::loadView('relatorios.pdf.motorista', [
                 'pedidos' => $dados,
-                'dia' => $inicio->format('d/m/Y')
+                'dia' => $inicioCarbon->format('d/m/Y')
             ]);
-            return $pdf->download("Relatório entregas {$inicio->format('d/m/Y')}.pdf");
+            return $pdf->download("Relatório entregas {$inicioCarbon->format('d/m/Y')}.pdf");
         } catch (\Exception $e) {
             return response()->json(['success' => true, 'data' => null, 'message' => 'Erro ao processar requisição. Tente novamente mais tarde.' . $e->getMessage()], 400);
         }
