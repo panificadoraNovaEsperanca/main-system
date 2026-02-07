@@ -44,19 +44,19 @@ class HomeController extends Controller
             }
         }
         try {
-            $inicio = Carbon::now()->startOfDay();
-            $fim = Carbon::now()->endOfDay();
+            $inicio = Carbon::now()->startOfDay()->toDateTimeString();
+            $fim = Carbon::now()->endOfDay()->toDateTimeString();
             $primeiroDiaDoMes = Carbon::now()->startOfMonth();
             $ultimoDiaDoMes = Carbon::now()->endOfMonth();
 
             // CORREÇÃO: Garantir mesma consulta para card e gráfico
-            $primeiroDiaDoMesStr = $primeiroDiaDoMes->toDateString();
-            $ultimoDiaDoMesStr = $ultimoDiaDoMes->toDateString();
+            $primeiroDiaDoMesStr = $primeiroDiaDoMes->toDateTimeString();
+            $ultimoDiaDoMesStr = $ultimoDiaDoMes->toDateTimeString();
 
             // Dados para o gráfico anual - PRIMEIRO
             $year = Carbon::now()->year;
-            $firstDateOfYear = Carbon::createFromDate($year, 1, 1)->startOfDay();
-            $lastDateOfYear = Carbon::createFromDate($year, 12, 31)->endOfDay();
+            $firstDateOfYear = Carbon::createFromDate($year, 1, 1)->startOfDay()->toDateTimeString();
+            $lastDateOfYear = Carbon::createFromDate($year, 12, 31)->endOfDay()->toDateTimeString();
 
             $meses = collect(range(1, 12))->map(function ($mes) {
                 return ['mes' => $mes, 'quantidade' => 0];
@@ -142,7 +142,7 @@ class HomeController extends Controller
             $dataAnual = $quantidadePedidosPorMes->pluck('quantidade');
 
             // Outros dados para gráficos
-            $seteDiasAtras = Carbon::now()->subDays(6)->startOfDay();
+            $seteDiasAtras = Carbon::now()->subDays(6)->startOfDay()->toDateTimeString();
             $pedidosPorDia = Pedido::whereBetween('dt_previsao', [$seteDiasAtras, $fim])
                 ->selectRaw('DATE(dt_previsao) as data, COUNT(*) as total')
                 ->groupBy('data')
@@ -200,8 +200,8 @@ class HomeController extends Controller
 
         $year = Carbon::now()->year;
 
-        $firstDateOfYear = Carbon::createFromDate($year, 1, 1)->toDateString();
-        $lastDateOfYear = Carbon::createFromDate($year, 12, 31)->toDateString();
+        $firstDateOfYear = Carbon::createFromDate($year, 1, 1)->startOfDay()->toDateTimeString();
+        $lastDateOfYear = Carbon::createFromDate($year, 12, 31)->endOfDay()->toDateTimeString();
         $meses = collect(range(1, 12))->map(function ($mes) {
             return ['mes' => $mes, 'quantidade' => 0];
         });

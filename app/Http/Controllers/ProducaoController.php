@@ -27,8 +27,8 @@ class ProducaoController extends Controller
         if (request()->has('dataHora') && !empty(request()->dataHora)) {
             try {
                 $data = Carbon::createFromFormat('d/m/Y', request()->dataHora);
-                $inicio = $data->copy()->startOfDay();
-                $fim = $data->copy()->endOfDay();
+                $inicio = $data->copy()->startOfDay()->toDateTimeString();
+                $fim = $data->copy()->endOfDay()->toDateTimeString();
                 
                 $queryPendentes->whereBetween('dt_inicio', [$inicio, $fim]);
                 $queryConcluidas->whereBetween('dt_inicio', [$inicio, $fim]);

@@ -136,8 +136,8 @@ class MotoristaController extends Controller
     {
         try {
             ini_set('memory_limit', '-1');
-            $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
-            $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
+            $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay()->toDateTimeString();
+            $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay()->toDateTimeString();
 
             $motoristasId = Motorista::when($request->motorista != null && $request->motorista != '', function ($query) use ($request) {
                 $query->where('id', $request->motorista);
@@ -166,8 +166,8 @@ class MotoristaController extends Controller
     {
         try {
             ini_set('memory_limit', '-1');
-            $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay();
-            $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay();
+            $inicio = Carbon::createFromFormat('d/m/Y', $request->data)->startOfDay()->toDateTimeString();
+            $fim = Carbon::createFromFormat('d/m/Y', $request->data)->endOfDay()->toDateTimeString();
 
             // Flag opcional - se true, imprime apenas 1 etiqueta (opcional para teste)
             $modoTeste = $request->get('teste', false);
@@ -388,8 +388,8 @@ class MotoristaController extends Controller
             return view('motorista.entrega', compact('pedidos', 'motoristas'));
         }
 
-        $dtInicial = Carbon::now()->startOfDay();
-        $dtFinal = Carbon::now()->endOfDay();
+        $dtInicial = Carbon::now()->startOfDay()->toDateTimeString();
+        $dtFinal = Carbon::now()->endOfDay()->toDateTimeString();
 
         $pedidos = Pedido::with(['cliente'])
             ->when(!empty($motoristas), function ($query) use ($motoristas) {

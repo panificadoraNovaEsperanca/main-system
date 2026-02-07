@@ -142,9 +142,9 @@ class ClienteController extends Controller
         try {
             $datas = explode(' - ', $request->intervalo);
 
-            $inicio = Carbon::createFromFormat('d/m/Y', $datas[0])->startOfDay();
+            $inicio = Carbon::createFromFormat('d/m/Y', $datas[0])->startOfDay()->toDateTimeString();
 
-            $fim = Carbon::createFromFormat('d/m/Y', $datas[1])->endOfDay();
+            $fim = Carbon::createFromFormat('d/m/Y', $datas[1])->endOfDay()->toDateTimeString();
             $dados = [];
             foreach ($request->cliente as $cliente) {
                 $dados[$cliente]['cliente'] = Cliente::findOrFail($cliente);

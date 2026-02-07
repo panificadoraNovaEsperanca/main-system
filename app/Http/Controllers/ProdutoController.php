@@ -208,8 +208,8 @@ class ProdutoController extends Controller
         try {
 
             $datas = explode(' - ', $request->intervalo);
-            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0]);
-            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1]);
+            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->toDateTimeString();
+            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->toDateTimeString();
 
             $pedidos = Pedido::whereBetween('dt_previsao', [$inicio, $fim])
                 ->whereNotIn('status', ['CANCELADO'])
@@ -329,8 +329,8 @@ class ProdutoController extends Controller
     {
         try {
             $datas = explode(' - ', $request->data);
-            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay();
-            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay();
+            $inicio = Carbon::createFromFormat('d/m/Y H:i', $datas[0])->startOfDay()->toDateTimeString();
+            $fim = Carbon::createFromFormat('d/m/Y H:i', $datas[1])->endOfDay()->toDateTimeString();
 
             $producaos = Producao::whereBetween('dt_inicio', [$inicio, $fim])
                 ->when($request->produto != null && count($request->produto), function ($query) use ($request) {

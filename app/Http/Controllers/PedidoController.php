@@ -44,8 +44,8 @@ class PedidoController extends Controller
             })
             ->when(request()->dataHora != '', function ($query) {
                 $datas = explode(' - ', request()->dataHora);
-                $dtInicial = Carbon::createFromFormat('d/m/Y', $datas[0])->startOfDay();
-                $dtFinal = Carbon::createFromFormat('d/m/Y', $datas[1])->endOfDay();
+                $dtInicial = Carbon::createFromFormat('d/m/Y', $datas[0])->startOfDay()->toDateTimeString();
+                $dtFinal = Carbon::createFromFormat('d/m/Y', $datas[1])->endOfDay()->toDateTimeString();
                 $query->whereBetween('dt_previsao', [$dtInicial, $dtFinal]);
             })
             ->paginate(request()->paginacao ?? 30);
@@ -295,8 +295,8 @@ class PedidoController extends Controller
                 $query->where('status', request()->status);
             })
             ->when(request()->dataHora != '', function ($query) {
-                $dtInicial = Carbon::createFromFormat('d/m/Y', request()->dataHora)->startOfDay();
-                $dtFinal = Carbon::createFromFormat('d/m/Y', request()->dataHora)->endOfDay();
+                $dtInicial = Carbon::createFromFormat('d/m/Y', request()->dataHora)->startOfDay()->toDateTimeString();
+                $dtFinal = Carbon::createFromFormat('d/m/Y', request()->dataHora)->endOfDay()->toDateTimeString();
                 $query->whereBetween('dt_previsao', [$dtInicial, $dtFinal]);
             })
             ->paginate(request()->paginacao ?? 50);
