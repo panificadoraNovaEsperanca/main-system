@@ -30,7 +30,7 @@ class ProducaoBaixaController extends Controller
             ->paginate(request()->query('paginacao', 30));
 
         $producaoCategoria = [];
-        dump($producaos);
+        dump($producaos->items());
         foreach ($producaos as $producao) {
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
