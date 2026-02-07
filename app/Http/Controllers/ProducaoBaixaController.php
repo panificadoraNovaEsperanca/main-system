@@ -29,18 +29,20 @@ class ProducaoBaixaController extends Controller
             ->whereBetween('dt_inicio', [$inicio, $fim])
             ->paginate(request()->query('paginacao', 30));
         $producaoCategoria = [];
-        dump(
-            Producao::whereBetween('dt_inicio', [
-                '2026-02-04 17:00:00',
-                '2026-02-04 19:04:00'
-            ])
-            ->select(['produto_id','quantidade','status','dt_inicio','observacao','user_id'])
-            ->get()
-        );
-                dump(['inicio' => $inicio, 'fim' => $fim]);
-        dump($producaos->items());
+
         foreach ($producaos as $producao) {
-            
+            dump(
+                [
+                    'categoria' => $producao->produto->categoria->nome,
+                    'produto' => $producao->produto->nome,
+                    'quantidade' => $producao->quantidade,
+                    'status' => $producao->status,
+                    'dt_inicio' => $producao->dt_inicio,
+                    'observacao' => $producao->observacao,
+                    'user' => $producao->user->name,
+                ]
+                );     
+                dump($producaoCategoria);
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
         dd($producaoCategoria);
