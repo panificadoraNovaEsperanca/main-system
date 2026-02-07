@@ -31,8 +31,10 @@ class ProducaoBaixaController extends Controller
         dump('Fim: ' . $fim);
         
         // Teste com filtro manual que funciona
-        $producaosManual = Producao::whereBetween('dt_inicio', ['2026-02-04 17:00:00', '2026-02-04 19:04:00'])->count();
-        dump('Total manual (17:00-19:04): ' . $producaosManual);
+        $producaosManual = Producao::whereBetween('dt_inicio', ['2026-02-04 17:00:00', '2026-02-04 19:04:00'])->get();
+        $idsManual = $producaosManual->pluck('id')->toArray();
+        dump('Total manual (17:00-19:04): ' . $producaosManual->count());
+        dump('IDs manual: ' . json_encode($idsManual));
         
         // Query com filtro dinâmico
         $query = Producao::with(['produto', 'produto.categoria', 'user'])
@@ -45,6 +47,13 @@ class ProducaoBaixaController extends Controller
         $producaos = $query->paginate(request()->query('paginacao', 100));
         
         dump('Total encontrado: ' . $producaos->total());
+        $idsDinamico = $producaos->pluck('id')->toArray();
+        dump('IDs dinâmico (primeira página): ' . json_encode($idsDinamico));
+        
+        // Verificar se os IDs do manual estão no dinâmico
+        $idsEncontrados = array_intersect($idsManual, $idsDinamico);
+        dump('IDs do manual encontrados no dinâmico: ' . json_encode($idsEncontrados));
+        dump('IDs do manual NÃO encontrados: ' . json_encode(array_diff($idsManual, $idsDinamico)));
         
         // Verificar alguns registros do banco na data
         $registrosBanco = DB::table('producaos')
