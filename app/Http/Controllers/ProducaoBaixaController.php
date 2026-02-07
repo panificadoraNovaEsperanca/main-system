@@ -37,7 +37,7 @@ class ProducaoBaixaController extends Controller
             dump($producao->produto->nome);
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
-        dd($producaoCategoria);s
+        dd($producaoCategoria);
         return view('producaoBaixa.index', compact('producaoCategoria', 'dataFiltroFormatada'));
     }
 
