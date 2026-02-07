@@ -21,38 +21,19 @@ class ProducaoBaixaController extends Controller
     {
         $dataFiltro = $this->resolveDataFiltro();
 
-        $inicio = $dataFiltro['inicio'];
-        $fim = $dataFiltro['fim'];
+        $inicio = $dataFiltro['inicio']->format('Y-m-d H:i:s');
+        $fim = $dataFiltro['fim']->format('Y-m-d H:i:s');
         $dataFiltroFormatada = $dataFiltro['formatada'];
-        dump([
-            'inicio' => $inicio,
-            'fim' => $fim,
-        ]);
+        
         $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
-            // ->whereBetween('dt_inicio', [$inicio, $fim])
-            ->whereBetween('dt_inicio', [
-                '2026-02-04 17:00:00',
-                '2026-02-04 19:04:00'
-            ])
+            ->whereBetween('dt_inicio', [$inicio, $fim])
             ->paginate(request()->query('paginacao', 30));
         $producaoCategoria = [];
 
         foreach ($producaos as $producao) {
-            dump(
-                [
-                    'categoria' => $producao->produto->categoria->nome,
-                    'produto' => $producao->produto->nome,
-                    'quantidade' => $producao->quantidade,
-                    'status' => $producao->status,
-                    'dt_inicio' => $producao->dt_inicio,
-                    'observacao' => $producao->observacao,
-                    'user' => $producao->user->name,
-                ]
-                );     
-                dump($producaoCategoria);
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
-        dd($producaoCategoria);
+        
         return view('producaoBaixa.index', compact('producaoCategoria', 'dataFiltroFormatada'));
     }
 
