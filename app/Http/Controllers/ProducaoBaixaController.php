@@ -24,7 +24,10 @@ class ProducaoBaixaController extends Controller
         $inicio = $dataFiltro['inicio']->format('Y-m-d H:i:s');
         $fim = $dataFiltro['fim']->format('Y-m-d H:i:s');
         $dataFiltroFormatada = $dataFiltro['formatada'];
-        
+        dd([
+            'inicio' => $inicio,
+            'fim' => $fim,
+        ]);
         $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
             ->whereBetween('dt_inicio', [$inicio, $fim])
             ->paginate(request()->query('paginacao', 30));
