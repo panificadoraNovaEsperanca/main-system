@@ -28,13 +28,13 @@ class ProducaoBaixaController extends Controller
         $producaos = Producao::with(['produto', 'produto.categoria', 'user'])
             ->whereBetween('dt_inicio', [$inicio, $fim])
             ->paginate(request()->query('paginacao', 30));
-
+        dump(Carbon::now());
         $producaoCategoria = [];
         dump(Producao::whereBetween('dt_inicio', [$inicio, $fim])->select(['produto_id','quantidade','status','dt_inicio','observacao','user_id'])->get());
         dump(['inicio' => $inicio, 'fim' => $fim]);
         dump($producaos->items());
         foreach ($producaos as $producao) {
-            dump($producao->produto->categoria->nome);
+            
             $producaoCategoria[$producao->produto->categoria->nome][] = $producao;
         }
         dd($producaoCategoria);
